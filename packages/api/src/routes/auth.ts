@@ -142,4 +142,7 @@ authRoutes.post(
   }
 );
 
+// Export route type for Hono RPC type inference
+export type AuthAPI = typeof authRoutes;
+
 export default authRoutes;
