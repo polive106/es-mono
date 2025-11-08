@@ -1,0 +1,643 @@
+openapi: 3.0.3
+info:
+  title: SkillSwap Users & Auth API
+  version: 1.0.0
+  description: |
+    Authentication, user registration, profile management, and role assignment.
+    Implements FR-005 to FR-012 (RBAC), FR-040 to FR-042 (security).
+
+servers:
+  - url: http://localhost:3000/api
+    description: Development server
+
+tags:
+  - name: Authentication
+    description: Login, registration, session management
+  - name: Users
+    description: User profile operations
+  - name: Roles
+    description: Role-based access control (RBAC)
+
+paths:
+  /auth/register:
+    post:
+      tags: [Authentication]
+      summary: Register new user via invite
+      description: |
+        Creates user account using company invite code.
+        Password must meet FR-040 requirements (12+ chars, breach checked).
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, name, companyInviteCode, languagePref]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "alice@example.com"
+                password:
+                  type: string
+                  minLength: 12
+                  example: "SecurePass123!"
+                  description: Min 12 chars, will be checked against breach database (FR-040)
+                name:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                  example: "Alice Johnson"
+                companyInviteCode:
+                  type: string
+                  example: "ABC12345"
+                  description: Invite code from company (FR-001)
+                languagePref:
+                  type: string
+                  enum: [en, fr]
+                  default: en
+                  description: User language preference (FR-003)
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+                  session:
+                    $ref: '#/components/schemas/Session'
+        '400':
+          description: Validation failed or password breached
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                passwordBreached:
+                  value:
+                    error: "Validation Failed"
+                    message: "Password found in breach database. Choose a different password."
+                    code: "PASSWORD_BREACHED"
+                invalidInvite:
+                  value:
+                    error: "Validation Failed"
+                    message: "Invalid invite code"
+                    code: "INVALID_INVITE_CODE"
+
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: Login with email/password
+      description: |
+        Authenticates user and creates session.
+        Session timeout: 24h for talent, 4h for talent_manager (FR-041).
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+                  session:
+                    $ref: '#/components/schemas/Session'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Unauthorized"
+                message: "Invalid email or password"
+                code: "INVALID_CREDENTIALS"
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      summary: Logout and invalidate session
+      operationId: logout
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Logout successful
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/reauth:
+    post:
+      tags: [Authentication]
+      summary: Re-authenticate for critical operations
+      description: |
+        Required for critical operations even if session is valid (FR-042):
+        - Exchange approval
+        - Credit purchase
+        - NDA signing
+      operationId: reauth
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [password]
+              properties:
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Re-authentication successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reauthToken:
+                    type: string
+                    description: Token valid for 5 minutes for critical operations
+                  expiresAt:
+                    type: string
+                    format: date-time
+        '401':
+          description: Invalid password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /users/me:
+    get:
+      tags: [Users]
+      summary: Get current user profile
+      operationId: getCurrentUser
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    put:
+      tags: [Users]
+      summary: Update current user profile
+      description: Update name or language preference (FR-003)
+      operationId: updateCurrentUser
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                languagePref:
+                  type: string
+                  enum: [en, fr]
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /users/{userId}/roles:
+    get:
+      tags: [Roles]
+      summary: Get user roles
+      description: |
+        Returns roles for a user across all companies (FR-012).
+        Multi-tenancy: user can have different roles in different companies.
+      operationId: getUserRoles
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: companyId
+          in: query
+          description: Filter roles by company context
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User roles
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  roles:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserRoleAssignment'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    post:
+      tags: [Roles]
+      summary: Assign role to user
+      description: |
+        Assigns a role to user within a company context (FR-006).
+        Requires talent_manager role in target company.
+      operationId: assignRoleToUser
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [roleId, companyId]
+              properties:
+                roleId:
+                  type: string
+                  format: uuid
+                  description: Role to assign (system role or company-specific custom role)
+                companyId:
+                  type: string
+                  format: uuid
+                  description: Company context for this role assignment
+      responses:
+        '201':
+          description: Role assigned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRoleAssignment'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Role already assigned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /roles:
+    get:
+      tags: [Roles]
+      summary: List available roles
+      description: Returns system roles and company-specific custom roles (FR-007, FR-009)
+      operationId: listRoles
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: scope
+          in: query
+          description: Filter by role scope
+          schema:
+            type: string
+            enum: [system, company]
+        - name: companyId
+          in: query
+          description: Filter company-specific roles
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of roles
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  roles:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Role'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags: [Roles]
+      summary: Create custom company role
+      description: |
+        Creates a company-specific custom role (FR-009).
+        Requires talent_manager role.
+      operationId: createCustomRole
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, description, companyId, permissionIds]
+              properties:
+                name:
+                  type: string
+                  minLength: 2
+                  maxLength: 50
+                  example: "compliance_officer"
+                description:
+                  type: string
+                  example: "Can approve legal checks for exchanges"
+                companyId:
+                  type: string
+                  format: uuid
+                permissionIds:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  description: Permissions to assign to this role (FR-010)
+      responses:
+        '201':
+          description: Custom role created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /permissions:
+    get:
+      tags: [Roles]
+      summary: List all permissions
+      description: Returns granular permissions available in the system (FR-010)
+      operationId: listPermissions
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of permissions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  permissions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Permission'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Session token (Lucia Auth)
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        languagePref:
+          type: string
+          enum: [en, fr]
+          description: User language preference (FR-003)
+        companyId:
+          type: string
+          format: uuid
+          description: Employer company
+        company:
+          $ref: '#/components/schemas/CompanyRef'
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRoleAssignment'
+          description: User's role assignments (can have multiple roles FR-008)
+        lastActivityAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    CompanyRef:
+      type: object
+      description: Abbreviated company reference
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+
+    Session:
+      type: object
+      properties:
+        token:
+          type: string
+          example: "sess_abc123..."
+          description: Bearer token for authentication
+        expiresAt:
+          type: string
+          format: date-time
+          description: Session expiry (24h talent, 4h talent_manager per FR-041)
+        user:
+          $ref: '#/components/schemas/User'
+
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: "talent_manager"
+          description: Role name (lowercase_underscore format)
+        description:
+          type: string
+          example: "Can create skill needs and manage exchanges"
+        scope:
+          type: string
+          enum: [system, company]
+          description: System roles or company-specific (FR-009)
+        companyId:
+          type: string
+          format: uuid
+          nullable: true
+          description: NULL for system roles, company ID for custom roles
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Permission'
+        createdAt:
+          type: string
+          format: date-time
+
+    Permission:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: "create_skill_need"
+          description: Permission name ({action}_{resource} format)
+        resource:
+          type: string
+          example: "skill_need"
+        action:
+          type: string
+          enum: [view, create, update, delete, approve]
+        description:
+          type: string
+          example: "Post skill requirements"
+
+    UserRoleAssignment:
+      type: object
+      description: User-Role junction with company context (FR-012)
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        role:
+          $ref: '#/components/schemas/Role'
+        companyId:
+          type: string
+          format: uuid
+          description: Company context for this role assignment
+        assignedAt:
+          type: string
+          format: date-time
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: string
+
+  responses:
+    BadRequest:
+      description: Invalid request data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Unauthorized"
+            message: "Valid session required"
+            code: "AUTH_REQUIRED"
+
+    Forbidden:
+      description: Insufficient permissions (FR-011 permission check failed)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Forbidden"
+            message: "Requires talent_manager role in this company"
+            code: "INSUFFICIENT_PERMISSIONS"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    RateLimitExceeded:
+      description: Rate limit exceeded (FR-045 - 20 writes/min or 100 reads/min)
+      headers:
+        X-RateLimit-Limit:
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Rate Limit Exceeded"
+            message: "Too many requests. Try again in 42 seconds."
+            code: "RATE_LIMIT_EXCEEDED"

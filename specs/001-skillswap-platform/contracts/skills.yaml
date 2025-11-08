@@ -1,0 +1,520 @@
+openapi: 3.0.3
+info:
+  title: SkillSwap Skills API
+  version: 1.0.0
+  description: |
+    Skill taxonomy management, user skill profiles, talent availability, and talent pool search.
+    Implements FR-013 to FR-017, FR-020 (skill management and search).
+
+servers:
+  - url: http://localhost:3000/api
+    description: Development server
+
+tags:
+  - name: Taxonomy
+    description: Skill taxonomy operations (ESCO-based)
+  - name: User Skills
+    description: User skill profile management
+  - name: Talent Search
+    description: Search and filter talent pool
+
+paths:
+  /skills/taxonomy:
+    get:
+      tags: [Taxonomy]
+      summary: Get skill taxonomy
+      description: |
+        Returns hierarchical skill taxonomy (FR-013).
+        10-15 categories with ~100 pre-seeded skills from ESCO.
+      operationId: getTaxonomy
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: category
+          in: query
+          description: Filter skills by category
+          schema:
+            type: string
+        - name: approved
+          in: query
+          description: Filter by approval status (user-proposed skills pending)
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Skill taxonomy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  categories:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          example: "Engineering"
+                        skillCount:
+                          type: integer
+                          example: 12
+                  skills:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Skill'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /skills/taxonomy/propose:
+    post:
+      tags: [Taxonomy]
+      summary: Propose new skill
+      description: |
+        Users can propose new skills for admin approval (FR-014).
+        Taxonomy grows based on real user needs.
+      operationId: proposeSkill
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, category]
+              properties:
+                name:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                  example: "Blockchain Security"
+                category:
+                  type: string
+                  example: "Engineering"
+                  description: Must be one of the 10-15 top-level categories
+                description:
+                  type: string
+                  example: "Security practices for blockchain applications"
+      responses:
+        '201':
+          description: Skill proposed successfully (pending approval)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Skill'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+
+  /users/me/skills:
+    get:
+      tags: [User Skills]
+      summary: Get my skill profile
+      description: Returns current user's documented skills (FR-015)
+      operationId: getMySkills
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User skill profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  skills:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserSkill'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags: [User Skills]
+      summary: Add skill to my profile
+      description: Self-reported skill with proficiency level (FR-015)
+      operationId: addSkillToProfile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [skillId, proficiencyLevel]
+              properties:
+                skillId:
+                  type: string
+                  format: uuid
+                  description: Skill from taxonomy
+                proficiencyLevel:
+                  type: string
+                  enum: [beginner, intermediate, advanced, expert]
+                yearsExperience:
+                  type: integer
+                  minimum: 0
+                  maximum: 50
+                  nullable: true
+      responses:
+        '201':
+          description: Skill added to profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSkill'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          description: Skill already in profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /users/me/skills/{userSkillId}:
+    delete:
+      tags: [User Skills]
+      summary: Remove skill from profile
+      operationId: removeSkillFromProfile
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userSkillId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Skill removed
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /users/me/availability:
+    get:
+      tags: [User Skills]
+      summary: Get my availability
+      description: Returns talent availability settings (FR-016)
+      operationId: getMyAvailability
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Talent availability
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TalentAvailability'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    put:
+      tags: [User Skills]
+      summary: Update my availability
+      description: Set availability percentage and period (FR-016)
+      operationId: updateMyAvailability
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                availabilityPct:
+                  type: integer
+                  minimum: 0
+                  maximum: 100
+                  example: 20
+                  description: Percentage of capacity available for exchanges
+                isAvailable:
+                  type: boolean
+                  example: true
+                  description: Actively seeking exchanges
+                activeFrom:
+                  type: string
+                  format: date
+                  nullable: true
+                  example: "2025-12-01"
+                activeUntil:
+                  type: string
+                  format: date
+                  nullable: true
+                  example: "2026-06-01"
+      responses:
+        '200':
+          description: Availability updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TalentAvailability'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /skills/search:
+    post:
+      tags: [Talent Search]
+      summary: Search talent pool
+      description: |
+        Search and filter available talent (FR-020).
+        Results are anonymized initially (FR-017).
+        Performance target: <2 seconds (SC-018).
+      operationId: searchTalent
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                skillIds:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  description: Filter by skills
+                categories:
+                  type: array
+                  items:
+                    type: string
+                  description: Filter by skill categories
+                minAvailabilityPct:
+                  type: integer
+                  minimum: 0
+                  maximum: 100
+                  example: 25
+                  description: Minimum availability percentage
+                proficiencyLevel:
+                  type: string
+                  enum: [beginner, intermediate, advanced, expert]
+                  nullable: true
+                excludeCompanyId:
+                  type: string
+                  format: uuid
+                  nullable: true
+                  description: Exclude users from specific company
+                page:
+                  type: integer
+                  default: 1
+                limit:
+                  type: integer
+                  default: 20
+                  maximum: 100
+      responses:
+        '200':
+          description: Talent search results (anonymized profiles)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AnonymizedTalent'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+
+  schemas:
+    Skill:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: "JavaScript"
+        category:
+          type: string
+          example: "Engineering"
+        description:
+          type: string
+          nullable: true
+        isApproved:
+          type: boolean
+          description: User-proposed skills pending admin approval (FR-014)
+        createdAt:
+          type: string
+          format: date-time
+
+    UserSkill:
+      type: object
+      description: User-skill junction with proficiency metadata
+      properties:
+        id:
+          type: string
+          format: uuid
+        skill:
+          $ref: '#/components/schemas/Skill'
+        proficiencyLevel:
+          type: string
+          enum: [beginner, intermediate, advanced, expert]
+          example: "advanced"
+        yearsExperience:
+          type: integer
+          nullable: true
+          example: 5
+        createdAt:
+          type: string
+          format: date-time
+
+    TalentAvailability:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        availabilityPct:
+          type: integer
+          minimum: 0
+          maximum: 100
+          example: 20
+          description: Percentage of capacity available (FR-016)
+        isAvailable:
+          type: boolean
+          example: true
+        isAnonymized:
+          type: boolean
+          example: true
+          description: Profile anonymized in search results (FR-017)
+        activeFrom:
+          type: string
+          format: date
+          nullable: true
+        activeUntil:
+          type: string
+          format: date
+          nullable: true
+        updatedAt:
+          type: string
+          format: date-time
+
+    AnonymizedTalent:
+      type: object
+      description: Anonymized talent profile for search results (FR-017)
+      properties:
+        id:
+          type: string
+          description: Hashed user ID (one-way, for matching proposals)
+          example: "anon_xyz789"
+        skillCategories:
+          type: array
+          items:
+            type: string
+          example: ["Engineering", "Design"]
+        skills:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                example: "JavaScript"
+              proficiencyLevel:
+                type: string
+                enum: [beginner, intermediate, advanced, expert]
+        experienceLevel:
+          type: string
+          enum: [junior, mid, senior]
+          description: Calculated from years of experience
+        availabilityPct:
+          type: integer
+          example: 20
+        companyIndustry:
+          type: string
+          example: "healthtech"
+          description: Industry, not company name (anonymized)
+        # NOT included: name, email, company name
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        totalPages:
+          type: integer
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: string
+
+  responses:
+    BadRequest:
+      description: Invalid request data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    RateLimitExceeded:
+      description: Rate limit exceeded (FR-045)
+      headers:
+        X-RateLimit-Limit:
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
