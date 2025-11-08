@@ -13,9 +13,9 @@
  * Example crontab: 0 2 * * * cd /app && npm run job:anonymize
  */
 
-import { eq, lt, isNull } from 'drizzle-orm';
-import type { Database } from '@es-mono/database';
-import { users, userStats } from '@es-mono/database/schema';
+import { eq, lt, isNull, and } from 'drizzle-orm';
+import type { DB } from '@es-mono/database';
+import { users } from '@es-mono/database/schema';
 import { logger } from '../middleware/logger';
 
 export interface AnonymizationResult {
@@ -33,7 +33,7 @@ export interface AnonymizationResult {
  * Main job function for anonymizing expired users
  */
 export async function anonymizeExpiredUsers(
-  db: Database,
+  db: DB,
   daysInactive: number = 365 * 3 // 3 years default
 ): Promise<AnonymizationResult> {
   const startTime = Date.now();
@@ -60,8 +60,10 @@ export async function anonymizeExpiredUsers(
       .select()
       .from(users)
       .where(
-        lt(users.lastActivityAt, threeYearsAgo) &&
-        isNull(users.anonymizedAt)
+        and(
+          lt(users.lastActivityAt, threeYearsAgo),
+          isNull(users.anonymizedAt)
+        )
       );
 
     result.totalRecords = expiredUsers.length;
@@ -119,10 +121,10 @@ export async function anonymizeExpiredUsers(
  * 4. Commit atomically
  */
 async function anonymizeUserTransaction(
-  db: Database,
+  db: DB,
   user: typeof users.$inferSelect
 ): Promise<void> {
-  await db.transaction(async (tx) => {
+  await db.transaction(async (tx: Parameters<Parameters<DB['transaction']>[0]>[0]) => {
     // Step 1: Preserve aggregate statistics
     // (skipped for MVP - implement when analytics needed)
 
@@ -162,14 +164,14 @@ async function anonymizeUserTransaction(
  * Verify anonymization was successful
  */
 export async function verifyAnonymization(
-  db: Database,
+  db: DB,
   userId: string
 ): Promise<boolean> {
-  const user = await db
+  const [user] = await db
     .select()
     .from(users)
     .where(eq(users.id, userId))
-    .get();
+    .limit(1);
 
   if (!user) {
     return false;
@@ -192,8 +194,7 @@ if (require.main === module) {
   (async () => {
     try {
       // Import database after checking if running as main module
-      const { initializeDatabase } = await import('@es-mono/database');
-      const db = await initializeDatabase();
+      const { db } = await import('@es-mono/database');
 
       const result = await anonymizeExpiredUsers(db);
 
