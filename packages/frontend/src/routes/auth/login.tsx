@@ -33,7 +33,7 @@ function Login() {
       });
 
       if (response.ok) {
-        const data = await response.json();
+        await response.json();
         // Redirect to dashboard on successful login
         navigate({ to: '/dashboard' });
       } else {
