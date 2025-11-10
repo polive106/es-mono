@@ -16,11 +16,12 @@
     "composite": true,
     "types": ["vite/client"],
     "paths": {
-      "@es-mono/api": ["../api/src/index.ts"]
+      "@/*": ["./src/*"]
     }
   },
   "include": ["src"],
   "references": [
-    { "path": "../shared" }
+    { "path": "../shared" },
+    { "path": "../api" }
   ]
 }
