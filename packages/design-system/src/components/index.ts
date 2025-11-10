@@ -4,5 +4,8 @@
  * shadcn/ui components and custom domain-specific components
  */
 
-// Export components as they are created
-export {};
+// UI Components
+export * from './ui/button';
+export * from './ui/card';
+export * from './ui/input';
+export * from './ui/label';
