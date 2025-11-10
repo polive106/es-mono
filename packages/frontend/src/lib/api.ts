@@ -1,5 +1,5 @@
 import { hc } from 'hono/client';
-import type { AppType } from '../../../api/src/index';
+import type { AppType } from '@es-mono/api';
 
 // Get API URL from environment variables or use default
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
