@@ -13,14 +13,18 @@
     "clean": "rm -rf dist node_modules .turbo"
   },
   "dependencies": {
+    "@es-mono/api": "workspace:^",
     "@es-mono/design-system": "workspace:^",
     "@tanstack/react-router": "^1.134.15",
+    "hono": "^4.10.4",
     "i18next": "^25.6.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-i18next": "^16.2.4"
   },
   "devDependencies": {
+    "@tanstack/router-devtools": "^1.134.15",
+    "@tanstack/router-vite-plugin": "^1.134.15",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@vitejs/plugin-react": "^5.1.0",

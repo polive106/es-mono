@@ -1,0 +1,123 @@
+import { defineConfig, devices } from '@playwright/test';
+
+/**
+ * Read environment variables from file.
+ * https://github.com/motdotla/dotenv
+ */
+// require('dotenv').config();
+
+/**
+ * See https://playwright.dev/docs/test-configuration.
+ */
+export default defineConfig({
+  testDir: './tests/e2e',
+  /* Run tests in files in parallel */
+  fullyParallel: true,
+  /* Fail the build on CI if you accidentally left test.only in the source code. */
+  forbidOnly: !!process.env.CI,
+  /* Retry on CI only */
+  retries: process.env.CI ? 2 : 0,
+  /* Opt out of parallel tests on CI. */
+  workers: process.env.CI ? 1 : undefined,
+  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
+  reporter: 'html',
+  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+  use: {
+    /* Base URL to use in actions like `await page.goto('/')`. */
+    baseURL: 'http://localhost:5173',
+    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
+    trace: 'on-first-retry',
+  },
+
+  /* Configure projects for major browsers */
+  projects: [
+    // English tests
+    {
+      name: 'chromium-en',
+      use: {
+        ...devices['Desktop Chrome'],
+        locale: 'en-US',
+      },
+    },
+    {
+      name: 'firefox-en',
+      use: {
+        ...devices['Desktop Firefox'],
+        locale: 'en-US',
+      },
+    },
+    {
+      name: 'webkit-en',
+      use: {
+        ...devices['Desktop Safari'],
+        locale: 'en-US',
+      },
+    },
+    // French tests
+    {
+      name: 'chromium-fr',
+      use: {
+        ...devices['Desktop Chrome'],
+        locale: 'fr-FR',
+      },
+    },
+    {
+      name: 'firefox-fr',
+      use: {
+        ...devices['Desktop Firefox'],
+        locale: 'fr-FR',
+      },
+    },
+    {
+      name: 'webkit-fr',
+      use: {
+        ...devices['Desktop Safari'],
+        locale: 'fr-FR',
+      },
+    },
+
+    /* Test against mobile viewports. */
+    {
+      name: 'Mobile Chrome-en',
+      use: {
+        ...devices['Pixel 5'],
+        locale: 'en-US',
+      },
+    },
+    {
+      name: 'Mobile Safari-en',
+      use: {
+        ...devices['iPhone 12'],
+        locale: 'en-US',
+      },
+    },
+    {
+      name: 'Mobile Chrome-fr',
+      use: {
+        ...devices['Pixel 5'],
+        locale: 'fr-FR',
+      },
+    },
+    {
+      name: 'Mobile Safari-fr',
+      use: {
+        ...devices['iPhone 12'],
+        locale: 'fr-FR',
+      },
+    },
+  ],
+
+  /* Run your local dev server before starting the tests */
+  webServer: [
+    {
+      command: 'pnpm --filter @es-mono/frontend dev',
+      url: 'http://localhost:5173',
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      command: 'pnpm --filter @es-mono/api dev',
+      url: 'http://localhost:3000/api/health',
+      reuseExistingServer: !process.env.CI,
+    },
+  ],
+});

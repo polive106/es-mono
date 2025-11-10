@@ -14,7 +14,10 @@
     "jsx": "react-jsx",
 
     "composite": true,
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    "paths": {
+      "@es-mono/api": ["../api/src/index.ts"]
+    }
   },
   "include": ["src"],
   "references": [

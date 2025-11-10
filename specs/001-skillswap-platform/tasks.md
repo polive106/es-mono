@@ -20,13 +20,13 @@
 
 **Purpose**: Initialize monorepo with hexagonal architecture
 
-- [ ] T001 Create Turborepo workspace with 6 packages (domain, database, api, frontend, design-system, shared)
-- [ ] T002 [P] Initialize TypeScript config with strict mode in packages/shared/tsconfig.json
-- [ ] T003 [P] Setup ESLint and Prettier configs in root
-- [ ] T004 [P] Configure Turborepo pipelines in turbo.json
-- [ ] T005 [P] Setup Vitest config for unit tests in packages/domain/vitest.config.ts
-- [ ] T006 [P] Setup Playwright config for E2E tests in tests/e2e/playwright.config.ts
-- [ ] T007 Create package.json scripts for dev, test, build in root
+- [x] T001 Create Turborepo workspace with 6 packages (domain, database, api, frontend, design-system, shared)
+- [x] T002 [P] Initialize TypeScript config with strict mode in packages/shared/tsconfig.json
+- [x] T003 [P] Setup ESLint and Prettier configs in root
+- [x] T004 [P] Configure Turborepo pipelines in turbo.json
+- [x] T005 [P] Setup Vitest config for unit tests in packages/domain/vitest.config.ts
+- [x] T006 [P] Setup Playwright config for E2E tests in tests/e2e/playwright.config.ts
+- [x] T007 Create package.json scripts for dev, test, build in root
 
 ---
 
@@ -38,42 +38,42 @@
 
 ### Database Foundation
 
-- [ ] T008 Setup Drizzle ORM config in packages/database/drizzle.config.ts (SQLite MVP, PostgreSQL production)
-- [ ] T009 [P] Create base schema files structure in packages/database/src/schema/
-- [ ] T010 [P] Define shared types and enums in packages/shared/src/types/index.ts
-- [ ] T011 [P] Define validation schemas with Zod in packages/shared/src/validation/
-- [ ] T012 Create migration generation script in packages/database/package.json
-- [ ] T013 Create seed script structure in packages/database/seeds/
+- [x] T008 Setup Drizzle ORM config in packages/database/drizzle.config.ts (SQLite MVP, PostgreSQL production)
+- [x] T009 [P] Create base schema files structure in packages/database/src/schema/
+- [x] T010 [P] Define shared types and enums in packages/shared/src/types/index.ts
+- [x] T011 [P] Define validation schemas with Zod in packages/shared/src/validation/
+- [x] T012 Create migration generation script in packages/database/package.json
+- [x] T013 Create seed script structure in packages/database/seeds/
 
 ### Authentication & Authorization Foundation
 
-- [ ] T014 [P] Setup Lucia auth adapter in packages/api/src/adapters/external/LuciaAuthAdapter.ts
-- [ ] T015 [P] Create sessions schema in packages/database/src/schema/sessions.ts
-- [ ] T016 [P] Implement password hashing utility in packages/shared/src/utils/password.ts
-- [ ] T017 [P] Integrate HIBP password breach checker in packages/api/src/adapters/external/HIBPPasswordChecker.ts
-- [ ] T018 Create auth middleware for Hono in packages/api/src/middleware/auth.ts
-- [ ] T019 [P] Create rate limiting middleware in packages/api/src/middleware/rate-limit.ts (FR-045)
-- [ ] T019a Create ADR-003: Custom RBAC vs CASL in docs/adr/003-rbac-implementation.md
-- [ ] T019b Create ADR-004: HIBP Password Breach Integration in docs/adr/004-hibp-integration.md
-- [ ] T019c Create scheduled job for 3-year data retention + anonymization (FR-044) in packages/api/src/jobs/anonymize-expired-users.ts
+- [x] T014 [P] Setup custom session management in packages/api/src/auth/sessions.ts (alternative to Lucia)
+- [x] T015 [P] Create sessions schema in packages/database/src/schema/sessions.ts
+- [x] T016 [P] Implement password hashing utility in packages/shared/src/utils/password.ts
+- [x] T017 [P] Integrate HIBP password breach checker in packages/api/src/auth/hibp.ts
+- [x] T018 Create auth middleware for Hono in packages/api/src/middleware/auth.ts
+- [x] T019 [P] Create rate limiting middleware in packages/api/src/middleware/rateLimit.ts (FR-045)
+- [x] T019a Create ADR-003: Custom RBAC vs CASL in docs/adr/003-rbac-implementation.md
+- [x] T019b Create ADR-004: HIBP Password Breach Integration in docs/adr/004-hibp-integration.md
+- [x] T019c Create scheduled job for 3-year data retention + anonymization (FR-044) in packages/api/src/jobs/anonymize-expired-users.ts
 
 ### API Foundation
 
-- [ ] T020 Setup Hono app structure in packages/api/src/index.ts
-- [ ] T021 [P] Create error handling middleware in packages/api/src/middleware/error-handler.ts
-- [ ] T022 [P] Create logging middleware in packages/api/src/middleware/logger.ts
-- [ ] T023 [P] Setup CORS and security headers middleware in packages/api/src/middleware/security.ts
-- [ ] T024 Create health check endpoint in packages/api/src/adapters/http/routes/health.ts
-- [ ] T025 Setup Hono RPC type exports in packages/api/src/types/rpc.ts
+- [x] T020 Setup Hono app structure in packages/api/src/app.ts and packages/api/src/index.ts
+- [x] T021 [P] Create error handling middleware in packages/api/src/middleware/errorHandler.ts
+- [x] T022 [P] Create logging middleware in packages/api/src/middleware/logger.ts
+- [x] T023 [P] Setup CORS and security headers middleware in packages/api/src/middleware/security.ts
+- [x] T024 Create health check endpoint in packages/api/src/app.ts (GET /health)
+- [x] T025 Setup Hono RPC type exports in packages/api/src/index.ts (export type AppType)
 
 ### Frontend Foundation
 
-- [ ] T026 Setup Vite React app in packages/frontend/
-- [ ] T027 [P] Configure TanStack Router in packages/frontend/src/routes/
-- [ ] T028 [P] Setup i18next with FR/EN namespaces in packages/frontend/src/i18n/
-- [ ] T029 [P] Initialize shadcn/ui theme in packages/design-system/
-- [ ] T030 [P] Create Hono RPC client in packages/frontend/src/lib/api.ts
-- [ ] T031 Create base layout components in packages/frontend/src/components/layouts/
+- [x] T026 Setup Vite React app in packages/frontend/
+- [x] T027 [P] Configure TanStack Router in packages/frontend/src/routes/
+- [x] T028 [P] Setup i18next with FR/EN namespaces in packages/frontend/src/i18n/
+- [x] T029 [P] Initialize shadcn/ui theme in packages/design-system/
+- [x] T030 [P] Create Hono RPC client in packages/frontend/src/lib/api.ts
+- [x] T031 Create base layout components in packages/frontend/src/components/layouts/
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 

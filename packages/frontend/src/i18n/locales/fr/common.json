@@ -1,0 +1,26 @@
+{
+  "appName": "Plateforme SkillSwap",
+  "welcome": "Bienvenue sur le réseau de partage de talents!",
+  "navigation": {
+    "home": "Accueil",
+    "login": "Connexion",
+    "register": "Inscription",
+    "logout": "Déconnexion",
+    "profile": "Profil"
+  },
+  "actions": {
+    "submit": "Soumettre",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "back": "Retour",
+    "next": "Suivant"
+  },
+  "validation": {
+    "required": "Ce champ est requis",
+    "invalidEmail": "Adresse email invalide",
+    "minLength": "La longueur minimale est de {{count}} caractères",
+    "maxLength": "La longueur maximale est de {{count}} caractères"
+  }
+}
