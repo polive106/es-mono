@@ -46,7 +46,7 @@ export function createApp() {
   });
 
   // API routes
-  app.route('/api/auth', authRoutes);
+  app.route('/auth', authRoutes);
 
   // 404 handler (must be last)
   app.notFound(notFoundHandler);

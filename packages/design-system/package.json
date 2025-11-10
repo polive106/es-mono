@@ -12,7 +12,8 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
-    "./styles.css": "./dist/design-system.css",
+    "./dist/style.css": "./dist/style.css",
+    "./style.css": "./dist/style.css",
     "./tailwind.config": "./tailwind.config.ts"
   },
   "scripts": {

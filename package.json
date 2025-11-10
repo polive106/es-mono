@@ -39,8 +39,9 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
+    "hono": "^4.10.4",
     "prettier": "^3.6.2",
-    "turbo": "^1.13.4",
+    "turbo": "^2.6.0",
     "typescript": "^5.9.3"
   },
   "workspaces": [

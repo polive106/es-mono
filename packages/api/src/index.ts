@@ -1,4 +1,7 @@
 // API layer - Hono REST API server
+// IMPORTANT: Load env FIRST before any other imports
+import './env';
+
 import { serve } from '@hono/node-server';
 import { app } from './app';
 import { logger } from './middleware/logger';

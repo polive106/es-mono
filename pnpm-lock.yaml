@@ -32,12 +32,15 @@ importers:
       eslint-plugin-react-hooks:
         specifier: ^7.0.1
         version: 7.0.1(eslint@9.39.1(jiti@1.21.7))
+      hono:
+        specifier: ^4.10.4
+        version: 4.10.4
       prettier:
         specifier: ^3.6.2
         version: 3.6.2
       turbo:
-        specifier: ^1.13.4
-        version: 1.13.4
+        specifier: ^2.6.0
+        version: 2.6.0
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -56,6 +59,9 @@ importers:
       '@hono/zod-validator':
         specifier: ^0.7.4
         version: 0.7.4(hono@4.10.4)(zod@4.1.12)
+      dotenv:
+        specifier: ^17.2.3
+        version: 17.2.3
       drizzle-orm:
         specifier: ^0.44.7
         version: 0.44.7(@types/better-sqlite3@7.6.13)(better-sqlite3@12.4.1)
@@ -203,7 +209,7 @@ importers:
         version: 1.135.0(@tanstack/react-router@1.134.17(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@tanstack/router-core@1.134.20)(@types/node@20.19.24)(csstype@3.1.3)(jiti@1.21.7)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(solid-js@1.9.10)(tiny-invariant@1.3.3)(tsx@4.20.6)
       '@tanstack/router-vite-plugin':
         specifier: ^1.134.15
-        version: 1.135.0(@tanstack/react-router@1.134.17(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(vite@7.2.2(@types/node@20.19.24)(jiti@1.21.7)(tsx@4.20.6))
+        version: 1.135.0(@tanstack/react-router@1.134.17(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(vite@5.4.21(@types/node@20.19.24))
       '@types/react':
         specifier: ^19.2.2
         version: 19.2.2
@@ -211,8 +217,8 @@ importers:
         specifier: ^19.2.2
         version: 19.2.2(@types/react@19.2.2)
       '@vitejs/plugin-react':
-        specifier: ^5.1.0
-        version: 5.1.0(vite@7.2.2(@types/node@20.19.24)(jiti@1.21.7)(tsx@4.20.6))
+        specifier: ^4.7.0
+        version: 4.7.0(vite@5.4.21(@types/node@20.19.24))
       autoprefixer:
         specifier: ^10.4.21
         version: 10.4.21(postcss@8.5.6)
@@ -223,8 +229,8 @@ importers:
         specifier: ^3.4.1
         version: 3.4.18(tsx@4.20.6)
       vite:
-        specifier: ^7.2.2
-        version: 7.2.2(@types/node@20.19.24)(jiti@1.21.7)(tsx@4.20.6)
+        specifier: ^5.4.21
+        version: 5.4.21(@types/node@20.19.24)
       vitest:
         specifier: ^4.0.8
         version: 4.0.8(@types/node@20.19.24)(jiti@1.21.7)(tsx@4.20.6)
@@ -1028,9 +1034,6 @@ packages:
   '@rolldown/pluginutils@1.0.0-beta.27':
     resolution: {integrity: sha512-+d0F4MKMCbeVUJwG96uQ4SgAznZNSq93I3V+9NHA4OpvqG8mRCpGdKmK8l/dl02h2CCDHwW2FqilnTyDcAnqjA==}
 
-  '@rolldown/pluginutils@1.0.0-beta.43':
-    resolution: {integrity: sha512-5Uxg7fQUCmfhax7FJke2+8B6cqgeUJUD9o2uXIKXhD+mG0mL6NObmVoi9wXEU1tY89mZKgAYA6fTbftx3q2ZPQ==}
-
   '@rollup/pluginutils@5.3.0':
     resolution: {integrity: sha512-5EdhGZtnu3V88ces7s53hhfK5KSASnJZv8Lulpc04cWO3REESroJXg73DFsOmgbU2BhwV0E20bu2IDZb3VKW4Q==}
     engines: {node: '>=14.0.0'}
@@ -1408,12 +1411,6 @@ packages:
   '@vitejs/plugin-react@4.7.0':
     resolution: {integrity: sha512-gUu9hwfWvvEDBBmgtAowQCojwZmJ5mcLn3aufeCsitijs3+f2NsrPtlAWIR6OPiqljl96GVCUbLe0HyqIpVaoA==}
     engines: {node: ^14.18.0 || >=16.0.0}
-    peerDependencies:
-      vite: ^4.2.0 || ^5.0.0 || ^6.0.0 || ^7.0.0
-
-  '@vitejs/plugin-react@5.1.0':
-    resolution: {integrity: sha512-4LuWrg7EKWgQaMJfnN+wcmbAW+VSsCmqGohftWjuct47bv8uE4n/nPpq4XjJPsxgq00GGG5J8dvBczp8uxScew==}
-    engines: {node: ^20.19.0 || >=22.12.0}
     peerDependencies:
       vite: ^4.2.0 || ^5.0.0 || ^6.0.0 || ^7.0.0
 
@@ -1823,6 +1820,10 @@ packages:
   doctrine@2.1.0:
     resolution: {integrity: sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw==}
     engines: {node: '>=0.10.0'}
+
+  dotenv@17.2.3:
+    resolution: {integrity: sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w==}
+    engines: {node: '>=12'}
 
   drizzle-kit@0.31.6:
     resolution: {integrity: sha512-/B4e/4pwnx25QwD5xXgdpo1S+077a2VZdosXbItE/oNmUgQwZydGDz9qJYmnQl/b+5IX0rLfwRhrPnroGtrg8Q==}
@@ -2893,10 +2894,6 @@ packages:
     resolution: {integrity: sha512-z6F7K9bV85EfseRCp2bzrpyQ0Gkw1uLoCel9XBVWPg/TjRj94SkJzUTGfOa4bs7iJvBWtQG0Wq7wnI0syw3EBQ==}
     engines: {node: '>=0.10.0'}
 
-  react-refresh@0.18.0:
-    resolution: {integrity: sha512-QgT5//D3jfjJb6Gsjxv0Slpj23ip+HtOpnNgnb2S5zU3CB26G/IDPGoy4RJB42wzFE46DRsstbW6tKHoKbhAxw==}
-    engines: {node: '>=0.10.0'}
-
   react@19.2.0:
     resolution: {integrity: sha512-tmbWg6W31tQLeB5cdIBOicJDJRR2KzXsV7uSK9iNfLWQ5bIZfxuPEHp7M8wiHyHnn0DD1i7w3Zmin0FtkrwoCQ==}
     engines: {node: '>=0.10.0'}
@@ -3258,38 +3255,38 @@ packages:
   tunnel-agent@0.6.0:
     resolution: {integrity: sha512-McnNiV1l8RYeY8tBgEpuodCC1mLUdbSN+CYBL7kJsJNInOP8UjDDEwdk6Mw60vdLLrr5NHKZhMAOSrR2NZuQ+w==}
 
-  turbo-darwin-64@1.13.4:
-    resolution: {integrity: sha512-A0eKd73R7CGnRinTiS7txkMElg+R5rKFp9HV7baDiEL4xTG1FIg/56Vm7A5RVgg8UNgG2qNnrfatJtb+dRmNdw==}
+  turbo-darwin-64@2.6.0:
+    resolution: {integrity: sha512-6vHnLAubHj8Ib45Knu+oY0ZVCLO7WcibzAvt5b1E72YHqAs4y8meMAGMZM0jLqWPh/9maHDc16/qBCMxtW4pXg==}
     cpu: [x64]
     os: [darwin]
 
-  turbo-darwin-arm64@1.13.4:
-    resolution: {integrity: sha512-eG769Q0NF6/Vyjsr3mKCnkG/eW6dKMBZk6dxWOdrHfrg6QgfkBUk0WUUujzdtVPiUIvsh4l46vQrNVd9EOtbyA==}
+  turbo-darwin-arm64@2.6.0:
+    resolution: {integrity: sha512-IU+gWMEXNBw8H0pxvE7nPEa5p6yahxbN8g/Q4Bf0AHymsAFqsScgV0peeNbWybdmY9jk1LPbALOsF2kY1I7ZiQ==}
     cpu: [arm64]
     os: [darwin]
 
-  turbo-linux-64@1.13.4:
-    resolution: {integrity: sha512-Bq0JphDeNw3XEi+Xb/e4xoKhs1DHN7OoLVUbTIQz+gazYjigVZvtwCvgrZI7eW9Xo1eOXM2zw2u1DGLLUfmGkQ==}
+  turbo-linux-64@2.6.0:
+    resolution: {integrity: sha512-CKoiJ2ZFJLCDsWdRlZg+ew1BkGn8iCEGdePhISVpjsGwkJwSVhVu49z2zKdBeL1IhcSKS2YALwp9ellNZANJxw==}
     cpu: [x64]
     os: [linux]
 
-  turbo-linux-arm64@1.13.4:
-    resolution: {integrity: sha512-BJcXw1DDiHO/okYbaNdcWN6szjXyHWx9d460v6fCHY65G8CyqGU3y2uUTPK89o8lq/b2C8NK0yZD+Vp0f9VoIg==}
+  turbo-linux-arm64@2.6.0:
+    resolution: {integrity: sha512-WroVCdCvJbrhNxNdw7XB7wHAfPPJPV+IXY+ZKNed+9VdfBu/2mQNfKnvqTuFTH7n+Pdpv8to9qwhXRTJe26upg==}
     cpu: [arm64]
     os: [linux]
 
-  turbo-windows-64@1.13.4:
-    resolution: {integrity: sha512-OFFhXHOFLN7A78vD/dlVuuSSVEB3s9ZBj18Tm1hk3aW1HTWTuAw0ReN6ZNlVObZUHvGy8d57OAGGxf2bT3etQw==}
+  turbo-windows-64@2.6.0:
+    resolution: {integrity: sha512-7pZo5aGQPR+A7RMtWCZHusarJ6y15LQ+o3jOmpMxTic/W6Bad+jSeqo07TWNIseIWjCVzrSv27+0odiYRYtQdA==}
     cpu: [x64]
     os: [win32]
 
-  turbo-windows-arm64@1.13.4:
-    resolution: {integrity: sha512-u5A+VOKHswJJmJ8o8rcilBfU5U3Y1TTAfP9wX8bFh8teYF1ghP0EhtMRLjhtp6RPa+XCxHHVA2CiC3gbh5eg5g==}
+  turbo-windows-arm64@2.6.0:
+    resolution: {integrity: sha512-1Ty+NwIksQY7AtFUCPrTpcKQE7zmd/f7aRjdT+qkqGFQjIjFYctEtN7qo4vpQPBgCfS1U3ka83A2u/9CfJQ3wQ==}
     cpu: [arm64]
     os: [win32]
 
-  turbo@1.13.4:
-    resolution: {integrity: sha512-1q7+9UJABuBAHrcC4Sxp5lOqYS5mvxRrwa33wpIyM18hlOCpRD/fTJNxZ0vhbMcJmz15o9kkVm743mPn7p6jpQ==}
+  turbo@2.6.0:
+    resolution: {integrity: sha512-kC5VJqOXo50k0/0jnJDDjibLAXalqT9j7PQ56so0pN+81VR4Fwb2QgIE9dTzT3phqOTQuEXkPh3sCpnv5Isz2g==}
     hasBin: true
 
   type-check@0.4.0:
@@ -4233,8 +4230,6 @@ snapshots:
 
   '@rolldown/pluginutils@1.0.0-beta.27': {}
 
-  '@rolldown/pluginutils@1.0.0-beta.43': {}
-
   '@rollup/pluginutils@5.3.0(rollup@4.53.1)':
     dependencies:
       '@types/estree': 1.0.8
@@ -4514,7 +4509,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@tanstack/router-plugin@1.135.0(@tanstack/react-router@1.134.17(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(vite@7.2.2(@types/node@20.19.24)(jiti@1.21.7)(tsx@4.20.6))':
+  '@tanstack/router-plugin@1.135.0(@tanstack/react-router@1.134.17(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(vite@5.4.21(@types/node@20.19.24))':
     dependencies:
       '@babel/core': 7.28.5
       '@babel/plugin-syntax-jsx': 7.27.1(@babel/core@7.28.5)
@@ -4532,7 +4527,7 @@ snapshots:
       zod: 3.25.76
     optionalDependencies:
       '@tanstack/react-router': 1.134.17(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      vite: 7.2.2(@types/node@20.19.24)(jiti@1.21.7)(tsx@4.20.6)
+      vite: 5.4.21(@types/node@20.19.24)
     transitivePeerDependencies:
       - supports-color
 
@@ -4549,9 +4544,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@tanstack/router-vite-plugin@1.135.0(@tanstack/react-router@1.134.17(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(vite@7.2.2(@types/node@20.19.24)(jiti@1.21.7)(tsx@4.20.6))':
+  '@tanstack/router-vite-plugin@1.135.0(@tanstack/react-router@1.134.17(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(vite@5.4.21(@types/node@20.19.24))':
     dependencies:
-      '@tanstack/router-plugin': 1.135.0(@tanstack/react-router@1.134.17(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(vite@7.2.2(@types/node@20.19.24)(jiti@1.21.7)(tsx@4.20.6))
+      '@tanstack/router-plugin': 1.135.0(@tanstack/react-router@1.134.17(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(vite@5.4.21(@types/node@20.19.24))
     transitivePeerDependencies:
       - '@rsbuild/core'
       - '@tanstack/react-router'
@@ -4720,18 +4715,6 @@ snapshots:
       '@types/babel__core': 7.20.5
       react-refresh: 0.17.0
       vite: 5.4.21(@types/node@20.19.24)
-    transitivePeerDependencies:
-      - supports-color
-
-  '@vitejs/plugin-react@5.1.0(vite@7.2.2(@types/node@20.19.24)(jiti@1.21.7)(tsx@4.20.6))':
-    dependencies:
-      '@babel/core': 7.28.5
-      '@babel/plugin-transform-react-jsx-self': 7.27.1(@babel/core@7.28.5)
-      '@babel/plugin-transform-react-jsx-source': 7.27.1(@babel/core@7.28.5)
-      '@rolldown/pluginutils': 1.0.0-beta.43
-      '@types/babel__core': 7.20.5
-      react-refresh: 0.18.0
-      vite: 7.2.2(@types/node@20.19.24)(jiti@1.21.7)(tsx@4.20.6)
     transitivePeerDependencies:
       - supports-color
 
@@ -5198,6 +5181,8 @@ snapshots:
   doctrine@2.1.0:
     dependencies:
       esutils: 2.0.3
+
+  dotenv@17.2.3: {}
 
   drizzle-kit@0.31.6:
     dependencies:
@@ -6318,8 +6303,6 @@ snapshots:
 
   react-refresh@0.17.0: {}
 
-  react-refresh@0.18.0: {}
-
   react@19.2.0: {}
 
   read-cache@1.0.0:
@@ -6787,32 +6770,32 @@ snapshots:
     dependencies:
       safe-buffer: 5.2.1
 
-  turbo-darwin-64@1.13.4:
+  turbo-darwin-64@2.6.0:
     optional: true
 
-  turbo-darwin-arm64@1.13.4:
+  turbo-darwin-arm64@2.6.0:
     optional: true
 
-  turbo-linux-64@1.13.4:
+  turbo-linux-64@2.6.0:
     optional: true
 
-  turbo-linux-arm64@1.13.4:
+  turbo-linux-arm64@2.6.0:
     optional: true
 
-  turbo-windows-64@1.13.4:
+  turbo-windows-64@2.6.0:
     optional: true
 
-  turbo-windows-arm64@1.13.4:
+  turbo-windows-arm64@2.6.0:
     optional: true
 
-  turbo@1.13.4:
+  turbo@2.6.0:
     optionalDependencies:
-      turbo-darwin-64: 1.13.4
-      turbo-darwin-arm64: 1.13.4
-      turbo-linux-64: 1.13.4
-      turbo-linux-arm64: 1.13.4
-      turbo-windows-64: 1.13.4
-      turbo-windows-arm64: 1.13.4
+      turbo-darwin-64: 2.6.0
+      turbo-darwin-arm64: 2.6.0
+      turbo-linux-64: 2.6.0
+      turbo-linux-arm64: 2.6.0
+      turbo-windows-64: 2.6.0
+      turbo-windows-arm64: 2.6.0
 
   type-check@0.4.0:
     dependencies:

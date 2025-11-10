@@ -3,11 +3,9 @@ import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 
 export const Route = createRootRoute({
   component: () => (
-    <div>
-      <div className="app-container">
-        <Outlet />
-      </div>
+    <>
+      <Outlet />
       {import.meta.env.DEV && <TanStackRouterDevtools />}
-    </div>
+    </>
   ),
 });

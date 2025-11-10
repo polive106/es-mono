@@ -14,10 +14,7 @@
     "jsx": "react-jsx",
 
     "composite": true,
-    "types": ["vite/client"],
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "types": ["vite/client"]
   },
   "include": ["src"],
   "references": [
