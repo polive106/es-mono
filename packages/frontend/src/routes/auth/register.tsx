@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { useForm } from '@tanstack/react-form';
 import { registerSchema } from '@es-mono/shared';
+import { Button, Input, Label, Card } from '@es-mono/design-system';
 import { useRegister } from '../../hooks';
 
 export const Route = createFileRoute('/auth/register')({
@@ -50,7 +51,7 @@ function Register() {
           </p>
         </div>
 
-        <div className="rounded-lg border bg-card p-8 shadow-sm">
+        <Card className="p-8">
           {error && (
             <div className="mb-4 rounded-md bg-destructive/10 p-3 text-sm text-destructive">
               {error}
@@ -78,10 +79,8 @@ function Register() {
             >
               {(field) => (
                 <div className="space-y-2">
-                  <label htmlFor="name" className="text-sm font-medium text-foreground">
-                    {t('register.name')}
-                  </label>
-                  <input
+                  <Label htmlFor="name">{t('register.name')}</Label>
+                  <Input
                     type="text"
                     id="name"
                     name="name"
@@ -90,7 +89,6 @@ function Register() {
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
                     disabled={isPending}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     placeholder="John Doe"
                   />
                   {field.state.meta.errors && field.state.meta.errors.length > 0 && (
@@ -111,10 +109,8 @@ function Register() {
             >
               {(field) => (
                 <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm font-medium text-foreground">
-                    {t('register.email')}
-                  </label>
-                  <input
+                  <Label htmlFor="email">{t('register.email')}</Label>
+                  <Input
                     type="email"
                     id="email"
                     name="email"
@@ -123,7 +119,6 @@ function Register() {
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
                     disabled={isPending}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     placeholder="you@example.com"
                   />
                   {field.state.meta.errors && field.state.meta.errors.length > 0 && (
@@ -144,10 +139,8 @@ function Register() {
             >
               {(field) => (
                 <div className="space-y-2">
-                  <label htmlFor="password" className="text-sm font-medium text-foreground">
-                    {t('register.password')}
-                  </label>
-                  <input
+                  <Label htmlFor="password">{t('register.password')}</Label>
+                  <Input
                     type="password"
                     id="password"
                     name="password"
@@ -156,7 +149,6 @@ function Register() {
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
                     disabled={isPending}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     placeholder="••••••••"
                   />
                   {field.state.meta.errors && field.state.meta.errors.length > 0 && (
@@ -177,10 +169,8 @@ function Register() {
             >
               {(field) => (
                 <div className="space-y-2">
-                  <label htmlFor="invite-code" className="text-sm font-medium text-foreground">
-                    {t('register.inviteCode')}
-                  </label>
-                  <input
+                  <Label htmlFor="invite-code">{t('register.inviteCode')}</Label>
+                  <Input
                     type="text"
                     id="invite-code"
                     name="inviteCode"
@@ -190,7 +180,6 @@ function Register() {
                     onChange={(e) => field.handleChange(e.target.value)}
                     disabled={isPending}
                     maxLength={8}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     placeholder="XXXXXXXX"
                   />
                   {field.state.meta.errors && field.state.meta.errors.length > 0 && (
@@ -200,16 +189,11 @@ function Register() {
               )}
             </form.Field>
 
-            <button
-              type="submit"
-              data-testid="register-submit"
-              disabled={isPending}
-              className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-            >
+            <Button type="submit" data-testid="register-submit" disabled={isPending} className="w-full">
               {isPending ? t('register.loading') : t('register.submit')}
-            </button>
+            </Button>
           </form>
-        </div>
+        </Card>
 
         <div className="text-center">
           <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">

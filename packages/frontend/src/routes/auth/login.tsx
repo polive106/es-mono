@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { useForm } from '@tanstack/react-form';
 import { loginSchema } from '@es-mono/shared';
+import { Button, Input, Label, Card } from '@es-mono/design-system';
 import { useLogin } from '../../hooks';
 
 export const Route = createFileRoute('/auth/login')({
@@ -42,7 +43,7 @@ function Login() {
           </p>
         </div>
 
-        <div className="rounded-lg border bg-card p-8 shadow-sm">
+        <Card className="p-8">
           {error && (
             <div className="mb-4 rounded-md bg-destructive/10 p-3 text-sm text-destructive">
               {error}
@@ -68,10 +69,8 @@ function Login() {
             >
               {(field) => (
                 <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm font-medium text-foreground">
-                    {t('login.email')}
-                  </label>
-                  <input
+                  <Label htmlFor="email">{t('login.email')}</Label>
+                  <Input
                     type="email"
                     id="email"
                     name="email"
@@ -79,7 +78,6 @@ function Login() {
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
                     disabled={isPending}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     placeholder="you@example.com"
                   />
                   {field.state.meta.errors && field.state.meta.errors.length > 0 && (
@@ -100,10 +98,8 @@ function Login() {
             >
               {(field) => (
                 <div className="space-y-2">
-                  <label htmlFor="password" className="text-sm font-medium text-foreground">
-                    {t('login.password')}
-                  </label>
-                  <input
+                  <Label htmlFor="password">{t('login.password')}</Label>
+                  <Input
                     type="password"
                     id="password"
                     name="password"
@@ -111,7 +107,6 @@ function Login() {
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
                     disabled={isPending}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     placeholder="••••••••"
                   />
                   {field.state.meta.errors && field.state.meta.errors.length > 0 && (
@@ -121,15 +116,11 @@ function Login() {
               )}
             </form.Field>
 
-            <button
-              type="submit"
-              disabled={isPending}
-              className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-            >
+            <Button type="submit" disabled={isPending} className="w-full">
               {isPending ? t('login.loading') : t('login.submit')}
-            </button>
+            </Button>
           </form>
-        </div>
+        </Card>
 
         <div className="text-center">
           <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">
