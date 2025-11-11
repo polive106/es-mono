@@ -22,12 +22,14 @@
     "@es-mono/shared": "workspace:*",
     "@hono/node-server": "^1.19.6",
     "@hono/zod-validator": "^0.7.4",
+    "bcrypt": "^6.0.0",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.44.7",
     "hono": "^4.10.4",
     "zod": "^4.1.12"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/better-sqlite3": "^7.6.13",
     "better-sqlite3": "^12.4.1",
     "tsup": "^8.5.0",

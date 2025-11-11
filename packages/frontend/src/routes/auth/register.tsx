@@ -75,6 +75,10 @@ function Register() {
                   const result = registerSchema.shape.name.safeParse(value);
                   return result.success ? undefined : result.error.issues[0]?.message;
                 },
+                onSubmit: ({ value }) => {
+                  const result = registerSchema.shape.name.safeParse(value);
+                  return result.success ? undefined : result.error.issues[0]?.message;
+                },
               }}
             >
               {(field) => (
@@ -102,6 +106,10 @@ function Register() {
               name="email"
               validators={{
                 onChange: ({ value }) => {
+                  const result = registerSchema.shape.email.safeParse(value);
+                  return result.success ? undefined : result.error.issues[0]?.message;
+                },
+                onSubmit: ({ value }) => {
                   const result = registerSchema.shape.email.safeParse(value);
                   return result.success ? undefined : result.error.issues[0]?.message;
                 },
@@ -135,6 +143,10 @@ function Register() {
                   const result = registerSchema.shape.password.safeParse(value);
                   return result.success ? undefined : result.error.issues[0]?.message;
                 },
+                onSubmit: ({ value }) => {
+                  const result = registerSchema.shape.password.safeParse(value);
+                  return result.success ? undefined : result.error.issues[0]?.message;
+                },
               }}
             >
               {(field) => (
@@ -162,6 +174,10 @@ function Register() {
               name="inviteCode"
               validators={{
                 onChange: ({ value }) => {
+                  const result = registerSchema.shape.inviteCode.safeParse(value);
+                  return result.success ? undefined : result.error.issues[0]?.message;
+                },
+                onSubmit: ({ value }) => {
                   const result = registerSchema.shape.inviteCode.safeParse(value);
                   return result.success ? undefined : result.error.issues[0]?.message;
                 },

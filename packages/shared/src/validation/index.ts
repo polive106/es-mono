@@ -12,9 +12,20 @@ import {
 } from '../types';
 
 // User Validation Schemas
-export const emailSchema = z.string().email().max(255);
-export const passwordSchema = z.string().min(12, 'Password must be at least 12 characters');
-export const nameSchema = z.string().min(2).max(100);
+export const emailSchema = z
+  .string()
+  .min(1, 'Email is required')
+  .email('Invalid email address')
+  .max(255);
+export const passwordSchema = z
+  .string()
+  .min(1, 'Password is required')
+  .min(12, 'Password must be at least 12 characters');
+export const nameSchema = z
+  .string()
+  .min(1, 'Name is required')
+  .min(2, 'Name must be at least 2 characters')
+  .max(100);
 export const languageSchema = z.enum(LANGUAGES);
 
 export const createUserSchema = z.object({
@@ -35,7 +46,10 @@ export const registerSchema = z.object({
   name: nameSchema,
   email: emailSchema,
   password: passwordSchema,
-  inviteCode: z.string().length(8, 'Invite code must be exactly 8 characters'),
+  inviteCode: z
+    .string()
+    .min(1, 'Invite code is required')
+    .length(8, 'Invite code must be exactly 8 characters'),
   languagePref: languageSchema.optional(),
 });
 

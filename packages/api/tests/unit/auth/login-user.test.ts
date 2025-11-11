@@ -2,12 +2,12 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { loginUserInternal, AuthError } from '../../../src/auth/service';
 import type { AuthServiceDependencies } from '../../../src/auth/service';
 import { createMockRepositories } from '../helpers/mock-repositories';
-import * as shared from '@es-mono/shared';
+import * as password from '../../../src/utils/password';
 import * as sessions from '../../../src/auth/sessions';
 
-// Mock the shared package
-vi.mock('@es-mono/shared', async () => {
-  const actual = await vi.importActual<typeof import('@es-mono/shared')>('@es-mono/shared');
+// Mock the password utility
+vi.mock('../../../src/utils/password', async () => {
+  const actual = await vi.importActual<typeof import('../../../src/utils/password')>('../../../src/utils/password');
   return {
     ...actual,
     verifyPassword: vi.fn(),
@@ -154,7 +154,7 @@ describe('loginUserInternal (Unit Tests)', () => {
         },
       });
 
-      vi.mocked(shared.verifyPassword).mockResolvedValue(false);
+      vi.mocked(password.verifyPassword).mockResolvedValue(false);
 
       await expect(
         loginUserInternal(
@@ -166,7 +166,7 @@ describe('loginUserInternal (Unit Tests)', () => {
         )
       ).rejects.toThrow('Invalid credentials');
 
-      expect(shared.verifyPassword).toHaveBeenCalledWith('wrong_password', 'correct_hash');
+      expect(password.verifyPassword).toHaveBeenCalledWith('wrong_password', 'correct_hash');
     });
 
     it('should accept correct password', async () => {
@@ -211,7 +211,7 @@ describe('loginUserInternal (Unit Tests)', () => {
       deps.userRoleRepo.findByUserIdWithRoles.mockResolvedValue([]);
       deps.userRepo.updateLastActivity.mockResolvedValue();
 
-      vi.mocked(shared.verifyPassword).mockResolvedValue(true);
+      vi.mocked(password.verifyPassword).mockResolvedValue(true);
       vi.mocked(sessions.createSessionInternal).mockResolvedValue({
         id: 'session-123',
         userId: 'user-1',
@@ -227,7 +227,7 @@ describe('loginUserInternal (Unit Tests)', () => {
         deps
       );
 
-      expect(shared.verifyPassword).toHaveBeenCalledWith('correct_password', 'correct_hash');
+      expect(password.verifyPassword).toHaveBeenCalledWith('correct_password', 'correct_hash');
     });
   });
 
@@ -274,7 +274,7 @@ describe('loginUserInternal (Unit Tests)', () => {
       deps.userRoleRepo.findByUserIdWithRoles.mockResolvedValue([]);
       deps.userRepo.updateLastActivity.mockResolvedValue();
 
-      vi.mocked(shared.verifyPassword).mockResolvedValue(true);
+      vi.mocked(password.verifyPassword).mockResolvedValue(true);
       vi.mocked(sessions.createSessionInternal).mockResolvedValue({
         id: 'session-123',
         userId: 'user-1',
@@ -355,7 +355,7 @@ describe('loginUserInternal (Unit Tests)', () => {
 
       deps.userRepo.updateLastActivity.mockResolvedValue();
 
-      vi.mocked(shared.verifyPassword).mockResolvedValue(true);
+      vi.mocked(password.verifyPassword).mockResolvedValue(true);
       vi.mocked(sessions.createSessionInternal).mockResolvedValue({
         id: 'session-123',
         userId: 'user-1',
@@ -435,7 +435,7 @@ describe('loginUserInternal (Unit Tests)', () => {
 
       deps.userRepo.updateLastActivity.mockResolvedValue();
 
-      vi.mocked(shared.verifyPassword).mockResolvedValue(true);
+      vi.mocked(password.verifyPassword).mockResolvedValue(true);
       vi.mocked(sessions.createSessionInternal).mockResolvedValue({
         id: 'session-123',
         userId: 'user-1',
@@ -502,7 +502,7 @@ describe('loginUserInternal (Unit Tests)', () => {
       deps.userRoleRepo.findByUserIdWithRoles.mockResolvedValue([]);
       deps.userRepo.updateLastActivity.mockResolvedValue();
 
-      vi.mocked(shared.verifyPassword).mockResolvedValue(true);
+      vi.mocked(password.verifyPassword).mockResolvedValue(true);
       vi.mocked(sessions.createSessionInternal).mockResolvedValue({
         id: 'session-123',
         userId: 'user-1',

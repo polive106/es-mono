@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import { registerUser, loginUser, AuthError } from '../../src/auth/service';
 import { companies } from '@es-mono/database/schema';
-import * as hibp from '@es-mono/shared';
+import * as hibp from '../../src/utils/hibp';
 import { createTestDatabase } from './setup/test-db';
 import type { DB } from '@es-mono/database';
 
@@ -19,8 +19,8 @@ vi.mock('@es-mono/database', async () => {
 });
 
 // Mock HIBP check to avoid external API calls
-vi.mock('@es-mono/shared', async () => {
-  const actual = await vi.importActual<typeof import('@es-mono/shared')>('@es-mono/shared');
+vi.mock('../../src/utils/hibp', async () => {
+  const actual = await vi.importActual<typeof import('../../src/utils/hibp')>('../../src/utils/hibp');
   return {
     ...actual,
     checkPasswordBreach: vi.fn().mockResolvedValue(0), // Not breached by default

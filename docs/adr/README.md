@@ -106,6 +106,10 @@ See `template.md` for the standard ADR format.
 | # | Title | Status | Date |
 |---|-------|--------|------|
 | [000](000-use-architecture-decision-records.md) | Use Architecture Decision Records | Accepted | 2025-11-08 |
+| [001](001-shadcn-ui-design-system-with-vite.md) | Use shadcn/ui Design System with Vite | Implemented | 2025-11-08 |
+| [003](003-rbac-implementation.md) | Custom RBAC Implementation | Implemented | 2025-11-08 |
+| [004](004-hibp-integration.md) | HIBP k-Anonymity Password Breach Detection | Implemented | 2025-11-08 |
+| [005](005-use-tanstack-form-for-react-forms.md) | Use TanStack Form for React Forms | Implemented | 2025-11-11 |
 
 ## Tools
 

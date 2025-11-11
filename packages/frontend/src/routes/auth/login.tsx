@@ -57,11 +57,17 @@ function Login() {
               form.handleSubmit();
             }}
             className="space-y-6"
+            data-testid="login-form"
+            noValidate
           >
             <form.Field
               name="email"
               validators={{
                 onChange: ({ value }) => {
+                  const result = loginSchema.shape.email.safeParse(value);
+                  return result.success ? undefined : result.error.issues[0]?.message;
+                },
+                onSubmit: ({ value }) => {
                   const result = loginSchema.shape.email.safeParse(value);
                   return result.success ? undefined : result.error.issues[0]?.message;
                 },
@@ -74,6 +80,7 @@ function Login() {
                     type="email"
                     id="email"
                     name="email"
+                    data-testid="email-input"
                     value={field.state.value}
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
@@ -94,6 +101,10 @@ function Login() {
                   if (!value) return 'Password is required';
                   return undefined;
                 },
+                onSubmit: ({ value }) => {
+                  if (!value) return 'Password is required';
+                  return undefined;
+                },
               }}
             >
               {(field) => (
@@ -103,6 +114,7 @@ function Login() {
                     type="password"
                     id="password"
                     name="password"
+                    data-testid="password-input"
                     value={field.state.value}
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
@@ -116,7 +128,7 @@ function Login() {
               )}
             </form.Field>
 
-            <Button type="submit" disabled={isPending} className="w-full">
+            <Button type="submit" data-testid="login-submit" disabled={isPending} className="w-full">
               {isPending ? t('login.loading') : t('login.submit')}
             </Button>
           </form>

@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { PASSWORD_MIN_LENGTH } from '../constants';
+import { PASSWORD_MIN_LENGTH } from '@es-mono/shared';
 
 const SALT_ROUNDS = 12;
 
