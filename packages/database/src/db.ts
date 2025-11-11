@@ -14,11 +14,14 @@ function getDbPath(): string {
   return dbPath;
 }
 
+// Type for the database instance with schema
+type DrizzleDB = ReturnType<typeof drizzle<typeof schema>>;
+
 // Lazy initialization - connection is created on first access, not at module import
-let _db: ReturnType<typeof drizzle> | null = null;
+let _db: DrizzleDB | null = null;
 let _sqlite: Database.Database | null = null;
 
-function initializeDatabase() {
+function initializeDatabase(): DrizzleDB {
   if (_db) return _db;
 
   const dbPath = getDbPath();
@@ -46,11 +49,11 @@ function initializeDatabase() {
 }
 
 // Export a proxy that lazily initializes the database on first access
-export const db = new Proxy({} as ReturnType<typeof drizzle>, {
+export const db = new Proxy({} as DrizzleDB, {
   get(_target, prop) {
     const database = initializeDatabase();
     return (database as any)[prop];
   },
-});
+}) as DrizzleDB;
 
 export type DB = typeof db;
