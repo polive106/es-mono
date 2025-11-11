@@ -18,6 +18,7 @@ function Index() {
       <header className="border-b border-border p-4">
         <button
           onClick={toggleLanguage}
+          data-testid="language-switcher"
           className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-sm font-medium"
         >
           {i18n.language === 'en' ? 'Français' : 'English'}
