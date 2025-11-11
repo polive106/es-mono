@@ -1,10 +1,34 @@
-import { db } from './db';
-import { roles, permissions, rolePermissions, skills } from './schema';
+import { drizzle } from 'drizzle-orm/better-sqlite3';
+import Database from 'better-sqlite3';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import { roles, permissions, rolePermissions, skills, companies } from './schema';
+import * as schema from './schema';
+
+// Get current directory in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Use absolute path to database file in monorepo root (same as migrate.ts)
+const dbPath = process.env.DATABASE_URL || join(__dirname, '../../../local.db');
+console.log(`[Seed] Database path: ${dbPath}`);
+const sqlite = new Database(dbPath);
+const db = drizzle(sqlite, { schema });
 
 console.log('🌱 Seeding database...');
 
 async function seed() {
   try {
+    // Seed development company
+    console.log('  → Creating development company...');
+    await db.insert(companies).values({
+      name: 'Development Company',
+      industry: 'Technology',
+      size: '11-50',
+      location: 'FR',
+      inviteCode: 'DEV12345',
+    });
+
     // Seed system roles
     console.log('  → Creating system roles...');
     await db.insert(roles).values([

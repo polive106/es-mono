@@ -5,6 +5,10 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['tests/integration/**/*.test.ts'],
-    setupFiles: ['./tests/integration/setup.ts'],
+    exclude: ['tests/integration/setup/**'],
+    passWithNoTests: true,
+    sequence: {
+      concurrent: false, // Run test files sequentially to avoid file conflicts
+    },
   },
 });

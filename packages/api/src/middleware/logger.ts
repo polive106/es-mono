@@ -71,6 +71,12 @@ export const logger = new Logger();
  * Logs all incoming requests and their responses
  */
 export const requestLogger = createMiddleware(async (c, next) => {
+  // Skip logging during test runs to keep output clean
+  if (process.env.NODE_ENV === 'test') {
+    await next();
+    return;
+  }
+
   const start = Date.now();
   const { method, path } = c.req;
 

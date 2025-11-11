@@ -1,20 +1,24 @@
 import { db } from '@es-mono/database';
-import { sessions, users } from '@es-mono/database/schema';
-import { eq, lt } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
+import type { ISessionRepository } from '../repositories/interfaces';
+import { DrizzleSessionRepository } from '../repositories/implementations';
 
 const SESSION_TIMEOUT_TALENT = 24 * 60 * 60 * 1000; // 24 hours
 const SESSION_TIMEOUT_MANAGER = 4 * 60 * 60 * 1000; // 4 hours
 
 /**
- * Create a new session for a user
+ * Create a new session for a user (internal implementation with dependency injection)
  */
-export async function createSession(userId: string, options?: { isTalent?: boolean }) {
+export async function createSessionInternal(
+  userId: string,
+  options: { isTalent?: boolean } | undefined,
+  sessionRepo: ISessionRepository
+) {
   const sessionId = randomUUID();
   const timeout = options?.isTalent ? SESSION_TIMEOUT_TALENT : SESSION_TIMEOUT_MANAGER;
   const expiresAt = new Date(Date.now() + timeout);
 
-  await db.insert(sessions).values({
+  await sessionRepo.create({
     id: sessionId,
     userId,
     expiresAt,
@@ -29,34 +33,33 @@ export async function createSession(userId: string, options?: { isTalent?: boole
 }
 
 /**
- * Validate a session and return the user if valid
+ * Create a new session for a user (backward compatible wrapper)
  */
-export async function validateSession(sessionId: string) {
-  const [session] = await db
-    .select()
-    .from(sessions)
-    .where(eq(sessions.id, sessionId))
-    .limit(1);
+export async function createSession(userId: string, options?: { isTalent?: boolean }) {
+  const sessionRepo = new DrizzleSessionRepository(db);
+  return createSessionInternal(userId, options, sessionRepo);
+}
 
-  if (!session) {
+/**
+ * Validate a session and return the user if valid (internal implementation with dependency injection)
+ */
+export async function validateSessionInternal(sessionId: string, sessionRepo: ISessionRepository) {
+  const result = await sessionRepo.findByIdWithUser(sessionId);
+
+  if (!result) {
     return { session: null, user: null };
   }
+
+  const { session, user } = result;
 
   // Check if session is expired
   if (session.expiresAt < new Date()) {
-    await db.delete(sessions).where(eq(sessions.id, sessionId));
+    await sessionRepo.delete(sessionId);
     return { session: null, user: null };
   }
 
-  // Get user
-  const [user] = await db
-    .select()
-    .from(users)
-    .where(eq(users.id, session.userId))
-    .limit(1);
-
   if (!user || user.isAnonymized) {
-    await db.delete(sessions).where(eq(sessions.id, sessionId));
+    await sessionRepo.delete(sessionId);
     return { session: null, user: null };
   }
 
@@ -83,38 +86,86 @@ export async function validateSession(sessionId: string) {
 }
 
 /**
- * Refresh a session (extend expiration)
+ * Validate a session and return the user if valid (backward compatible wrapper)
  */
-export async function refreshSession(sessionId: string, options?: { isTalent?: boolean }) {
+export async function validateSession(sessionId: string) {
+  const sessionRepo = new DrizzleSessionRepository(db);
+  return validateSessionInternal(sessionId, sessionRepo);
+}
+
+/**
+ * Refresh a session (extend expiration) (internal implementation with dependency injection)
+ */
+export async function refreshSessionInternal(
+  sessionId: string,
+  options: { isTalent?: boolean } | undefined,
+  sessionRepo: ISessionRepository
+) {
   const timeout = options?.isTalent ? SESSION_TIMEOUT_TALENT : SESSION_TIMEOUT_MANAGER;
   const expiresAt = new Date(Date.now() + timeout);
 
-  await db.update(sessions).set({ expiresAt }).where(eq(sessions.id, sessionId));
+  await sessionRepo.updateExpiration(sessionId, expiresAt);
 
   return { id: sessionId, expiresAt };
 }
 
 /**
- * Invalidate (delete) a session
+ * Refresh a session (extend expiration) (backward compatible wrapper)
+ */
+export async function refreshSession(sessionId: string, options?: { isTalent?: boolean }) {
+  const sessionRepo = new DrizzleSessionRepository(db);
+  return refreshSessionInternal(sessionId, options, sessionRepo);
+}
+
+/**
+ * Invalidate (delete) a session (internal implementation with dependency injection)
+ */
+export async function invalidateSessionInternal(
+  sessionId: string,
+  sessionRepo: ISessionRepository
+) {
+  await sessionRepo.delete(sessionId);
+}
+
+/**
+ * Invalidate (delete) a session (backward compatible wrapper)
  */
 export async function invalidateSession(sessionId: string) {
-  await db.delete(sessions).where(eq(sessions.id, sessionId));
+  const sessionRepo = new DrizzleSessionRepository(db);
+  return invalidateSessionInternal(sessionId, sessionRepo);
 }
 
 /**
- * Invalidate all sessions for a user
+ * Invalidate all sessions for a user (internal implementation with dependency injection)
+ */
+export async function invalidateUserSessionsInternal(
+  userId: string,
+  sessionRepo: ISessionRepository
+) {
+  await sessionRepo.deleteByUserId(userId);
+}
+
+/**
+ * Invalidate all sessions for a user (backward compatible wrapper)
  */
 export async function invalidateUserSessions(userId: string) {
-  await db.delete(sessions).where(eq(sessions.userId, userId));
+  const sessionRepo = new DrizzleSessionRepository(db);
+  return invalidateUserSessionsInternal(userId, sessionRepo);
 }
 
 /**
- * Clean up expired sessions (should be run periodically)
+ * Clean up expired sessions (should be run periodically) (internal implementation with dependency injection)
+ */
+export async function cleanupExpiredSessionsInternal(sessionRepo: ISessionRepository) {
+  return await sessionRepo.deleteExpired();
+}
+
+/**
+ * Clean up expired sessions (should be run periodically) (backward compatible wrapper)
  */
 export async function cleanupExpiredSessions() {
-  const now = new Date();
-  const result = await db.delete(sessions).where(lt(sessions.expiresAt, now));
-  return result;
+  const sessionRepo = new DrizzleSessionRepository(db);
+  return cleanupExpiredSessionsInternal(sessionRepo);
 }
 
 /**

@@ -1,8 +1,18 @@
 import { db } from '@es-mono/database';
-import { users, companies, userRoles } from '@es-mono/database/schema';
 import { hashPassword, verifyPassword, checkPasswordBreach } from '@es-mono/shared';
-import { eq } from 'drizzle-orm';
-import { createSession, invalidateSession } from './sessions';
+import { invalidateSession, createSessionInternal } from './sessions';
+import type {
+  IUserRepository,
+  ICompanyRepository,
+  ISessionRepository,
+  IUserRoleRepository,
+} from '../repositories/interfaces';
+import {
+  DrizzleUserRepository,
+  DrizzleCompanyRepository,
+  DrizzleSessionRepository,
+  DrizzleUserRoleRepository,
+} from '../repositories/implementations';
 
 /**
  * Error types for authentication
@@ -18,15 +28,40 @@ export class AuthError extends Error {
 }
 
 /**
- * Register a new user
+ * Dependencies for authentication services
  */
-export async function registerUser(data: {
-  email: string;
-  password: string;
-  name: string;
-  languagePref?: 'en' | 'fr';
-  inviteCode: string;
-}) {
+export interface AuthServiceDependencies {
+  userRepo: IUserRepository;
+  companyRepo: ICompanyRepository;
+  sessionRepo: ISessionRepository;
+  userRoleRepo: IUserRoleRepository;
+}
+
+/**
+ * Create default repository instances using the database connection
+ */
+function createDefaultDependencies(): AuthServiceDependencies {
+  return {
+    userRepo: new DrizzleUserRepository(db),
+    companyRepo: new DrizzleCompanyRepository(db),
+    sessionRepo: new DrizzleSessionRepository(db),
+    userRoleRepo: new DrizzleUserRoleRepository(db),
+  };
+}
+
+/**
+ * Register a new user (internal implementation with dependency injection)
+ */
+export async function registerUserInternal(
+  data: {
+    email: string;
+    password: string;
+    name: string;
+    languagePref?: 'en' | 'fr';
+    inviteCode: string;
+  },
+  deps: AuthServiceDependencies
+) {
   // Validate email format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(data.email)) {
@@ -34,18 +69,14 @@ export async function registerUser(data: {
   }
 
   // Check if email already exists
-  const existingUser = await db.query.users.findFirst({
-    where: eq(users.email, data.email.toLowerCase()),
-  });
+  const existingUser = await deps.userRepo.findByEmail(data.email);
 
   if (existingUser) {
     throw new AuthError('Email already registered', 'EMAIL_EXISTS');
   }
 
   // Validate invite code and get company
-  const company = await db.query.companies.findFirst({
-    where: eq(companies.inviteCode, data.inviteCode),
-  });
+  const company = await deps.companyRepo.findByInviteCode(data.inviteCode);
 
   if (!company) {
     throw new AuthError('Invalid invite code', 'INVALID_INVITE_CODE');
@@ -69,16 +100,13 @@ export async function registerUser(data: {
   const passwordHash = await hashPassword(data.password);
 
   // Create user
-  const [newUser] = await db
-    .insert(users)
-    .values({
-      email: data.email.toLowerCase(),
-      passwordHash,
-      name: data.name,
-      languagePref: data.languagePref || 'en',
-      companyId: company.id,
-    })
-    .returning();
+  const newUser = await deps.userRepo.create({
+    email: data.email.toLowerCase(),
+    passwordHash,
+    name: data.name,
+    languagePref: data.languagePref || 'en',
+    companyId: company.id,
+  });
 
   return {
     id: newUser.id,
@@ -89,16 +117,30 @@ export async function registerUser(data: {
 }
 
 /**
- * Login user
+ * Register a new user (backward compatible wrapper)
  */
-export async function loginUser(data: { email: string; password: string }) {
+export async function registerUser(data: {
+  email: string;
+  password: string;
+  name: string;
+  languagePref?: 'en' | 'fr';
+  inviteCode: string;
+}) {
+  const deps = createDefaultDependencies();
+  return registerUserInternal(data, deps);
+}
+
+/**
+ * Login user (internal implementation with dependency injection)
+ */
+export async function loginUserInternal(
+  data: { email: string; password: string },
+  deps: AuthServiceDependencies
+) {
   // Find user by email
-  const user = await db.query.users.findFirst({
-    where: eq(users.email, data.email.toLowerCase()),
-    with: {
-      company: true,
-    },
-  });
+  const user = await deps.userRepo.findByIdWithCompany(
+    (await deps.userRepo.findByEmail(data.email))?.id || ''
+  );
 
   if (!user) {
     throw new AuthError('Invalid credentials', 'INVALID_CREDENTIALS');
@@ -117,23 +159,15 @@ export async function loginUser(data: { email: string; password: string }) {
   }
 
   // Update last activity
-  await db
-    .update(users)
-    .set({ lastActivityAt: new Date() })
-    .where(eq(users.id, user.id));
+  await deps.userRepo.updateLastActivity(user.id, new Date());
 
   // Check user roles to determine session timeout
-  const userRoleRecords = await db.query.userRoles.findMany({
-    where: eq(userRoles.userId, user.id),
-    with: {
-      role: true,
-    },
-  });
+  const userRoleRecords = await deps.userRoleRepo.findByUserIdWithRoles(user.id);
 
   const isTalent = userRoleRecords.some((ur) => ur.role.name === 'talent');
 
   // Create session
-  const session = await createSession(user.id, { isTalent });
+  const session = await createSessionInternal(user.id, { isTalent }, deps.sessionRepo);
 
   return {
     user: {
@@ -148,6 +182,14 @@ export async function loginUser(data: { email: string; password: string }) {
 }
 
 /**
+ * Login user (backward compatible wrapper)
+ */
+export async function loginUser(data: { email: string; password: string }) {
+  const deps = createDefaultDependencies();
+  return loginUserInternal(data, deps);
+}
+
+/**
  * Logout user
  */
 export async function logoutUser(sessionId: string) {
@@ -156,17 +198,18 @@ export async function logoutUser(sessionId: string) {
 }
 
 /**
- * Change user password
+ * Change user password (internal implementation with dependency injection)
  */
-export async function changePassword(data: {
-  userId: string;
-  currentPassword: string;
-  newPassword: string;
-}) {
+export async function changePasswordInternal(
+  data: {
+    userId: string;
+    currentPassword: string;
+    newPassword: string;
+  },
+  deps: AuthServiceDependencies
+) {
   // Get user
-  const user = await db.query.users.findFirst({
-    where: eq(users.id, data.userId),
-  });
+  const user = await deps.userRepo.findById(data.userId);
 
   if (!user) {
     throw new AuthError('User not found', 'USER_NOT_FOUND');
@@ -197,7 +240,19 @@ export async function changePassword(data: {
   const passwordHash = await hashPassword(data.newPassword);
 
   // Update password
-  await db.update(users).set({ passwordHash, updatedAt: new Date() }).where(eq(users.id, user.id));
+  await deps.userRepo.updatePassword(user.id, passwordHash);
 
   return { success: true };
+}
+
+/**
+ * Change user password (backward compatible wrapper)
+ */
+export async function changePassword(data: {
+  userId: string;
+  currentPassword: string;
+  newPassword: string;
+}) {
+  const deps = createDefaultDependencies();
+  return changePasswordInternal(data, deps);
 }
