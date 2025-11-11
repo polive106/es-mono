@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { useForm } from '@tanstack/react-form';
 import { loginSchema } from '@es-mono/shared';
-import { Button, Input, Label, Card } from '@es-mono/design-system';
+import { Button, Input, Label, Card, Alert, AlertDescription } from '@es-mono/design-system';
 import { useLogin } from '../../hooks';
 
 export const Route = createFileRoute('/auth/login')({
@@ -45,9 +45,9 @@ function Login() {
 
         <Card className="p-8">
           {error && (
-            <div className="mb-4 rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-              {error}
-            </div>
+            <Alert variant="destructive" className="mb-4">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
           )}
 
           <form

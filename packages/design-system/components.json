@@ -14,5 +14,10 @@
     "components": "./src/components",
     "utils": "./src/lib",
     "ui": "./src/components/ui"
+  },
+  "resolvedPaths": {
+    "components": "/home/user/es-mono/packages/design-system/src/components",
+    "utils": "/home/user/es-mono/packages/design-system/src/lib",
+    "ui": "/home/user/es-mono/packages/design-system/src/components/ui"
   }
 }
