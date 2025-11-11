@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
+import { useLogin } from '../../hooks';
 
 export const Route = createFileRoute('/auth/login')({
   component: Login,
@@ -9,8 +10,7 @@ export const Route = createFileRoute('/auth/login')({
 function Login() {
   const { t } = useTranslation('auth');
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { mutate: login, isPending, error: mutationError } = useLogin();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -18,39 +18,21 @@ function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setIsLoading(true);
 
-    try {
-      // Direct fetch call until Hono RPC types are fixed
-      // eslint-disable-next-line no-undef
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
+    login(
+      {
+        email: formData.email,
+        password: formData.password,
+      },
+      {
+        onSuccess: () => {
+          navigate({ to: '/dashboard' });
         },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
-
-      if (response.ok) {
-        await response.json();
-        // Redirect to dashboard on successful login
-        navigate({ to: '/dashboard' });
-      } else {
-        setError(t('login.error.invalidCredentials'));
       }
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : t('login.error.networkError')
-      );
-    } finally {
-      setIsLoading(false);
-    }
+    );
   };
+
+  const error = mutationError?.message;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -92,7 +74,7 @@ function Login() {
                 value={formData.email}
                 onChange={handleInputChange}
                 required
-                disabled={isLoading}
+                disabled={isPending}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 placeholder="you@example.com"
               />
@@ -109,7 +91,7 @@ function Login() {
                 value={formData.password}
                 onChange={handleInputChange}
                 required
-                disabled={isLoading}
+                disabled={isPending}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 placeholder="••••••••"
               />
@@ -117,10 +99,10 @@ function Login() {
 
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isPending}
               className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
             >
-              {isLoading ? t('login.loading') : t('login.submit')}
+              {isPending ? t('login.loading') : t('login.submit')}
             </button>
           </form>
         </div>

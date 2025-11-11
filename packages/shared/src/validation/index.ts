@@ -31,6 +31,14 @@ export const loginSchema = z.object({
   password: z.string(),
 });
 
+export const registerSchema = z.object({
+  name: nameSchema,
+  email: emailSchema,
+  password: passwordSchema,
+  inviteCode: z.string().length(8, 'Invite code must be exactly 8 characters'),
+  languagePref: languageSchema.optional(),
+});
+
 // Company Validation Schemas
 export const companySizeSchema = z.enum(COMPANY_SIZES);
 export const companyLocationSchema = z.enum(COMPANY_LOCATIONS);
@@ -120,6 +128,7 @@ export const schemas = {
   // User
   createUser: createUserSchema,
   login: loginSchema,
+  register: registerSchema,
 
   // Company
   createCompany: createCompanySchema,
