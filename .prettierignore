@@ -1,0 +1,15 @@
+node_modules
+dist
+.turbo
+coverage
+build
+*.lock
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+.next
+.cache
+public
+
+# Auto-generated files
+**/routeTree.gen.ts

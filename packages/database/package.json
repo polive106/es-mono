@@ -1,0 +1,44 @@
+{
+  "name": "@es-mono/database",
+  "version": "0.1.0",
+  "description": "Database layer - Drizzle ORM schemas, migrations, repositories",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./schema": {
+      "import": "./dist/schema/index.mjs",
+      "require": "./dist/schema/index.js",
+      "types": "./dist/schema/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts src/schema/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts src/schema/index.ts --format cjs,esm --dts --watch",
+    "generate": "drizzle-kit generate:sqlite",
+    "migrate": "tsx src/migrate.ts",
+    "seed": "tsx src/seed.ts",
+    "studio": "drizzle-kit studio",
+    "test": "vitest run",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist node_modules .turbo"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.4.1",
+    "drizzle-orm": "^0.44.7"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^20.19.24",
+    "drizzle-kit": "^0.31.6",
+    "tsup": "^8.5.0",
+    "tsx": "^4.20.6",
+    "vitest": "^4.0.8"
+  }
+}

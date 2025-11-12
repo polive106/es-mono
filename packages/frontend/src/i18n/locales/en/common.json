@@ -1,0 +1,42 @@
+{
+  "appName": "SkillSwap Platform",
+  "welcome": "Welcome to the talent sharing network!",
+  "navigation": {
+    "home": "Home",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "profile": "Profile"
+  },
+  "dashboard": "Dashboard",
+  "companies": "Companies",
+  "skillNeeds": "Skill Needs",
+  "talentSearch": "Talent Search",
+  "missions": "Missions",
+  "credits": "Credits",
+  "profile": "Profile",
+  "skills": "Skills",
+  "availability": "Availability",
+  "opportunities": "Opportunities",
+  "myMissions": "My Missions",
+  "allRightsReserved": "All rights reserved",
+  "privacy": "Privacy Policy",
+  "terms": "Terms of Service",
+  "contact": "Contact",
+  "logout": "Logout",
+  "actions": {
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next"
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidEmail": "Invalid email address",
+    "minLength": "Minimum length is {{count}} characters",
+    "maxLength": "Maximum length is {{count}} characters"
+  }
+}

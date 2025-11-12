@@ -1,0 +1,41 @@
+{
+  "name": "@es-mono/api",
+  "version": "0.1.0",
+  "description": "API layer - Hono REST API server",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "vite build && tsc --emitDeclarationOnly --declaration",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "test": "pnpm run test:unit && pnpm run test:integration",
+    "test:unit": "vitest run --config vitest.unit.config.mts",
+    "test:integration": "vitest run --config vitest.integration.config.mts",
+    "test:watch": "vitest",
+    "test:watch:unit": "vitest --config vitest.unit.config.mts",
+    "test:watch:integration": "vitest --config vitest.integration.config.mts",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "@es-mono/database": "workspace:*",
+    "@es-mono/shared": "workspace:*",
+    "@hono/node-server": "^1.19.6",
+    "@hono/zod-validator": "^0.7.4",
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.3",
+    "drizzle-orm": "^0.44.7",
+    "hono": "^4.10.4",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/better-sqlite3": "^7.6.13",
+    "better-sqlite3": "^12.4.1",
+    "tsup": "^8.5.0",
+    "tsx": "^4.20.6",
+    "vite": "^7.2.2",
+    "vite-plugin-dts": "^3.9.0",
+    "vitest": "^4.0.8"
+  }
+}

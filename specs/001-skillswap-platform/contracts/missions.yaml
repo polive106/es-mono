@@ -1,0 +1,920 @@
+openapi: 3.0.3
+info:
+  title: SkillSwap Missions API
+  version: 1.0.0
+  description: |
+    Skill need posting, mission proposals, approval workflow, time tracking.
+    Implements FR-018 to FR-025, FR-032 to FR-035 (mission lifecycle).
+
+servers:
+  - url: http://localhost:3000/api
+    description: Development server
+
+tags:
+  - name: Skill Needs
+    description: Post and manage skill requirements
+  - name: Missions
+    description: Mission proposals and lifecycle
+  - name: Approvals
+    description: Approval workflow (consent → manager → legal)
+  - name: Time Tracking
+    description: Log hours for active missions
+
+paths:
+  /skill-needs:
+    get:
+      tags: [Skill Needs]
+      summary: List skill needs
+      description: Returns open skill needs for matchmaking
+      operationId: listSkillNeeds
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: companyId
+          in: query
+          description: Filter by requesting company
+          schema:
+            type: string
+            format: uuid
+        - name: skillId
+          in: query
+          description: Filter by required skill
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          description: Filter by status
+          schema:
+            type: string
+            enum: [open, matched, fulfilled, cancelled]
+            default: open
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+      responses:
+        '200':
+          description: List of skill needs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  needs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SkillNeed'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags: [Skill Needs]
+      summary: Create skill need
+      description: |
+        Post skill requirement (FR-018).
+        Requires talent_manager role.
+      operationId: createSkillNeed
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSkillNeedRequest'
+      responses:
+        '201':
+          description: Skill need created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillNeed'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Requires talent_manager role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+
+  /skill-needs/{needId}:
+    get:
+      tags: [Skill Needs]
+      summary: Get skill need details
+      operationId: getSkillNeed
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: needId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Skill need details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillNeed'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [Skill Needs]
+      summary: Update skill need
+      description: Update need details or status (requires talent_manager)
+      operationId: updateSkillNeed
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: needId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                durationMonths:
+                  type: integer
+                timeCommitmentHrsWeek:
+                  type: integer
+                status:
+                  type: string
+                  enum: [open, matched, fulfilled, cancelled]
+      responses:
+        '200':
+          description: Skill need updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillNeed'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /missions:
+    get:
+      tags: [Missions]
+      summary: List missions
+      description: Returns missions for current user's company
+      operationId: listMissions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          description: Filter by mission status
+          schema:
+            type: string
+            enum: [proposed, negotiating, awaiting_consent, awaiting_manager, awaiting_legal, approved, active, completed, cancelled]
+        - name: companyId
+          in: query
+          description: Filter by company (proposing or receiving)
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+      responses:
+        '200':
+          description: List of missions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  missions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Mission'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags: [Missions]
+      summary: Propose mission
+      description: |
+        Create mission proposal (FR-021).
+        Talent can be from anonymized search or direct user ID.
+      operationId: proposeMission
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMissionRequest'
+      responses:
+        '201':
+          description: Mission proposed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mission'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+
+  /missions/{missionId}:
+    get:
+      tags: [Missions]
+      summary: Get mission details
+      operationId: getMission
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: missionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Mission details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissionDetailed'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /missions/{missionId}/negotiate:
+    put:
+      tags: [Missions]
+      summary: Submit counter-proposal
+      description: |
+        Negotiate mission terms (FR-023).
+        Transitions status: proposed → negotiating or negotiating → negotiating.
+      operationId: negotiateMission
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: missionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                durationMonths:
+                  type: integer
+                  minimum: 1
+                  maximum: 12
+                timeCommitmentHrsWeek:
+                  type: integer
+                  minimum: 1
+                  maximum: 40
+                creditValue:
+                  type: integer
+                  minimum: 1
+                comments:
+                  type: string
+                  description: Negotiation notes
+      responses:
+        '200':
+          description: Counter-proposal submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mission'
+        '400':
+          description: Invalid state transition or invalid terms
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /missions/{missionId}/approvals:
+    post:
+      tags: [Approvals]
+      summary: Submit approval decision
+      description: |
+        Approve or reject mission at current workflow step (FR-022).
+        Workflow: employee_consent → manager_approval → legal_check.
+        Legal check requires re-authentication (FR-042).
+      operationId: submitApproval
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: missionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type, status]
+              properties:
+                type:
+                  type: string
+                  enum: [employee_consent, manager_approval, legal_check]
+                  description: Approval type (must match current workflow step)
+                status:
+                  type: string
+                  enum: [approved, rejected]
+                comments:
+                  type: string
+                  nullable: true
+                reauthToken:
+                  type: string
+                  nullable: true
+                  description: Required for legal_check (FR-042)
+                ndaDocumentUrl:
+                  type: string
+                  nullable: true
+                  description: Required for legal_check (FR-024)
+      responses:
+        '200':
+          description: Approval submitted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  approval:
+                    $ref: '#/components/schemas/Approval'
+                  mission:
+                    $ref: '#/components/schemas/Mission'
+        '400':
+          description: Invalid workflow step or missing required fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                missingReauth:
+                  value:
+                    error: "Validation Failed"
+                    message: "Re-authentication required for legal approval (FR-042)"
+                    code: "REAUTH_REQUIRED"
+                invalidStep:
+                  value:
+                    error: "Invalid State"
+                    message: "Mission is not awaiting employee_consent"
+                    code: "INVALID_WORKFLOW_STEP"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /missions/{missionId}/cancel:
+    post:
+      tags: [Missions]
+      summary: Cancel mission
+      description: |
+        Cancel mission before employee consent (FR-025).
+        No penalties if cancelled before consent.
+      operationId: cancelMission
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: missionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+                  description: Cancellation reason
+      responses:
+        '200':
+          description: Mission cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mission'
+        '400':
+          description: Cannot cancel at this stage
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /missions/{missionId}/complete:
+    put:
+      tags: [Missions]
+      summary: Mark mission as complete
+      description: |
+        Complete active mission (FR-035).
+        Both companies must agree.
+      operationId: completeMission
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: missionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                feedback:
+                  type: string
+                  nullable: true
+                  description: Optional feedback on mission
+      responses:
+        '200':
+          description: Mission marked complete
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mission'
+        '400':
+          description: Mission not active or already completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /missions/{missionId}/time-logs:
+    get:
+      tags: [Time Tracking]
+      summary: Get time logs for mission
+      operationId: getTimeLogs
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: missionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Time logs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  logs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimeLog'
+                  totalHours:
+                    type: integer
+                    description: Sum of logged hours
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    post:
+      tags: [Time Tracking]
+      summary: Log time for active mission
+      description: Log hours worked (FR-032)
+      operationId: logTime
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: missionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [hoursWorked, workDate]
+              properties:
+                hoursWorked:
+                  type: integer
+                  minimum: 0
+                  maximum: 24
+                  description: Hours logged for this entry
+                workDate:
+                  type: string
+                  format: date
+                  description: Date of work
+                notes:
+                  type: string
+                  nullable: true
+                  description: Work notes (FR-034)
+      responses:
+        '201':
+          description: Time logged
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeLog'
+        '400':
+          description: Invalid hours or mission not active
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+
+  schemas:
+    CreateSkillNeedRequest:
+      type: object
+      required: [skillId, title, description, durationMonths, timeCommitmentHrsWeek]
+      properties:
+        skillId:
+          type: string
+          format: uuid
+          description: Required skill from taxonomy
+        title:
+          type: string
+          example: "Financial Regulatory Compliance Expert"
+        description:
+          type: string
+          example: "Need help navigating EU financial regulations for new product launch"
+        durationMonths:
+          type: integer
+          minimum: 1
+          maximum: 12
+          example: 3
+          description: Expected project duration (FR-018)
+        timeCommitmentHrsWeek:
+          type: integer
+          minimum: 1
+          maximum: 40
+          example: 8
+          description: Hours per week needed
+
+    SkillNeed:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        company:
+          $ref: '#/components/schemas/CompanyRef'
+        skill:
+          $ref: '#/components/schemas/SkillRef'
+        title:
+          type: string
+        description:
+          type: string
+        durationMonths:
+          type: integer
+        timeCommitmentHrsWeek:
+          type: integer
+        status:
+          type: string
+          enum: [open, matched, fulfilled, cancelled]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateMissionRequest:
+      type: object
+      required: [receivingCompanyId, talentUserId, durationMonths, timeCommitmentHrsWeek, creditValue]
+      properties:
+        receivingCompanyId:
+          type: string
+          format: uuid
+          description: Company receiving talent
+        talentUserId:
+          type: string
+          description: User ID or anonymized ID from search
+        skillNeedId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Related skill need (if applicable)
+        durationMonths:
+          type: integer
+          minimum: 1
+          maximum: 12
+        timeCommitmentHrsWeek:
+          type: integer
+          minimum: 1
+          maximum: 40
+        creditValue:
+          type: integer
+          minimum: 1
+          description: Credit value (salary-based or negotiated FR-028/FR-029)
+
+    Mission:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        proposingCompany:
+          $ref: '#/components/schemas/CompanyRef'
+        receivingCompany:
+          $ref: '#/components/schemas/CompanyRef'
+        talentUser:
+          $ref: '#/components/schemas/UserRef'
+        skillNeed:
+          $ref: '#/components/schemas/SkillNeedRef'
+        durationMonths:
+          type: integer
+        timeCommitmentHrsWeek:
+          type: integer
+        creditValue:
+          type: integer
+        status:
+          type: string
+          enum: [proposed, negotiating, awaiting_consent, awaiting_manager, awaiting_legal, approved, active, completed, cancelled]
+          description: Mission status (see state machine in data-model.md)
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    MissionDetailed:
+      allOf:
+        - $ref: '#/components/schemas/Mission'
+        - type: object
+          properties:
+            approvals:
+              type: array
+              items:
+                $ref: '#/components/schemas/Approval'
+              description: Approval workflow records (FR-022)
+            nda:
+              $ref: '#/components/schemas/NDA'
+              nullable: true
+              description: Legal agreement (FR-024)
+            timeLogs:
+              type: array
+              items:
+                $ref: '#/components/schemas/TimeLog'
+
+    Approval:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        missionId:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum: [employee_consent, manager_approval, legal_check]
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+        approver:
+          $ref: '#/components/schemas/UserRef'
+          nullable: true
+        comments:
+          type: string
+          nullable: true
+        approvedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    NDA:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        missionId:
+          type: string
+          format: uuid
+        proposingCompanySigner:
+          $ref: '#/components/schemas/UserRef'
+        receivingCompanySigner:
+          $ref: '#/components/schemas/UserRef'
+        documentUrl:
+          type: string
+          description: URL to signed NDA document
+        signedAt:
+          type: string
+          format: date-time
+
+    TimeLog:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        missionId:
+          type: string
+          format: uuid
+        user:
+          $ref: '#/components/schemas/UserRef'
+        hoursWorked:
+          type: integer
+        workDate:
+          type: string
+          format: date
+        notes:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    CompanyRef:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+
+    SkillRef:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        category:
+          type: string
+
+    SkillNeedRef:
+      type: object
+      nullable: true
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+
+    UserRef:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        totalPages:
+          type: integer
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: string
+
+  responses:
+    BadRequest:
+      description: Invalid request data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Forbidden:
+      description: Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    RateLimitExceeded:
+      description: Rate limit exceeded (FR-045)
+      headers:
+        X-RateLimit-Limit:
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
