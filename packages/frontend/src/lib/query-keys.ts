@@ -39,6 +39,7 @@ export const queryKeys = {
   },
   companies: {
     all: ['companies'] as const,
+    list: () => [...queryKeys.companies.all, 'list'] as const,
     current: () => [...queryKeys.companies.all, 'current'] as const,
     detail: (id: string) => [...queryKeys.companies.all, 'detail', id] as const,
   },

@@ -8,6 +8,7 @@ export interface User {
   name: string;
   role: 'talent' | 'talent_manager';
   languagePref?: 'en' | 'fr';
+  companyId?: string;
 }
 
 export interface LoginCredentials {
