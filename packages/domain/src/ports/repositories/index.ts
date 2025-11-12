@@ -6,12 +6,4 @@
  * Repositories are implemented by adapters in packages/database
  */
 
-// Export repositories as they are created
-// - UserRepository
-// - CompanyRepository
-// - SkillRepository
-// - MissionRepository
-// - CreditTransactionRepository
-// - etc.
-
-export {};
+export * from './CompanyRepository';

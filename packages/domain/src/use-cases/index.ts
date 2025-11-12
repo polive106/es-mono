@@ -12,5 +12,4 @@
  */
 
 // Export use cases as they are created
-
-export {};
+export * from './companies';

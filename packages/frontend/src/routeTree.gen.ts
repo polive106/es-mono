@@ -11,6 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CompaniesIndexRouteImport } from './routes/companies/index'
+import { Route as CompaniesProfileRouteImport } from './routes/companies/profile'
+import { Route as CompaniesOnboardRouteImport } from './routes/companies/onboard'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 
@@ -22,6 +25,21 @@ const DashboardRoute = DashboardRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompaniesIndexRoute = CompaniesIndexRouteImport.update({
+  id: '/companies/',
+  path: '/companies/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompaniesProfileRoute = CompaniesProfileRouteImport.update({
+  id: '/companies/profile',
+  path: '/companies/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompaniesOnboardRoute = CompaniesOnboardRouteImport.update({
+  id: '/companies/onboard',
+  path: '/companies/onboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
@@ -40,12 +58,18 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/companies/onboard': typeof CompaniesOnboardRoute
+  '/companies/profile': typeof CompaniesProfileRoute
+  '/companies': typeof CompaniesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/companies/onboard': typeof CompaniesOnboardRoute
+  '/companies/profile': typeof CompaniesProfileRoute
+  '/companies': typeof CompaniesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +77,38 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/companies/onboard': typeof CompaniesOnboardRoute
+  '/companies/profile': typeof CompaniesProfileRoute
+  '/companies/': typeof CompaniesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/auth/login' | '/auth/register'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/auth/login'
+    | '/auth/register'
+    | '/companies/onboard'
+    | '/companies/profile'
+    | '/companies'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/auth/login' | '/auth/register'
-  id: '__root__' | '/' | '/dashboard' | '/auth/login' | '/auth/register'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/auth/login'
+    | '/auth/register'
+    | '/companies/onboard'
+    | '/companies/profile'
+    | '/companies'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard'
+    | '/auth/login'
+    | '/auth/register'
+    | '/companies/onboard'
+    | '/companies/profile'
+    | '/companies/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +116,9 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
+  CompaniesOnboardRoute: typeof CompaniesOnboardRoute
+  CompaniesProfileRoute: typeof CompaniesProfileRoute
+  CompaniesIndexRoute: typeof CompaniesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -83,6 +135,27 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/companies/': {
+      id: '/companies/'
+      path: '/companies'
+      fullPath: '/companies'
+      preLoaderRoute: typeof CompaniesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/companies/profile': {
+      id: '/companies/profile'
+      path: '/companies/profile'
+      fullPath: '/companies/profile'
+      preLoaderRoute: typeof CompaniesProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/companies/onboard': {
+      id: '/companies/onboard'
+      path: '/companies/onboard'
+      fullPath: '/companies/onboard'
+      preLoaderRoute: typeof CompaniesOnboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/register': {
@@ -107,6 +180,9 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
+  CompaniesOnboardRoute: CompaniesOnboardRoute,
+  CompaniesProfileRoute: CompaniesProfileRoute,
+  CompaniesIndexRoute: CompaniesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

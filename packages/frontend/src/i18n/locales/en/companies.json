@@ -1,0 +1,71 @@
+{
+  "onboarding": {
+    "title": "Complete Your Company Profile",
+    "description": "Let's set up your company profile to get started",
+    "companyName": "Company Name",
+    "industry": "Industry",
+    "size": "Company Size",
+    "location": "Location",
+    "submit": "Complete Setup",
+    "loading": "Setting up...",
+    "success": "Company profile created successfully!",
+    "error": {
+      "failed": "Failed to create company profile. Please try again.",
+      "networkError": "Network error. Please try again."
+    }
+  },
+  "profile": {
+    "title": "Company Profile",
+    "edit": "Edit Profile",
+    "save": "Save Changes",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "updating": "Updating...",
+    "name": "Company Name",
+    "industry": "Industry",
+    "size": "Company Size",
+    "location": "Location",
+    "inviteCode": "Invite Code",
+    "creditBalance": "Credit Balance",
+    "createdAt": "Member Since",
+    "success": "Profile updated successfully!",
+    "error": {
+      "loadFailed": "Failed to load company profile.",
+      "updateFailed": "Failed to update profile. Please try again."
+    }
+  },
+  "list": {
+    "title": "Network Companies",
+    "description": "Browse companies in your network",
+    "loading": "Loading companies...",
+    "empty": "No companies found in your network yet.",
+    "viewProfile": "View Profile",
+    "error": {
+      "loadFailed": "Failed to load companies. Please try again."
+    }
+  },
+  "sizes": {
+    "1-10": "1-10 employees",
+    "11-50": "11-50 employees",
+    "51-200": "51-200 employees",
+    "201-500": "201-500 employees",
+    "501+": "501+ employees"
+  },
+  "locations": {
+    "FR": "France",
+    "UK": "United Kingdom",
+    "DE": "Germany",
+    "ES": "Spain",
+    "IT": "Italy",
+    "NL": "Netherlands",
+    "BE": "Belgium",
+    "Other": "Other"
+  },
+  "errors": {
+    "nameRequired": "Company name is required",
+    "industryRequired": "Industry is required",
+    "sizeRequired": "Company size is required",
+    "locationRequired": "Location is required",
+    "invalidIndustry": "Please enter a valid industry"
+  }
+}

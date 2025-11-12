@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@es-mono/database": "workspace:*",
+    "@es-mono/domain": "workspace:*",
     "@es-mono/shared": "workspace:*",
     "@hono/node-server": "^1.19.6",
     "@hono/zod-validator": "^0.7.4",

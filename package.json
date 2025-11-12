@@ -30,7 +30,8 @@
     "db:seed": "pnpm --filter @es-mono/database seed",
     "db:studio": "pnpm --filter @es-mono/database studio",
     "clean": "turbo run clean && rm -rf node_modules",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",
@@ -42,6 +43,8 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "hono": "^4.10.4",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.6",
     "prettier": "^3.6.2",
     "turbo": "^2.6.0",
     "typescript": "^5.9.3"

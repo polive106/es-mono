@@ -1,0 +1,71 @@
+{
+  "onboarding": {
+    "title": "Complétez le profil de votre entreprise",
+    "description": "Configurons le profil de votre entreprise pour commencer",
+    "companyName": "Nom de l'entreprise",
+    "industry": "Secteur d'activité",
+    "size": "Taille de l'entreprise",
+    "location": "Localisation",
+    "submit": "Finaliser la configuration",
+    "loading": "Configuration en cours...",
+    "success": "Profil d'entreprise créé avec succès !",
+    "error": {
+      "failed": "Échec de la création du profil d'entreprise. Veuillez réessayer.",
+      "networkError": "Erreur réseau. Veuillez réessayer."
+    }
+  },
+  "profile": {
+    "title": "Profil de l'entreprise",
+    "edit": "Modifier le profil",
+    "save": "Enregistrer les modifications",
+    "cancel": "Annuler",
+    "loading": "Chargement...",
+    "updating": "Mise à jour...",
+    "name": "Nom de l'entreprise",
+    "industry": "Secteur d'activité",
+    "size": "Taille de l'entreprise",
+    "location": "Localisation",
+    "inviteCode": "Code d'invitation",
+    "creditBalance": "Solde de crédits",
+    "createdAt": "Membre depuis",
+    "success": "Profil mis à jour avec succès !",
+    "error": {
+      "loadFailed": "Échec du chargement du profil de l'entreprise.",
+      "updateFailed": "Échec de la mise à jour du profil. Veuillez réessayer."
+    }
+  },
+  "list": {
+    "title": "Entreprises du réseau",
+    "description": "Parcourez les entreprises de votre réseau",
+    "loading": "Chargement des entreprises...",
+    "empty": "Aucune entreprise trouvée dans votre réseau pour le moment.",
+    "viewProfile": "Voir le profil",
+    "error": {
+      "loadFailed": "Échec du chargement des entreprises. Veuillez réessayer."
+    }
+  },
+  "sizes": {
+    "1-10": "1-10 employés",
+    "11-50": "11-50 employés",
+    "51-200": "51-200 employés",
+    "201-500": "201-500 employés",
+    "501+": "501+ employés"
+  },
+  "locations": {
+    "FR": "France",
+    "UK": "Royaume-Uni",
+    "DE": "Allemagne",
+    "ES": "Espagne",
+    "IT": "Italie",
+    "NL": "Pays-Bas",
+    "BE": "Belgique",
+    "Other": "Autre"
+  },
+  "errors": {
+    "nameRequired": "Le nom de l'entreprise est requis",
+    "industryRequired": "Le secteur d'activité est requis",
+    "sizeRequired": "La taille de l'entreprise est requise",
+    "locationRequired": "La localisation est requise",
+    "invalidIndustry": "Veuillez saisir un secteur d'activité valide"
+  }
+}

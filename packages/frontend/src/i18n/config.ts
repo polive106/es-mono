@@ -4,18 +4,22 @@ import { initReactI18next } from 'react-i18next';
 // Import translation files
 import commonEN from './locales/en/common.json';
 import authEN from './locales/en/auth.json';
+import companiesEN from './locales/en/companies.json';
 import commonFR from './locales/fr/common.json';
 import authFR from './locales/fr/auth.json';
+import companiesFR from './locales/fr/companies.json';
 
 // Define resources type for type safety
 export const resources = {
   en: {
     common: commonEN,
     auth: authEN,
+    companies: companiesEN,
   },
   fr: {
     common: commonFR,
     auth: authFR,
+    companies: companiesFR,
   },
 } as const;
 
@@ -27,7 +31,7 @@ i18n
     lng: 'en', // default language
     fallbackLng: 'en',
     defaultNS: 'common',
-    ns: ['common', 'auth'],
+    ns: ['common', 'auth', 'companies'],
     interpolation: {
       escapeValue: false, // react already safes from xss
     },
