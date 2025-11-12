@@ -132,7 +132,9 @@ test.describe('Company Onboarding (EN)', () => {
     await page.goto('/companies/profile');
 
     // Verify company details are displayed
-    await expect(page.getByTestId('company-name')).toContainText(`Test Onboarding Company ${timestamp}`);
+    await expect(page.getByTestId('company-name')).toContainText(
+      `Test Onboarding Company ${timestamp}`
+    );
     await expect(page.getByTestId('company-industry')).toContainText('Healthcare');
     await expect(page.getByTestId('company-size')).toContainText('51-200');
     await expect(page.getByTestId('company-location')).toContainText('UK');
