@@ -170,11 +170,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-artifacts
-          path: .
+      - name: Build packages
+        run: pnpm build
 
       - name: Install Playwright browsers
         run: cd tests/e2e && pnpm exec playwright install --with-deps chromium
