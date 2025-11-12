@@ -12,6 +12,7 @@ import {
 import { AuthError } from './auth/service';
 import { APIError } from './middleware/errorHandler';
 import authRoutes from './routes/auth';
+import companiesRoutes from './routes/companies';
 
 /**
  * Create and configure the main Hono application
@@ -47,6 +48,7 @@ export function createApp() {
 
   // API routes
   app.route('/auth', authRoutes);
+  app.route('/companies', companiesRoutes);
 
   // Error handler - must use onError, not middleware
   app.onError((error, c) => {
