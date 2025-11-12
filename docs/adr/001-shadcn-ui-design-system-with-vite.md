@@ -7,6 +7,7 @@
 **Deciders**: Development Team
 
 **Related ADRs**:
+
 - Related to: [ADR-000](000-use-architecture-decision-records.md)
 
 ---
@@ -23,6 +24,7 @@ The SkillSwap platform requires a UI component library for the frontend applicat
 - Accessibility compliance (WCAG 2.1 AA minimum)
 
 The design-system package was created with `tsup` as the build tool, but we need to decide:
+
 1. Which component library to use
 2. Whether to keep `tsup` or switch to `Vite` for consistency
 
@@ -44,6 +46,7 @@ The design-system package was created with `tsup` as the build tool, but we need
 **Description**: Use shadcn/ui component library (built on Radix UI + Tailwind CSS) with Vite as the build tool for the design-system package.
 
 **Pros**:
+
 - Copy components into codebase (full ownership, no version lock-in)
 - Built on Radix UI (excellent accessibility)
 - Tailwind CSS integration (matches project CSS framework)
@@ -55,6 +58,7 @@ The design-system package was created with `tsup` as the build tool, but we need
 - Easy to customize (components are in your codebase)
 
 **Cons**:
+
 - Vite library mode requires slightly more config than tsup (~10 lines)
 - Need `vite-plugin-dts` for declaration files
 - Components copied in (not npm installed), requires updates manually
@@ -70,11 +74,13 @@ The design-system package was created with `tsup` as the build tool, but we need
 **Description**: Keep existing tsup setup, add shadcn/ui components.
 
 **Pros**:
+
 - tsup is purpose-built for library bundling (simpler config)
 - Faster builds (esbuild-based)
 - Zero-config dual format (CJS + ESM) generation
 
 **Cons**:
+
 - Different tool from frontend (team learns two bundlers)
 - CSS handling more complex with tsup
 - Tailwind CSS integration not as seamless
@@ -92,6 +98,7 @@ The design-system package was created with `tsup` as the build tool, but we need
 **Description**: Use Material UI component library with Vite.
 
 **Pros**:
+
 - Comprehensive component set
 - Well-documented
 - Large community
@@ -99,6 +106,7 @@ The design-system package was created with `tsup` as the build tool, but we need
 - Built-in theming
 
 **Cons**:
+
 - npm installed (version lock-in, harder to customize)
 - Material Design aesthetic (may not fit brand)
 - Larger bundle size (~300KB minified)
@@ -116,11 +124,13 @@ The design-system package was created with `tsup` as the build tool, but we need
 **Description**: Use Ant Design component library with Vite.
 
 **Pros**:
+
 - Comprehensive enterprise components
 - Good TypeScript support
 - i18n built-in
 
 **Cons**:
+
 - npm installed (less customizable)
 - Opinionated design language
 - Larger bundle size
@@ -137,11 +147,13 @@ The design-system package was created with `tsup` as the build tool, but we need
 **Description**: Build all components from scratch using Tailwind CSS.
 
 **Pros**:
+
 - Full control over every detail
 - No external dependencies
 - Exact implementation needed
 
 **Cons**:
+
 - High effort (weeks of work)
 - Accessibility requires significant expertise
 - Reinventing the wheel (testing, edge cases)
@@ -188,16 +200,19 @@ We chose shadcn/ui with Vite because:
 5. **Developer Experience**: Active community, great docs, regular updates
 
 **Trade-offs Accepted**:
+
 - Slightly more Vite config than tsup (10 lines vs 1 line) - acceptable for consistency
 - Manual component updates vs npm package - acceptable for customization benefits
 
 ## Implementation Notes
 
 **Affected Packages**:
+
 - `packages/design-system`: Complete setup with Vite, Tailwind, shadcn CLI integration
 - `packages/frontend`: Import design-system styles, configure Tailwind to scan design-system sources
 
 **Migration Path**:
+
 1. Replace tsup with Vite in `design-system/package.json`
 2. Create `vite.config.ts` for library mode with `vite-plugin-dts`
 3. Install Tailwind CSS + dependencies
@@ -262,6 +277,7 @@ export default defineConfig({
 ```
 
 **Adding Components**:
+
 ```bash
 cd packages/design-system
 npx shadcn@latest add button
@@ -271,6 +287,7 @@ npx shadcn@latest add card
 ```
 
 **Testing Requirements**:
+
 - [x] Vite builds design-system without errors
 - [x] Frontend can import and use components
 - [x] CSS is properly bundled and imported
@@ -280,6 +297,7 @@ npx shadcn@latest add card
 - [ ] Visual regression tests (future: Chromatic/Percy)
 
 **Documentation Updates**:
+
 - [x] This ADR
 - [ ] Update `docs/architecture.md` with design-system details
 - [ ] Update quickstart.md with component usage examples
@@ -287,6 +305,7 @@ npx shadcn@latest add card
 ## Consequences
 
 ### Positive Consequences
+
 - **Unified Build Tool**: Entire team uses Vite, reducing cognitive load
 - **Component Ownership**: Can customize any component without forking or waiting for upstream
 - **Accessibility**: Get Radix UI's accessibility for free
@@ -296,17 +315,20 @@ npx shadcn@latest add card
 - **Theming**: CSS variables make light/dark mode trivial
 
 ### Negative Consequences
+
 - **Manual Updates**: Component updates require running shadcn CLI, not `npm update`
 - **Component Sprawl**: If not careful, can accumulate many component variations
 - **Initial Setup**: ~10 config lines more than tsup (one-time cost)
 
 ### Neutral Consequences
+
 - **Build Time**: Vite slightly slower than tsup for libraries (~2s vs ~0.5s), negligible for dev experience
 - **Bundle Size**: Similar to other Radix-based solutions
 
 ## Review Schedule
 
 **Trigger Events**:
+
 - When we need to add Storybook (Vite choice will simplify this)
 - If build times become problematic (unlikely for library package)
 - If shadcn/ui stops being actively maintained
@@ -328,7 +350,7 @@ npx shadcn@latest add card
 
 ## Change Log
 
-| Date | Change | Author |
-|------|--------|--------|
-| 2025-11-09 | Created initial ADR | Claude Code |
+| Date       | Change                 | Author      |
+| ---------- | ---------------------- | ----------- |
+| 2025-11-09 | Created initial ADR    | Claude Code |
 | 2025-11-09 | Status set to Accepted | Claude Code |

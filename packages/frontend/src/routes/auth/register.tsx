@@ -205,7 +205,12 @@ function Register() {
               )}
             </form.Field>
 
-            <Button type="submit" data-testid="register-submit" disabled={isPending} className="w-full">
+            <Button
+              type="submit"
+              data-testid="register-submit"
+              disabled={isPending}
+              className="w-full"
+            >
               {isPending ? t('register.loading') : t('register.submit')}
             </Button>
           </form>

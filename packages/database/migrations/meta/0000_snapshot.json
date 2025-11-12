@@ -75,23 +75,17 @@
       "indexes": {
         "companies_name_unique": {
           "name": "companies_name_unique",
-          "columns": [
-            "name"
-          ],
+          "columns": ["name"],
           "isUnique": true
         },
         "companies_invite_code_unique": {
           "name": "companies_invite_code_unique",
-          "columns": [
-            "invite_code"
-          ],
+          "columns": ["invite_code"],
           "isUnique": true
         },
         "idx_companies_invite_code": {
           "name": "idx_companies_invite_code",
-          "columns": [
-            "invite_code"
-          ],
+          "columns": ["invite_code"],
           "isUnique": false
         }
       },
@@ -149,9 +143,7 @@
       "indexes": {
         "permissions_name_unique": {
           "name": "permissions_name_unique",
-          "columns": [
-            "name"
-          ],
+          "columns": ["name"],
           "isUnique": true
         }
       },
@@ -184,12 +176,8 @@
           "name": "role_permissions_role_id_roles_id_fk",
           "tableFrom": "role_permissions",
           "tableTo": "roles",
-          "columnsFrom": [
-            "role_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["role_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -197,22 +185,15 @@
           "name": "role_permissions_permission_id_permissions_id_fk",
           "tableFrom": "role_permissions",
           "tableTo": "permissions",
-          "columnsFrom": [
-            "permission_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["permission_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "role_permissions_role_id_permission_id_pk": {
-          "columns": [
-            "role_id",
-            "permission_id"
-          ],
+          "columns": ["role_id", "permission_id"],
           "name": "role_permissions_role_id_permission_id_pk"
         }
       },
@@ -272,12 +253,8 @@
           "name": "roles_company_id_companies_id_fk",
           "tableFrom": "roles",
           "tableTo": "companies",
-          "columnsFrom": [
-            "company_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["company_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -328,25 +305,17 @@
       "indexes": {
         "idx_user_roles_user_id": {
           "name": "idx_user_roles_user_id",
-          "columns": [
-            "user_id"
-          ],
+          "columns": ["user_id"],
           "isUnique": false
         },
         "idx_user_roles_role_id": {
           "name": "idx_user_roles_role_id",
-          "columns": [
-            "role_id"
-          ],
+          "columns": ["role_id"],
           "isUnique": false
         },
         "unique_user_role_company": {
           "name": "unique_user_role_company",
-          "columns": [
-            "user_id",
-            "role_id",
-            "company_id"
-          ],
+          "columns": ["user_id", "role_id", "company_id"],
           "isUnique": true
         }
       },
@@ -355,12 +324,8 @@
           "name": "user_roles_user_id_users_id_fk",
           "tableFrom": "user_roles",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -368,12 +333,8 @@
           "name": "user_roles_role_id_roles_id_fk",
           "tableFrom": "user_roles",
           "tableTo": "roles",
-          "columnsFrom": [
-            "role_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["role_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -381,12 +342,8 @@
           "name": "user_roles_company_id_companies_id_fk",
           "tableFrom": "user_roles",
           "tableTo": "companies",
-          "columnsFrom": [
-            "company_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["company_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -481,23 +438,17 @@
       "indexes": {
         "users_email_unique": {
           "name": "users_email_unique",
-          "columns": [
-            "email"
-          ],
+          "columns": ["email"],
           "isUnique": true
         },
         "idx_users_company_id": {
           "name": "idx_users_company_id",
-          "columns": [
-            "company_id"
-          ],
+          "columns": ["company_id"],
           "isUnique": false
         },
         "idx_users_email": {
           "name": "idx_users_email",
-          "columns": [
-            "email"
-          ],
+          "columns": ["email"],
           "isUnique": false
         }
       },
@@ -506,12 +457,8 @@
           "name": "users_company_id_companies_id_fk",
           "tableFrom": "users",
           "tableTo": "companies",
-          "columnsFrom": [
-            "company_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["company_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -555,9 +502,7 @@
       "indexes": {
         "idx_sessions_user_id": {
           "name": "idx_sessions_user_id",
-          "columns": [
-            "user_id"
-          ],
+          "columns": ["user_id"],
           "isUnique": false
         }
       },
@@ -566,12 +511,8 @@
           "name": "sessions_user_id_users_id_fk",
           "tableFrom": "sessions",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -630,16 +571,12 @@
       "indexes": {
         "idx_skills_name": {
           "name": "idx_skills_name",
-          "columns": [
-            "name"
-          ],
+          "columns": ["name"],
           "isUnique": false
         },
         "idx_skills_category": {
           "name": "idx_skills_category",
-          "columns": [
-            "category"
-          ],
+          "columns": ["category"],
           "isUnique": false
         }
       },
@@ -714,16 +651,12 @@
       "indexes": {
         "talent_availability_user_id_unique": {
           "name": "talent_availability_user_id_unique",
-          "columns": [
-            "user_id"
-          ],
+          "columns": ["user_id"],
           "isUnique": true
         },
         "idx_talent_availability_pct": {
           "name": "idx_talent_availability_pct",
-          "columns": [
-            "availability_pct"
-          ],
+          "columns": ["availability_pct"],
           "isUnique": false
         }
       },
@@ -732,12 +665,8 @@
           "name": "talent_availability_user_id_users_id_fk",
           "tableFrom": "talent_availability",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -795,24 +724,17 @@
       "indexes": {
         "idx_user_skills_user_id": {
           "name": "idx_user_skills_user_id",
-          "columns": [
-            "user_id"
-          ],
+          "columns": ["user_id"],
           "isUnique": false
         },
         "idx_user_skills_skill_id": {
           "name": "idx_user_skills_skill_id",
-          "columns": [
-            "skill_id"
-          ],
+          "columns": ["skill_id"],
           "isUnique": false
         },
         "unique_user_skill": {
           "name": "unique_user_skill",
-          "columns": [
-            "user_id",
-            "skill_id"
-          ],
+          "columns": ["user_id", "skill_id"],
           "isUnique": true
         }
       },
@@ -821,12 +743,8 @@
           "name": "user_skills_user_id_users_id_fk",
           "tableFrom": "user_skills",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -834,12 +752,8 @@
           "name": "user_skills_skill_id_skills_id_fk",
           "tableFrom": "user_skills",
           "tableTo": "skills",
-          "columnsFrom": [
-            "skill_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["skill_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -912,17 +826,12 @@
       "indexes": {
         "idx_approvals_mission_id": {
           "name": "idx_approvals_mission_id",
-          "columns": [
-            "mission_id"
-          ],
+          "columns": ["mission_id"],
           "isUnique": false
         },
         "unique_mission_type": {
           "name": "unique_mission_type",
-          "columns": [
-            "mission_id",
-            "type"
-          ],
+          "columns": ["mission_id", "type"],
           "isUnique": true
         }
       },
@@ -931,12 +840,8 @@
           "name": "approvals_mission_id_missions_id_fk",
           "tableFrom": "approvals",
           "tableTo": "missions",
-          "columnsFrom": [
-            "mission_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["mission_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -944,12 +849,8 @@
           "name": "approvals_approver_user_id_users_id_fk",
           "tableFrom": "approvals",
           "tableTo": "users",
-          "columnsFrom": [
-            "approver_user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["approver_user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1043,30 +944,22 @@
       "indexes": {
         "idx_missions_proposing_company": {
           "name": "idx_missions_proposing_company",
-          "columns": [
-            "proposing_company_id"
-          ],
+          "columns": ["proposing_company_id"],
           "isUnique": false
         },
         "idx_missions_receiving_company": {
           "name": "idx_missions_receiving_company",
-          "columns": [
-            "receiving_company_id"
-          ],
+          "columns": ["receiving_company_id"],
           "isUnique": false
         },
         "idx_missions_talent_user": {
           "name": "idx_missions_talent_user",
-          "columns": [
-            "talent_user_id"
-          ],
+          "columns": ["talent_user_id"],
           "isUnique": false
         },
         "idx_missions_status": {
           "name": "idx_missions_status",
-          "columns": [
-            "status"
-          ],
+          "columns": ["status"],
           "isUnique": false
         }
       },
@@ -1075,12 +968,8 @@
           "name": "missions_proposing_company_id_companies_id_fk",
           "tableFrom": "missions",
           "tableTo": "companies",
-          "columnsFrom": [
-            "proposing_company_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["proposing_company_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1088,12 +977,8 @@
           "name": "missions_receiving_company_id_companies_id_fk",
           "tableFrom": "missions",
           "tableTo": "companies",
-          "columnsFrom": [
-            "receiving_company_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["receiving_company_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1101,12 +986,8 @@
           "name": "missions_talent_user_id_users_id_fk",
           "tableFrom": "missions",
           "tableTo": "users",
-          "columnsFrom": [
-            "talent_user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["talent_user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1114,12 +995,8 @@
           "name": "missions_skill_need_id_skill_needs_id_fk",
           "tableFrom": "missions",
           "tableTo": "skill_needs",
-          "columnsFrom": [
-            "skill_need_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["skill_need_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1184,9 +1061,7 @@
       "indexes": {
         "ndas_mission_id_unique": {
           "name": "ndas_mission_id_unique",
-          "columns": [
-            "mission_id"
-          ],
+          "columns": ["mission_id"],
           "isUnique": true
         }
       },
@@ -1195,12 +1070,8 @@
           "name": "ndas_mission_id_missions_id_fk",
           "tableFrom": "ndas",
           "tableTo": "missions",
-          "columnsFrom": [
-            "mission_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["mission_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1208,12 +1079,8 @@
           "name": "ndas_proposing_company_signer_id_users_id_fk",
           "tableFrom": "ndas",
           "tableTo": "users",
-          "columnsFrom": [
-            "proposing_company_signer_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["proposing_company_signer_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1221,12 +1088,8 @@
           "name": "ndas_receiving_company_signer_id_users_id_fk",
           "tableFrom": "ndas",
           "tableTo": "users",
-          "columnsFrom": [
-            "receiving_company_signer_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["receiving_company_signer_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1313,23 +1176,17 @@
       "indexes": {
         "idx_skill_needs_company_id": {
           "name": "idx_skill_needs_company_id",
-          "columns": [
-            "company_id"
-          ],
+          "columns": ["company_id"],
           "isUnique": false
         },
         "idx_skill_needs_skill_id": {
           "name": "idx_skill_needs_skill_id",
-          "columns": [
-            "skill_id"
-          ],
+          "columns": ["skill_id"],
           "isUnique": false
         },
         "idx_skill_needs_status": {
           "name": "idx_skill_needs_status",
-          "columns": [
-            "status"
-          ],
+          "columns": ["status"],
           "isUnique": false
         }
       },
@@ -1338,12 +1195,8 @@
           "name": "skill_needs_company_id_companies_id_fk",
           "tableFrom": "skill_needs",
           "tableTo": "companies",
-          "columnsFrom": [
-            "company_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["company_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1351,12 +1204,8 @@
           "name": "skill_needs_skill_id_skills_id_fk",
           "tableFrom": "skill_needs",
           "tableTo": "skills",
-          "columnsFrom": [
-            "skill_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["skill_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1421,16 +1270,12 @@
       "indexes": {
         "idx_time_logs_mission_id": {
           "name": "idx_time_logs_mission_id",
-          "columns": [
-            "mission_id"
-          ],
+          "columns": ["mission_id"],
           "isUnique": false
         },
         "idx_time_logs_user_id": {
           "name": "idx_time_logs_user_id",
-          "columns": [
-            "user_id"
-          ],
+          "columns": ["user_id"],
           "isUnique": false
         }
       },
@@ -1439,12 +1284,8 @@
           "name": "time_logs_mission_id_missions_id_fk",
           "tableFrom": "time_logs",
           "tableTo": "missions",
-          "columnsFrom": [
-            "mission_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["mission_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1452,12 +1293,8 @@
           "name": "time_logs_user_id_users_id_fk",
           "tableFrom": "time_logs",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1529,23 +1366,17 @@
       "indexes": {
         "idx_credit_transactions_company_id": {
           "name": "idx_credit_transactions_company_id",
-          "columns": [
-            "company_id"
-          ],
+          "columns": ["company_id"],
           "isUnique": false
         },
         "idx_credit_transactions_type": {
           "name": "idx_credit_transactions_type",
-          "columns": [
-            "type"
-          ],
+          "columns": ["type"],
           "isUnique": false
         },
         "idx_credit_transactions_mission_id": {
           "name": "idx_credit_transactions_mission_id",
-          "columns": [
-            "mission_id"
-          ],
+          "columns": ["mission_id"],
           "isUnique": false
         }
       },
@@ -1554,12 +1385,8 @@
           "name": "credit_transactions_company_id_companies_id_fk",
           "tableFrom": "credit_transactions",
           "tableTo": "companies",
-          "columnsFrom": [
-            "company_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["company_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1567,12 +1394,8 @@
           "name": "credit_transactions_mission_id_missions_id_fk",
           "tableFrom": "credit_transactions",
           "tableTo": "missions",
-          "columnsFrom": [
-            "mission_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["mission_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1580,12 +1403,8 @@
           "name": "credit_transactions_initiated_by_user_id_users_id_fk",
           "tableFrom": "credit_transactions",
           "tableTo": "users",
-          "columnsFrom": [
-            "initiated_by_user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["initiated_by_user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }

@@ -20,7 +20,8 @@ vi.mock('@es-mono/database', async () => {
 
 // Mock HIBP check to avoid external API calls
 vi.mock('../../src/utils/hibp', async () => {
-  const actual = await vi.importActual<typeof import('../../src/utils/hibp')>('../../src/utils/hibp');
+  const actual =
+    await vi.importActual<typeof import('../../src/utils/hibp')>('../../src/utils/hibp');
   return {
     ...actual,
     checkPasswordBreach: vi.fn().mockResolvedValue(0), // Not breached by default

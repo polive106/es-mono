@@ -105,8 +105,16 @@ async function seed() {
     console.log('  → Creating skill taxonomy...');
     await db.insert(skills).values([
       // Engineering
-      { name: 'JavaScript', category: 'Engineering', description: 'JavaScript programming language' },
-      { name: 'TypeScript', category: 'Engineering', description: 'TypeScript programming language' },
+      {
+        name: 'JavaScript',
+        category: 'Engineering',
+        description: 'JavaScript programming language',
+      },
+      {
+        name: 'TypeScript',
+        category: 'Engineering',
+        description: 'TypeScript programming language',
+      },
       { name: 'React', category: 'Engineering', description: 'React framework' },
       { name: 'Node.js', category: 'Engineering', description: 'Node.js runtime' },
       { name: 'Python', category: 'Engineering', description: 'Python programming language' },
@@ -120,7 +128,11 @@ async function seed() {
       { name: 'Adobe Creative Suite', category: 'Design', description: 'Adobe design tools' },
 
       // Business Analysis
-      { name: 'Business Analysis', category: 'Business Analysis', description: 'Business analysis skills' },
+      {
+        name: 'Business Analysis',
+        category: 'Business Analysis',
+        description: 'Business analysis skills',
+      },
       {
         name: 'Regulatory Compliance',
         category: 'Business Analysis',
@@ -129,9 +141,17 @@ async function seed() {
       { name: 'Data Analysis', category: 'Business Analysis', description: 'Data analysis skills' },
 
       // Marketing
-      { name: 'Content Marketing', category: 'Marketing', description: 'Content marketing expertise' },
+      {
+        name: 'Content Marketing',
+        category: 'Marketing',
+        description: 'Content marketing expertise',
+      },
       { name: 'SEO', category: 'Marketing', description: 'Search engine optimization' },
-      { name: 'Social Media Marketing', category: 'Marketing', description: 'Social media marketing' },
+      {
+        name: 'Social Media Marketing',
+        category: 'Marketing',
+        description: 'Social media marketing',
+      },
 
       // Finance
       { name: 'Financial Modeling', category: 'Finance', description: 'Financial modeling skills' },

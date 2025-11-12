@@ -128,7 +128,12 @@ function Login() {
               )}
             </form.Field>
 
-            <Button type="submit" data-testid="login-submit" disabled={isPending} className="w-full">
+            <Button
+              type="submit"
+              data-testid="login-submit"
+              disabled={isPending}
+              className="w-full"
+            >
               {isPending ? t('login.loading') : t('login.submit')}
             </Button>
           </form>

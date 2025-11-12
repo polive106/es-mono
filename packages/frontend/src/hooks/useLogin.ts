@@ -28,8 +28,7 @@ export function useLogin() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (credentials: LoginCredentials) =>
-      loginUseCase.execute(credentials),
+    mutationFn: (credentials: LoginCredentials) => loginUseCase.execute(credentials),
     onSuccess: (user) => {
       // Update user cache after successful login
       queryClient.setQueryData(queryKeys.auth.user(), user);

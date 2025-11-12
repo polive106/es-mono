@@ -7,7 +7,9 @@ import * as sessions from '../../../src/auth/sessions';
 
 // Mock the password utility
 vi.mock('../../../src/utils/password', async () => {
-  const actual = await vi.importActual<typeof import('../../../src/utils/password')>('../../../src/utils/password');
+  const actual = await vi.importActual<typeof import('../../../src/utils/password')>(
+    '../../../src/utils/password'
+  );
   return {
     ...actual,
     verifyPassword: vi.fn(),
@@ -290,10 +292,7 @@ describe('loginUserInternal (Unit Tests)', () => {
         deps
       );
 
-      expect(deps.userRepo.updateLastActivity).toHaveBeenCalledWith(
-        'user-1',
-        expect.any(Date)
-      );
+      expect(deps.userRepo.updateLastActivity).toHaveBeenCalledWith('user-1', expect.any(Date));
     });
   });
 

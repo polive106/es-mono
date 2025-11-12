@@ -7,7 +7,9 @@ import * as hibp from '../../../src/utils/hibp';
 
 // Mock the password utility
 vi.mock('../../../src/utils/password', async () => {
-  const actual = await vi.importActual<typeof import('../../../src/utils/password')>('../../../src/utils/password');
+  const actual = await vi.importActual<typeof import('../../../src/utils/password')>(
+    '../../../src/utils/password'
+  );
   return {
     ...actual,
     hashPassword: vi.fn().mockResolvedValue('hashed_password_123'),
@@ -16,7 +18,8 @@ vi.mock('../../../src/utils/password', async () => {
 
 // Mock HIBP check to avoid external API calls
 vi.mock('../../../src/utils/hibp', async () => {
-  const actual = await vi.importActual<typeof import('../../../src/utils/hibp')>('../../../src/utils/hibp');
+  const actual =
+    await vi.importActual<typeof import('../../../src/utils/hibp')>('../../../src/utils/hibp');
   return {
     ...actual,
     checkPasswordBreach: vi.fn().mockResolvedValue(0), // Not breached by default

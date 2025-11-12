@@ -11,11 +11,13 @@ This document defines the technical architecture decisions for the SkillSwap pla
 ### Hexagonal Architecture (Ports & Adapters)
 
 The system must follow hexagonal architecture principles to ensure:
+
 - **Technology Independence**: Easy to swap databases, frameworks, external services
 - **Testability**: Business logic isolated from infrastructure concerns
 - **Maintainability**: Clear separation of concerns
 
 **Structure**:
+
 - **Domain Core**: Pure business logic, no external dependencies
 - **Ports**: Interfaces defining how the domain communicates with the outside world
 - **Adapters**: Concrete implementations of ports (database, HTTP, external APIs)
@@ -25,12 +27,14 @@ The system must follow hexagonal architecture principles to ensure:
 ### Required Technologies
 
 #### Package Management & Build
+
 - **Package Manager**: pnpm (workspace feature required)
 - **Language**: TypeScript (all packages)
 - **Build Tool**: Vite (for frontend and bundling)
 - **Monorepo Structure**: pnpm workspace
 
 #### Frontend Stack
+
 - **Framework**: React 18+
 - **Router**: TanStack Router (type-safe routing)
 - **Bundler**: Vite
@@ -38,23 +42,27 @@ The system must follow hexagonal architecture principles to ensure:
 - **Internationalization**: i18next + react-i18next (FR/EN support)
 
 #### Backend/API Stack
+
 - **API Framework**: Hono (with RPC for type-safe client/server communication)
 - **API Style**: RESTful
 - **Type Sharing**: Hono RPC system ([docs](https://hono.dev/docs/guides/rpc))
 - **Runtime**: Node.js (or Bun if preferred for performance)
 
 #### Database & ORM
+
 - **ORM**: Drizzle ORM
 - **Initial Database**: SQLite (development and early production)
 - **Target Database**: PostgreSQL (architecture must support migration)
 - **Migration Path**: Drizzle supports SQLite → PostgreSQL migration with minimal code changes
 
 #### Authentication & Authorization
+
 - **Phase 1 (MVP)**: Lucia Auth (lightweight, TypeScript-first, self-hosted)
 - **Phase 2 (Production Scale)**: Clerk (managed auth, multi-tenant, invite system)
 - **Migration Strategy**: Abstract auth behind a port/interface to enable swap
 
 #### Testing
+
 - **Unit Tests**: Vitest (Vite-native, fast)
 - **API Integration Tests**: Supertest (HTTP assertions)
 - **E2E Tests**: Playwright (cross-browser, multi-language support)
@@ -81,6 +89,7 @@ es-mono/
 ### Package Responsibilities
 
 #### `packages/domain`
+
 - **Purpose**: Pure business logic, domain entities, use cases
 - **Dependencies**: ZERO external dependencies (except minimal utils like date libraries if needed)
 - **Exports**:
@@ -91,6 +100,7 @@ es-mono/
 - **Consumed By**: All other packages (api, frontend via shared types)
 
 #### `packages/database`
+
 - **Purpose**: Database schemas, migrations, ORM configuration
 - **Dependencies**: Drizzle ORM, domain package
 - **Exports**:
@@ -104,6 +114,7 @@ es-mono/
   - Avoid SQLite-specific features that don't translate to PostgreSQL
 
 #### `packages/api`
+
 - **Purpose**: HTTP API layer using Hono
 - **Architecture**: Hexagonal (ports & adapters)
   - **Ports**: Defined in `domain` package
@@ -127,6 +138,7 @@ es-mono/
   ```
 
 #### `packages/frontend`
+
 - **Purpose**: React application with Vite
 - **Dependencies**: React, TanStack Router, design-system, shared, Hono RPC client
 - **Key Features**:
@@ -145,6 +157,7 @@ es-mono/
   ```
 
 #### `packages/design-system`
+
 - **Purpose**: Shared UI component library
 - **Base**: shadcn/ui components
 - **Dependencies**: React, Tailwind CSS, Radix UI (shadcn dependencies)
@@ -152,6 +165,7 @@ es-mono/
 - **Customization**: Brand colors, typography, spacing tokens
 
 #### `packages/shared`
+
 - **Purpose**: Cross-cutting utilities and types
 - **Exports**:
   - Type definitions shared between frontend/backend
@@ -186,6 +200,7 @@ packages/api/src/
 ```
 
 **Key Principles**:
+
 1. **Controllers** receive HTTP requests, call use cases from `domain` package
 2. **Repositories** implement port interfaces defined in `domain`
 3. **External adapters** implement service ports (auth, email, payments)
@@ -222,30 +237,36 @@ packages/domain/src/
 ### SQLite → PostgreSQL Migration Path
 
 **Phase 1: SQLite (Development & MVP)**
+
 - Use SQLite for rapid development
 - Local file-based database (easy setup)
 - Good performance for MVP scale (<10k users)
 
 **Phase 2: PostgreSQL (Production Scale)**
+
 - Horizontal scaling support
 - Advanced features (full-text search, JSON queries)
 - Better concurrency handling
 
 **Migration Requirements**:
+
 1. **Schema Compatibility**:
    - Use PostgreSQL-compatible types from day 1
    - Avoid SQLite-specific features (e.g., dynamic typing)
    - Example: Use `INTEGER` not `INT`, `TEXT` not `VARCHAR(255)`
 
 2. **Drizzle Configuration**:
+
    ```typescript
    // packages/database/src/drizzle.config.ts
    export default {
-     schema: "./src/schema.ts",
-     out: "./migrations",
+     schema: './src/schema.ts',
+     out: './migrations',
      driver: process.env.DB_TYPE === 'postgres' ? 'pg' : 'better-sqlite3',
-     dbCredentials: { /* ... */ }
-   }
+     dbCredentials: {
+       /* ... */
+     },
+   };
    ```
 
 3. **Repository Abstraction**:
@@ -268,12 +289,14 @@ export { migrate } from './migrate';
 ### Phase 1: Lucia Auth (MVP)
 
 **Why Lucia**:
+
 - Lightweight, no external dependencies
 - Full control over auth flow
 - TypeScript-first
 - Free (self-hosted)
 
 **Implementation**:
+
 ```typescript
 // packages/domain/src/ports/services/AuthService.ts
 export interface AuthService {
@@ -291,12 +314,14 @@ export class LuciaAuthAdapter implements AuthService {
 ### Phase 2: Clerk (Production)
 
 **Why Clerk**:
+
 - Multi-tenant out of the box
 - Built-in invite system (perfect for company invites)
 - User management UI
 - Generous free tier (10k MAU)
 
 **Migration Path**:
+
 1. Create `ClerkAuthAdapter` implementing `AuthService` port
 2. Swap adapter in dependency injection container
 3. Migrate user data (Clerk provides migration APIs)
@@ -308,6 +333,7 @@ export class LuciaAuthAdapter implements AuthService {
 **Languages**: French (FR), English (EN)
 
 **Structure**:
+
 ```
 packages/frontend/src/i18n/
 ├── locales/
@@ -324,11 +350,13 @@ packages/frontend/src/i18n/
 ```
 
 **Namespace Strategy**:
+
 - `common`: Shared UI strings (buttons, errors, navigation)
 - `exchange`: Exchange-specific terms
 - `skills`: Skill taxonomy translations
 
 **Backend Consideration**:
+
 - Email templates also need i18n
 - Store user language preference in database
 - API accepts `Accept-Language` header
@@ -338,6 +366,7 @@ packages/frontend/src/i18n/
 ### Type-Safe Client/Server Communication
 
 **Server (packages/api)**:
+
 ```typescript
 // packages/api/src/index.ts
 const app = new Hono()
@@ -349,6 +378,7 @@ export type AppType = typeof app;
 ```
 
 **Client (packages/frontend)**:
+
 ```typescript
 // packages/frontend/src/lib/api.ts
 import { hc } from 'hono/client';
@@ -361,6 +391,7 @@ const companies = await client.companies.$get();
 ```
 
 **Benefits**:
+
 - End-to-end type safety
 - Auto-completion in frontend
 - Refactoring safety (rename endpoints, types update automatically)
@@ -370,6 +401,7 @@ const companies = await client.companies.$get();
 ### Unit Tests (Vitest)
 
 **Target**: Domain logic, use cases, utilities
+
 ```typescript
 // packages/domain/tests/use-cases/CreateExchange.test.ts
 describe('CreateExchange use case', () => {
@@ -384,13 +416,12 @@ describe('CreateExchange use case', () => {
 ### Integration Tests (Supertest + Vitest)
 
 **Target**: API endpoints, database interactions
+
 ```typescript
 // packages/api/tests/integration/exchanges.test.ts
 describe('POST /exchanges', () => {
   it('should create exchange and return 201', async () => {
-    const response = await request(app)
-      .post('/exchanges')
-      .send(exchangeData);
+    const response = await request(app).post('/exchanges').send(exchangeData);
     expect(response.status).toBe(201);
   });
 });
@@ -399,6 +430,7 @@ describe('POST /exchanges', () => {
 ### E2E Tests (Playwright)
 
 **Target**: Critical user journeys
+
 ```typescript
 // tests/e2e/exchange-flow.spec.ts
 test('HR manager can create and approve exchange', async ({ page }) => {
@@ -408,18 +440,21 @@ test('HR manager can create and approve exchange', async ({ page }) => {
 ```
 
 **Multi-language Testing**:
+
 - Test critical flows in both FR and EN
 - Playwright supports locale switching
 
 ## Deployment Considerations
 
 ### Development
+
 - SQLite database (local file)
 - Vite dev server (frontend)
 - Hono development server (API)
 - pnpm dev script runs all packages concurrently
 
 ### Production (Future)
+
 - PostgreSQL database (managed service: Supabase, Neon, Railway)
 - Frontend: Deploy to Vercel/Netlify (static assets)
 - API: Deploy to Fly.io, Railway, or AWS Lambda (Hono is edge-compatible)
@@ -444,6 +479,7 @@ When migrating from SQLite to PostgreSQL:
 ### What Requires an ADR?
 
 Create an ADR when:
+
 1. **Choosing or changing core technologies** (e.g., switching ORMs, adding a payment provider)
 2. **Deviating from architecture constraints** defined in this document
 3. **Adding new packages** to the monorepo
@@ -483,6 +519,7 @@ This architecture enforces the ES-Mono Constitution principles:
 ## Questions or Deviations
 
 If implementation requires deviation from these constraints:
+
 1. Document rationale in an ADR
 2. Update this document with amendment
 3. Get approval from tech lead

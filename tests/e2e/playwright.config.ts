@@ -25,10 +25,7 @@ export default defineConfig({
   workers: 1,
 
   /* Reporter to use */
-  reporter: [
-    ['list'],
-    ['html', { outputFolder: 'playwright-report' }]
-  ],
+  reporter: [['list'], ['html', { outputFolder: 'playwright-report' }]],
 
   /* Shared settings for all the projects below */
   use: {
@@ -61,7 +58,7 @@ export default defineConfig({
       command: 'cd ../../packages/api && pnpm dev',
       url: 'http://localhost:3000/health',
       timeout: 120 * 1000,
-      reuseExistingServer: false,  // Always start fresh for e2e tests to ensure correct database
+      reuseExistingServer: false, // Always start fresh for e2e tests to ensure correct database
       env: {
         NODE_ENV: 'test',
         DATABASE_URL: './test-e2e.db',

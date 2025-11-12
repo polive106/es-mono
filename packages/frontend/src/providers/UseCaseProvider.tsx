@@ -54,11 +54,7 @@ export function UseCaseProvider({ children }: UseCaseProviderProps) {
     [authService]
   );
 
-  return (
-    <UseCaseContext.Provider value={useCases}>
-      {children}
-    </UseCaseContext.Provider>
-  );
+  return <UseCaseContext.Provider value={useCases}>{children}</UseCaseContext.Provider>;
 }
 
 /**

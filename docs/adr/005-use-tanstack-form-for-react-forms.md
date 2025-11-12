@@ -7,6 +7,7 @@
 **Deciders**: Development Team
 
 **Related ADRs**:
+
 - Related to: [ADR-001](001-shadcn-ui-design-system-with-vite.md) - Design system integration
 
 ---
@@ -41,6 +42,7 @@ Without a standardized form library, developers might use different approaches (
 **Description**: Modern React form library from the TanStack ecosystem, designed for TypeScript-first development with flexible validation.
 
 **Pros**:
+
 - Excellent TypeScript support with full type inference
 - Framework-agnostic validation (works with Zod, Yup, or custom validators)
 - Granular field-level re-renders for optimal performance
@@ -51,6 +53,7 @@ Without a standardized form library, developers might use different approaches (
 - Compatible with TanStack Router (already in use)
 
 **Cons**:
+
 - Newer library with smaller community than React Hook Form
 - Fewer third-party integrations and examples
 - Documentation still evolving
@@ -66,6 +69,7 @@ Without a standardized form library, developers might use different approaches (
 **Description**: Popular React form library with hook-based API and wide adoption.
 
 **Pros**:
+
 - Large community and extensive documentation
 - Many third-party integrations (UI libraries, validation libraries)
 - Mature and battle-tested in production
@@ -73,6 +77,7 @@ Without a standardized form library, developers might use different approaches (
 - Built-in validation support
 
 **Cons**:
+
 - TypeScript support is good but not as seamless as TanStack Form
 - Hook-based API can be less intuitive for complex forms
 - Validation patterns less flexible (harder to do both onChange and onSubmit)
@@ -89,11 +94,13 @@ Without a standardized form library, developers might use different approaches (
 **Description**: Veteran React form library, widely used before hooks era.
 
 **Pros**:
+
 - Mature and stable
 - Large community
 - Comprehensive documentation
 
 **Cons**:
+
 - Maintenance has slowed (fewer updates)
 - Component-based API feels dated compared to hooks
 - TypeScript support is adequate but not exceptional
@@ -111,11 +118,13 @@ Without a standardized form library, developers might use different approaches (
 **Description**: Handle forms with `useState` and event handlers without a library.
 
 **Pros**:
+
 - No external dependency
 - Full control over implementation
 - Zero bundle size overhead
 
 **Cons**:
+
 - Significant boilerplate for validation, error handling, submit logic
 - Prone to inconsistent patterns across different forms
 - Hard to enforce standards (onChange vs onSubmit validation)
@@ -246,6 +255,7 @@ function MyForm() {
 ## Review Schedule
 
 **Trigger Events**:
+
 - When TanStack Form reaches 1.0.0 stable (currently in beta)
 - If TanStack Form development stalls or is abandoned
 - When we need features not supported by TanStack Form
@@ -269,7 +279,7 @@ function MyForm() {
 
 ## Change Log
 
-| Date | Change | Author |
-|------|--------|--------|
+| Date       | Change                                         | Author |
+| ---------- | ---------------------------------------------- | ------ |
 | 2025-11-11 | Created ADR documenting TanStack Form decision | Claude |
-| 2025-11-11 | Marked as Implemented (already in use) | Claude |
+| 2025-11-11 | Marked as Implemented (already in use)         | Claude |

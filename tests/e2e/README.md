@@ -5,6 +5,7 @@ End-to-end tests for the SkillSwap platform using Playwright.
 ## Overview
 
 E2E tests validate the complete application stack:
+
 - **Frontend** (React + Vite)
 - **API** (Hono REST API)
 - **Database** (SQLite)
@@ -14,6 +15,7 @@ Tests run in a real browser and interact with the application as a user would.
 ## Prerequisites
 
 1. **Install Chromium browser** (one-time setup):
+
    ```bash
    pnpm exec playwright install chromium
    ```
@@ -26,26 +28,31 @@ Tests run in a real browser and interact with the application as a user would.
 ## Running Tests
 
 ### Run all E2E tests (headless)
+
 ```bash
 pnpm test:e2e
 ```
 
 ### Run tests with UI (interactive mode)
+
 ```bash
 pnpm test:e2e:ui
 ```
 
 ### Run tests in headed mode (see browser)
+
 ```bash
 pnpm test:e2e:headed
 ```
 
 ### Debug tests (step-by-step)
+
 ```bash
 pnpm test:e2e:debug
 ```
 
 ### Run specific test file
+
 ```bash
 cd tests/e2e
 playwright test tests/auth/register.spec.ts
@@ -54,6 +61,7 @@ playwright test tests/auth/register.spec.ts
 ## Test Database
 
 E2E tests use a **persistent test database** located at:
+
 ```
 packages/api/test-e2e.db
 ```
@@ -67,6 +75,7 @@ packages/api/test-e2e.db
 ### Test Data
 
 The database is seeded with:
+
 - **Test Company**: "E2E Test Company"
 - **Invite Code**: `E2E12345`
 
@@ -91,7 +100,10 @@ tests/e2e/
 
 ```typescript
 import { test, expect } from '@playwright/test';
-import { setupE2EDatabase, type E2EDatabase } from '../../helpers/test-database';
+import {
+  setupE2EDatabase,
+  type E2EDatabase,
+} from '../../helpers/test-database';
 
 let e2eDb: E2EDatabase;
 
@@ -122,6 +134,7 @@ test('my test', async ({ page }) => {
 ## Test Reports
 
 After running tests, view the HTML report:
+
 ```bash
 cd tests/e2e
 playwright show-report playwright-report
@@ -130,12 +143,15 @@ playwright show-report playwright-report
 ## Troubleshooting
 
 ### Browsers not installed
+
 ```bash
 pnpm exec playwright install
 ```
 
 ### Port conflicts
+
 If ports 3000 or 5173 are in use, stop other dev servers:
+
 ```bash
 # Check what's using the ports
 lsof -i :3000
@@ -143,13 +159,16 @@ lsof -i :5173
 ```
 
 ### Database locked
+
 If you see "database is locked", ensure no other tests are running:
+
 ```bash
 # Clean up any test databases
 rm packages/api/test-e2e.db
 ```
 
 ### Test failures
+
 1. Check screenshots in `test-results/`
 2. Run with `--headed` to see browser
 3. Use `--debug` to step through tests
@@ -157,6 +176,7 @@ rm packages/api/test-e2e.db
 ## CI/CD
 
 In CI environments:
+
 - Tests run with `workers: 1` (sequential)
 - Browsers are installed automatically
 - Test results are saved as artifacts
@@ -192,6 +212,7 @@ Current E2E test coverage:
   - Empty form validation
 
 Future coverage (TODO):
+
 - [ ] User Login
 - [ ] User Logout
 - [ ] Password Change

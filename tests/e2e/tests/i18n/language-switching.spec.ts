@@ -127,7 +127,9 @@ test.describe('Language Switching', () => {
     await page.getByTestId('language-switcher').click();
 
     // Verify French welcome message
-    await expect(page.locator('text=/Bienvenue sur le réseau de partage de talents/i')).toBeVisible();
+    await expect(
+      page.locator('text=/Bienvenue sur le réseau de partage de talents/i')
+    ).toBeVisible();
 
     // Verify app name is translated
     await expect(page.locator('h1')).toHaveText('Plateforme SkillSwap');

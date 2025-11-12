@@ -30,9 +30,7 @@ export function Header() {
             <div className="flex items-center gap-2">
               <div className="flex flex-col gap-0 text-right text-sm">
                 <span className="font-medium text-foreground">{user.name}</span>
-                <span className="text-xs text-muted-foreground">
-                  {user.email}
-                </span>
+                <span className="text-xs text-muted-foreground">{user.email}</span>
               </div>
               <button
                 onClick={logout}

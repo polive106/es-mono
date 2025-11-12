@@ -13,6 +13,7 @@ We evaluated three approaches for implementing password breach detection.
 ## Options Evaluated
 
 ### Option A: Have I Been Pwned (HIBP) API
+
 - **Privacy**: ✅ Excellent (k-anonymity protocol)
   - Only first 5 characters of SHA-1 hash sent over network
   - Server cannot reverse-engineer original password
@@ -31,6 +32,7 @@ We evaluated three approaches for implementing password breach detection.
   - Network latency
 
 ### Option B: Local Breached Password Database
+
 - **Privacy**: ✅ Perfect (no external calls)
 - **Data Quality**: Depends on dataset
   - Full HIBP dump: 12GB (impractical)
@@ -47,6 +49,7 @@ We evaluated three approaches for implementing password breach detection.
   - False negatives (misses new breaches)
 
 ### Option C: Password Strength Rules Only
+
 - **Privacy**: ✅ Perfect
 - **Data Quality**: ❌ Cannot detect breaches
 - **Pros**:
@@ -74,6 +77,7 @@ We evaluated three approaches for implementing password breach detection.
 ### k-Anonymity Protocol
 
 HIBP API works by:
+
 1. Client computes SHA-1 hash of password
 2. Client sends only **first 5 characters** of hash (k-anonymity)
 3. HIBP returns all hashes starting with those 5 chars (~500-1000 results)
@@ -81,6 +85,7 @@ HIBP API works by:
 5. If match found, password is breached
 
 Example:
+
 ```
 Password: "MyPassword123!"
 SHA-1: D4B8F4B2C7A9E3F1D2E4A5B6C7D8E9F0A1B2C3D
@@ -144,14 +149,14 @@ export class RegisterUser {
   constructor(
     private userRepository: UserRepository,
     private passwordService: PasswordService,
-    private breachChecker: BreachChecker,
+    private breachChecker: BreachChecker
   ) {}
 
   async execute(
     email: string,
     password: string,
     name: string,
-    companyInviteCode: string,
+    companyInviteCode: string
   ): Promise<User> {
     // Validation
     if (password.length < 12) {
@@ -184,8 +189,10 @@ export class RegisterUser {
 
 ```typescript
 // packages/api/src/adapters/http/routes/auth.ts
-const authRouter = new Hono()
-  .post('/register', zValidator('json', registerSchema), async (c) => {
+const authRouter = new Hono().post(
+  '/register',
+  zValidator('json', registerSchema),
+  async (c) => {
     const data = c.req.valid('json');
 
     try {
@@ -210,7 +217,8 @@ const authRouter = new Hono()
       }
       throw error;
     }
-  });
+  }
+);
 ```
 
 ## Rate Limiting Strategy
@@ -218,6 +226,7 @@ const authRouter = new Hono()
 HIBP has rate limit: **1 request per 1.5 seconds per IP**
 
 Handling:
+
 1. **Per-request caching**: Cache HIBP result for 5 minutes
    - If same password checked twice, use cache for 2nd check
 2. **Batch registration**: If multiple users registering, check once per password
@@ -228,7 +237,9 @@ Handling:
 const breachCache = new Map<string, boolean>();
 const cacheExpiry = new Map<string, number>();
 
-export async function isPasswordBreachedCached(password: string): Promise<boolean> {
+export async function isPasswordBreachedCached(
+  password: string
+): Promise<boolean> {
   const sha1 = crypto.createHash('sha1').update(password).digest('hex');
 
   // Check cache
@@ -278,7 +289,12 @@ describe('RegisterUser', () => {
     );
 
     await expect(
-      registerUser.execute('user@example.com', 'Password123456', 'John', 'invite-code')
+      registerUser.execute(
+        'user@example.com',
+        'Password123456',
+        'John',
+        'invite-code'
+      )
     ).rejects.toThrow('appears in known breach database');
   });
 
@@ -350,6 +366,7 @@ if (error) {
 ## Consequences
 
 ### Positive
+
 - ✅ Strong security posture (FR-040 satisfied)
 - ✅ Privacy-preserving (k-anonymity)
 - ✅ Zero maintenance (no manual updates)
@@ -357,6 +374,7 @@ if (error) {
 - ✅ Graceful degradation on failures
 
 ### Negative
+
 - ⚠️ External API dependency
 - ⚠️ Network latency (~200-500ms per check)
 - ⚠️ Rate limiting (1 req/1.5s)

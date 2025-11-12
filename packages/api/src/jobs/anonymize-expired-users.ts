@@ -59,12 +59,7 @@ export async function anonymizeExpiredUsers(
     const expiredUsers = await db
       .select()
       .from(users)
-      .where(
-        and(
-          lt(users.lastActivityAt, threeYearsAgo),
-          isNull(users.anonymizedAt)
-        )
-      );
+      .where(and(lt(users.lastActivityAt, threeYearsAgo), isNull(users.anonymizedAt)));
 
     result.totalRecords = expiredUsers.length;
 
@@ -120,10 +115,7 @@ export async function anonymizeExpiredUsers(
  * 3. Record anonymization timestamp
  * 4. Commit atomically
  */
-async function anonymizeUserTransaction(
-  db: DB,
-  user: typeof users.$inferSelect
-): Promise<void> {
+async function anonymizeUserTransaction(db: DB, user: typeof users.$inferSelect): Promise<void> {
   await db.transaction(async (tx: Parameters<Parameters<DB['transaction']>[0]>[0]) => {
     // Step 1: Preserve aggregate statistics
     // (skipped for MVP - implement when analytics needed)
@@ -163,15 +155,8 @@ async function anonymizeUserTransaction(
 /**
  * Verify anonymization was successful
  */
-export async function verifyAnonymization(
-  db: DB,
-  userId: string
-): Promise<boolean> {
-  const [user] = await db
-    .select()
-    .from(users)
-    .where(eq(users.id, userId))
-    .limit(1);
+export async function verifyAnonymization(db: DB, userId: string): Promise<boolean> {
+  const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
 
   if (!user) {
     return false;
@@ -179,9 +164,8 @@ export async function verifyAnonymization(
 
   // Check that personal data is anonymized
   const isAnonymized =
-    user.isAnonymized &&
-    user.anonymizedAt !== null &&
-    !user.email.includes('@') || user.email.endsWith('@anonymized.local');
+    (user.isAnonymized && user.anonymizedAt !== null && !user.email.includes('@')) ||
+    user.email.endsWith('@anonymized.local');
 
   return isAnonymized;
 }

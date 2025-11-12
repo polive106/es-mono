@@ -10,27 +10,31 @@ This document resolves the 10 technical unknowns identified in [plan.md](plan.md
 
 ## Research Topic 1: Skill Taxonomy Data Source
 
-**Context**: FR-013 requires 10-15 top-level categories and ~100 pre-seeded skills from industry standards (LinkedIn Skills, O*NET classifications).
+**Context**: FR-013 requires 10-15 top-level categories and ~100 pre-seeded skills from industry standards (LinkedIn Skills, O\*NET classifications).
 
 ### Options Evaluated
 
 **Option A: LinkedIn Skills API**
+
 - **Pros**: Industry-standard, constantly updated, widely recognized
 - **Cons**: No public API, requires LinkedIn Partnership (costly), rate limits
 - **Feasibility**: ❌ Not viable (API access restricted)
 
-**Option B: O*NET Database**
+**Option B: O\*NET Database**
+
 - **Pros**: Free, comprehensive (35k skills), US Department of Labor maintained, CC BY 4.0 license
 - **Cons**: US-centric, requires data transformation, large dataset to filter
 - **Feasibility**: ✅ Viable
 - **URL**: https://www.onetcenter.org/database.html
 
 **Option C: Manual Curation from Multiple Sources**
+
 - **Pros**: Full control, can curate for EU market (FR/UK), lightweight
 - **Cons**: Initial effort, maintenance burden, may miss emerging skills
 - **Feasibility**: ✅ Viable
 
 **Option D: European Skills/Competences Classification (ESCO)**
+
 - **Pros**: EU-focused, multilingual (FR/EN), European Commission maintained, free API
 - **Cons**: Bureaucratic taxonomy, may be overly detailed for MVP
 - **Feasibility**: ✅ Highly viable for FR/UK market
@@ -41,6 +45,7 @@ This document resolves the 10 technical unknowns identified in [plan.md](plan.md
 **Use ESCO (European Skills/Competences, Qualifications and Occupations) for initial taxonomy seeding**
 
 **Rationale**:
+
 1. **Geographic Fit**: Designed for European market (FR/UK scope)
 2. **Multilingual**: Native FR/EN support (matches FR-003 i18n requirement)
 3. **Free & Open**: No licensing costs, API available
@@ -48,6 +53,7 @@ This document resolves the 10 technical unknowns identified in [plan.md](plan.md
 5. **Quality**: Standardized across EU, industry-recognized
 
 **Implementation Plan**:
+
 - Download ESCO CSV dump (2.5k skills in hierarchical structure)
 - Filter to 10-15 top-level categories (Engineering, Design, Marketing, Business, etc.)
 - Select ~100 most relevant skills for startup/SME context
@@ -55,7 +61,7 @@ This document resolves the 10 technical unknowns identified in [plan.md](plan.md
 - Store in database seed file (`packages/database/seeds/skills.ts`)
 - Allow user-proposed skills (FR-014) to grow taxonomy organically
 
-**Fallback**: If ESCO data is too complex, use manual curation from O*NET + LinkedIn job postings
+**Fallback**: If ESCO data is too complex, use manual curation from O\*NET + LinkedIn job postings
 
 **ADR**: Create ADR-005 during implementation phase
 
@@ -68,6 +74,7 @@ This document resolves the 10 technical unknowns identified in [plan.md](plan.md
 ### Options Evaluated
 
 **Option A: CASL (Isomorphic Authorization)**
+
 - **TypeScript Support**: ✅ Excellent (first-class)
 - **Complexity**: Low (define abilities declaratively)
 - **Flexibility**: High (field-level permissions, conditions)
@@ -77,6 +84,7 @@ This document resolves the 10 technical unknowns identified in [plan.md](plan.md
 - **Cons**: Learning curve for advanced features
 
 **Option B: Casbin**
+
 - **TypeScript Support**: ⚠️ Adequate (bindings available, not idiomatic)
 - **Complexity**: Medium (PERM/ACL model files)
 - **Flexibility**: Very high (policy-based, supports RBAC/ABAC)
@@ -85,6 +93,7 @@ This document resolves the 10 technical unknowns identified in [plan.md](plan.md
 - **Cons**: Config files separate from code, less TypeScript-friendly
 
 **Option C: Custom Implementation**
+
 - **TypeScript Support**: ✅ Native
 - **Complexity**: Low for MVP (simple role-permission checks)
 - **Flexibility**: Medium (grows with requirements)
@@ -96,6 +105,7 @@ This document resolves the 10 technical unknowns identified in [plan.md](plan.md
 **Start with Custom RBAC implementation for MVP, migrate to CASL if complexity grows**
 
 **Rationale**:
+
 1. **Simplicity (YAGNI)**: MVP needs simple role-permission checks, not complex policies
 2. **Type Safety**: Custom TypeScript code is fully typed without learning library DSL
 3. **Zero Dependencies**: Aligns with Constitution Principle V (simplicity)
@@ -115,13 +125,18 @@ interface PermissionCheck {
 // Middleware: packages/api/src/middleware/permissions.ts
 export const requirePermission = (permission: string) => async (c, next) => {
   const user = c.get('user');
-  const hasPermission = await checkUserPermission(user.id, permission, companyId);
+  const hasPermission = await checkUserPermission(
+    user.id,
+    permission,
+    companyId
+  );
   if (!hasPermission) throw new ForbiddenError();
   await next();
 };
 ```
 
 **Database Schema**:
+
 - `permissions` table: `{ id, name, resource, action, description }`
 - `roles` table: `{ id, name, company_id, scope }`
 - `role_permissions` junction: `{ role_id, permission_id }`
@@ -140,6 +155,7 @@ export const requirePermission = (permission: string) => async (c, next) => {
 ### Options Evaluated
 
 **Option A: Have I Been Pwned (HIBP) API**
+
 - **Privacy**: ✅ Excellent (k-anonymity protocol, only first 5 chars of SHA-1 sent)
 - **Data Quality**: 850M+ breached passwords (updated frequently)
 - **API**: Free for reasonable use, rate limit 1 req/1.5s
@@ -148,6 +164,7 @@ export const requirePermission = (permission: string) => async (c, next) => {
 - **Cons**: External dependency, rate limits
 
 **Option B: Local Breached Password Database**
+
 - **Privacy**: ✅ Perfect (no external calls)
 - **Data Quality**: Depends on dataset (e.g., 10M from SecLists)
 - **Storage**: ~200MB compressed (full HIBP dataset ~12GB)
@@ -155,6 +172,7 @@ export const requirePermission = (permission: string) => async (c, next) => {
 - **Cons**: Large storage, requires updates, out-of-date quickly
 
 **Option C: Password Strength Rules (No Breach Check)**
+
 - **Privacy**: ✅ Perfect
 - **Data Quality**: ❌ Doesn't catch breached passwords
 - **Pros**: Zero dependencies
@@ -165,6 +183,7 @@ export const requirePermission = (permission: string) => async (c, next) => {
 **Use Have I Been Pwned (HIBP) k-Anonymity API**
 
 **Rationale**:
+
 1. **Requirement Compliance**: FR-040 explicitly requires breach detection
 2. **Privacy**: k-anonymity ensures no full password/hash sent over network
 3. **Maintenance-Free**: Troy Hunt maintains dataset, no manual updates
@@ -178,11 +197,17 @@ export const requirePermission = (permission: string) => async (c, next) => {
 import crypto from 'crypto';
 
 async function isPasswordBreached(password: string): Promise<boolean> {
-  const sha1 = crypto.createHash('sha1').update(password).digest('hex').toUpperCase();
+  const sha1 = crypto
+    .createHash('sha1')
+    .update(password)
+    .digest('hex')
+    .toUpperCase();
   const prefix = sha1.substring(0, 5);
   const suffix = sha1.substring(5);
 
-  const response = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`);
+  const response = await fetch(
+    `https://api.pwnedpasswords.com/range/${prefix}`
+  );
   const hashes = await response.text();
 
   return hashes.includes(suffix); // If found, password is breached
@@ -204,6 +229,7 @@ async function isPasswordBreached(password: string): Promise<boolean> {
 ### Options Evaluated
 
 **Option A: Hono Middleware (In-Memory)**
+
 - **Complexity**: Low (simple Map-based counter)
 - **Scalability**: Single-server only (no shared state)
 - **Persistence**: None (resets on restart)
@@ -211,6 +237,7 @@ async function isPasswordBreached(password: string): Promise<boolean> {
 - **Cons**: Not distributed, no persistence
 
 **Option B: Redis-Backed Rate Limiter**
+
 - **Complexity**: Medium (requires Redis)
 - **Scalability**: High (distributed state)
 - **Persistence**: Optional (can persist to disk)
@@ -218,6 +245,7 @@ async function isPasswordBreached(password: string): Promise<boolean> {
 - **Cons**: External dependency (Redis), operational complexity
 
 **Option C: Upstash Rate Limit (Serverless)**
+
 - **Complexity**: Low (managed service)
 - **Scalability**: High (serverless)
 - **Persistence**: Built-in
@@ -229,6 +257,7 @@ async function isPasswordBreached(password: string): Promise<boolean> {
 **Use In-Memory Hono Middleware for MVP, migrate to Redis for production**
 
 **Rationale**:
+
 1. **YAGNI**: MVP runs single server (no distributed state needed)
 2. **Simplicity**: No external dependencies for MVP
 3. **Performance**: In-memory is fastest for single-server
@@ -247,7 +276,8 @@ interface RateLimitConfig {
 const store = new Map<string, { count: number; resetAt: number }>();
 
 export const rateLimit = (config: RateLimitConfig) => async (c, next) => {
-  const key = c.get('user')?.id || c.req.header('x-forwarded-for') || 'anonymous';
+  const key =
+    c.get('user')?.id || c.req.header('x-forwarded-for') || 'anonymous';
   const now = Date.now();
 
   let record = store.get(key);
@@ -266,6 +296,7 @@ export const rateLimit = (config: RateLimitConfig) => async (c, next) => {
 ```
 
 **Usage**:
+
 ```typescript
 app.get('/api/skills/*', rateLimit({ windowMs: 60000, maxRequests: 100 })); // 100/min reads
 app.post('/api/*', rateLimit({ windowMs: 60000, maxRequests: 20 })); // 20/min writes
@@ -282,6 +313,7 @@ app.post('/api/*', rateLimit({ windowMs: 60000, maxRequests: 20 })); // 20/min w
 ### Options Evaluated
 
 **Option A: Database Sessions** (SQLite/PostgreSQL)
+
 - **Persistence**: ✅ Full (survives server restart)
 - **Scalability**: Medium (database I/O overhead)
 - **Complexity**: Low (reuse existing database)
@@ -289,6 +321,7 @@ app.post('/api/*', rateLimit({ windowMs: 60000, maxRequests: 20 })); // 20/min w
 - **Cons**: Database load increases with sessions
 
 **Option B: In-Memory Sessions**
+
 - **Persistence**: ❌ Lost on restart
 - **Scalability**: High (fastest)
 - **Complexity**: Very low
@@ -296,6 +329,7 @@ app.post('/api/*', rateLimit({ windowMs: 60000, maxRequests: 20 })); // 20/min w
 - **Cons**: Not production-ready, sessions lost on deploy
 
 **Option C: Redis Sessions**
+
 - **Persistence**: ✅ Configurable (RDB/AOF)
 - **Scalability**: Very high (sub-millisecond latency)
 - **Complexity**: Medium (requires Redis)
@@ -307,6 +341,7 @@ app.post('/api/*', rateLimit({ windowMs: 60000, maxRequests: 20 })); // 20/min w
 **Use Database Sessions (SQLite MVP → PostgreSQL production)**
 
 **Rationale**:
+
 1. **Simplicity**: Reuse existing database (no additional infrastructure)
 2. **Persistence**: Sessions survive server restarts (important for 24h sessions)
 3. **Consistency**: Session data in same transactional boundary as user data
@@ -319,7 +354,9 @@ app.post('/api/*', rateLimit({ windowMs: 60000, maxRequests: 20 })); // 20/min w
 // packages/database/src/schema/sessions.ts (Drizzle)
 export const sessions = sqliteTable('sessions', {
   id: text('id').primaryKey(),
-  userId: text('user_id').notNull().references(() => users.id),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id),
   expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 });
@@ -336,6 +373,7 @@ const lucia = new Lucia(adapter, {
 ```
 
 **Session Timeout Implementation**:
+
 - Middleware checks user roles, sets appropriate expiry (24h vs 4h)
 - Re-authentication for critical ops (FR-042) checks session age separately
 
@@ -352,16 +390,19 @@ const lucia = new Lucia(adapter, {
 **Namespace Strategy** (from i18next documentation + React community):
 
 **Option A: Feature-Based Namespaces**
+
 - Structure: `en/companies.json`, `en/skills.json`, `en/exchanges.json`
 - Pros: Clear ownership, easy to find translations for feature
 - Cons: May have duplication (e.g., "Save" button in multiple features)
 
 **Option B: Layer-Based Namespaces**
+
 - Structure: `en/common.json` (shared), `en/domain.json` (business terms), `en/errors.json`
 - Pros: DRY principle, shared strings reused
 - Cons: Large files, harder to find specific translation
 
 **Option C: Hybrid Approach**
+
 - Structure: `common.json` + feature namespaces
 - Pros: Best of both (shared + specific)
 - Cons: Need to decide common vs. feature boundary
@@ -391,6 +432,7 @@ packages/frontend/src/i18n/locales/
 ```
 
 **Common Namespace** (`common.json`):
+
 - UI elements: "Save", "Cancel", "Delete", "Edit", "Back", "Next"
 - Navigation: "Dashboard", "Profile", "Settings", "Logout"
 - Validation: "Required field", "Invalid email", "Password too short"
@@ -398,6 +440,7 @@ packages/frontend/src/i18n/locales/
 - Dates: "Today", "Yesterday", "Week ago"
 
 **Feature Namespaces**: Business-specific terms
+
 - `skills.json`: "Skill categories", "Propose new skill", "Availability percentage"
 - `exchanges.json`: "Skill need", "Propose exchange", "Approve exchange", "Legal review"
 
@@ -431,6 +474,7 @@ function SkillForm() {
 ### Patterns Evaluated
 
 **Option A: XState (Explicit State Machines)**
+
 - **Complexity**: Medium (learning curve)
 - **Visualization**: ✅ Excellent (statechart visualizer)
 - **Type Safety**: ✅ Full TypeScript support
@@ -438,6 +482,7 @@ function SkillForm() {
 - **Cons**: Library dependency, overkill for simple workflows
 
 **Option B: Enum + Transition Rules (Custom)**
+
 - **Complexity**: Low
 - **Visualization**: Manual (draw diagrams)
 - **Type Safety**: ✅ TypeScript enums
@@ -445,6 +490,7 @@ function SkillForm() {
 - **Cons**: Manual validation of transitions
 
 **Option C: Database-Driven Workflow Engine**
+
 - **Complexity**: High
 - **Pros**: Dynamic workflows, no code changes
 - **Cons**: Over-engineered for MVP
@@ -454,6 +500,7 @@ function SkillForm() {
 **Use Enum + Transition Rules (Custom State Machine)**
 
 **Rationale**:
+
 1. **Simplicity**: Workflow is simple and unlikely to change (YAGNI)
 2. **Type Safety**: TypeScript enums + validation functions
 3. **Zero Dependencies**: Aligns with Constitution Principle V
@@ -479,11 +526,26 @@ export enum ExchangeStatus {
 // packages/domain/src/entities/Exchange.ts
 export class Exchange {
   private static transitions: Record<ExchangeStatus, ExchangeStatus[]> = {
-    [ExchangeStatus.PROPOSED]: [ExchangeStatus.NEGOTIATING, ExchangeStatus.CANCELLED],
-    [ExchangeStatus.NEGOTIATING]: [ExchangeStatus.AWAITING_CONSENT, ExchangeStatus.CANCELLED],
-    [ExchangeStatus.AWAITING_CONSENT]: [ExchangeStatus.AWAITING_MANAGER, ExchangeStatus.CANCELLED],
-    [ExchangeStatus.AWAITING_MANAGER]: [ExchangeStatus.AWAITING_LEGAL, ExchangeStatus.CANCELLED],
-    [ExchangeStatus.AWAITING_LEGAL]: [ExchangeStatus.APPROVED, ExchangeStatus.CANCELLED],
+    [ExchangeStatus.PROPOSED]: [
+      ExchangeStatus.NEGOTIATING,
+      ExchangeStatus.CANCELLED,
+    ],
+    [ExchangeStatus.NEGOTIATING]: [
+      ExchangeStatus.AWAITING_CONSENT,
+      ExchangeStatus.CANCELLED,
+    ],
+    [ExchangeStatus.AWAITING_CONSENT]: [
+      ExchangeStatus.AWAITING_MANAGER,
+      ExchangeStatus.CANCELLED,
+    ],
+    [ExchangeStatus.AWAITING_MANAGER]: [
+      ExchangeStatus.AWAITING_LEGAL,
+      ExchangeStatus.CANCELLED,
+    ],
+    [ExchangeStatus.AWAITING_LEGAL]: [
+      ExchangeStatus.APPROVED,
+      ExchangeStatus.CANCELLED,
+    ],
     [ExchangeStatus.APPROVED]: [ExchangeStatus.ACTIVE],
     [ExchangeStatus.ACTIVE]: [ExchangeStatus.COMPLETED],
     [ExchangeStatus.COMPLETED]: [],
@@ -504,6 +566,7 @@ export class Exchange {
 ```
 
 **Approval Tracking**:
+
 - Each status change creates an `Approval` record: `{ exchange_id, type, status, approver_id, timestamp }`
 - Types: `employee_consent`, `manager_approval`, `legal_check`
 
@@ -518,6 +581,7 @@ export class Exchange {
 ### Indexing Strategy
 
 **Query Patterns** (derived from FR-020):
+
 1. Search by skill name: `SELECT * FROM user_skills WHERE skill_id = ?`
 2. Filter by availability: `SELECT * FROM talent_availability WHERE availability_pct >= ?`
 3. Filter by company: `SELECT * FROM users WHERE company_id = ?`
@@ -549,22 +613,28 @@ CREATE INDEX idx_search_skill_availability ON user_skills(skill_id, user_id);
 // packages/database/src/schema/skills.ts
 import { index } from 'drizzle-orm/sqlite-core';
 
-export const userSkills = sqliteTable('user_skills', {
-  id: text('id').primaryKey(),
-  userId: text('user_id').notNull(),
-  skillId: text('skill_id').notNull(),
-}, (table) => ({
-  userIdx: index('idx_user_skills_user_id').on(table.userId),
-  skillIdx: index('idx_user_skills_skill_id').on(table.skillId),
-}));
+export const userSkills = sqliteTable(
+  'user_skills',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    skillId: text('skill_id').notNull(),
+  },
+  (table) => ({
+    userIdx: index('idx_user_skills_user_id').on(table.userId),
+    skillIdx: index('idx_user_skills_skill_id').on(table.skillId),
+  })
+);
 ```
 
 **Performance Testing**:
+
 - Seed database with 100 users × 10 skills = 1000 rows
 - Run search queries, measure with `EXPLAIN QUERY PLAN` (SQLite)
 - Target: <100ms for skill search queries
 
 **Future Optimization** (if search is slow):
+
 - Materialized view for "available talent" (denormalized search index)
 - Elasticsearch integration (if full-text search becomes complex)
 
@@ -577,16 +647,19 @@ export const userSkills = sqliteTable('user_skills', {
 ### Anonymization Approaches
 
 **Option A: Database-Level Anonymization**
+
 - Store `is_anonymized` flag, return partial data in query
 - Pros: Simple, enforced at data layer
 - Cons: Requires careful query construction
 
 **Option B: API-Level Anonymization**
+
 - Full data in database, redact in API response
 - Pros: Flexible, easy to change rules
 - Cons: Risk of accidental data leakage
 
 **Option C: Separate Tables (Anonymized vs. Full Profiles)**
+
 - Two tables: `talent_profiles` (anonymized) and `user_details` (full)
 - Pros: Impossible to leak data
 - Cons: Data duplication, complexity
@@ -596,6 +669,7 @@ export const userSkills = sqliteTable('user_skills', {
 **Use API-Level Anonymization with TypeScript Types**
 
 **Rationale**:
+
 1. **Type Safety**: Separate TypeScript types prevent accidental leakage
 2. **Flexibility**: Easy to adjust anonymization rules per use case
 3. **Simplicity**: Single source of truth (database), transformation at API layer
@@ -635,6 +709,7 @@ function anonymizeUser(user: User): AnonymizedUser {
 ```
 
 **Reveal Workflow**:
+
 1. Company A sees anonymized profile (hashed ID: `anon_xyz`)
 2. Company A expresses interest → sends proposal to `anon_xyz`
 3. System looks up real user from hash, notifies talent for consent
@@ -651,16 +726,19 @@ function anonymizeUser(user: User): AnonymizedUser {
 ### Automation Strategies
 
 **Option A: Database Triggers**
+
 - Trigger on date comparison, anonymize on read
 - Pros: Automatic, no external scheduler
 - Cons: Performance overhead, complex SQL
 
 **Option B: Scheduled Cron Job**
+
 - Daily job finds expired records, anonymizes in batch
 - Pros: Simple, predictable, testable
 - Cons: Requires scheduler (cron, Kubernetes CronJob)
 
 **Option C: Application-Level Lazy Anonymization**
+
 - Anonymize on access (if `lastActivityAt + 3 years < now`)
 - Pros: Zero infrastructure
 - Cons: Unpredictable, may miss records
@@ -670,6 +748,7 @@ function anonymizeUser(user: User): AnonymizedUser {
 **Use Scheduled Job (Node.js Script + System Cron or Cloud Scheduler)**
 
 **Rationale**:
+
 1. **Predictability**: Runs at defined time (e.g., 2 AM daily)
 2. **Testability**: Can run script manually for testing
 3. **Auditability**: Logs how many records anonymized
@@ -686,7 +765,8 @@ async function anonymizeExpiredUsers() {
   const threeYearsAgo = new Date();
   threeYearsAgo.setFullYear(threeYearsAgo.getFullYear() - 3);
 
-  const expiredUsers = await db.select()
+  const expiredUsers = await db
+    .select()
     .from(users)
     .where(lt(users.lastActivityAt, threeYearsAgo))
     .where(eq(users.isAnonymized, false));
@@ -702,12 +782,15 @@ async function anonymizeExpiredUsers() {
       });
 
       // Anonymize user
-      await tx.update(users).set({
-        name: `User_${user.id.slice(0, 8)}`,
-        email: `anonymized_${user.id}@deleted.local`,
-        isAnonymized: true,
-        anonymizedAt: new Date(),
-      }).where(eq(users.id, user.id));
+      await tx
+        .update(users)
+        .set({
+          name: `User_${user.id.slice(0, 8)}`,
+          email: `anonymized_${user.id}@deleted.local`,
+          isAnonymized: true,
+          anonymizedAt: new Date(),
+        })
+        .where(eq(users.id, user.id));
     });
   }
 
@@ -716,10 +799,12 @@ async function anonymizeExpiredUsers() {
 ```
 
 **Scheduling**:
+
 - Development: Manual run via `pnpm run job:anonymize`
 - Production: System cron (`0 2 * * *` = 2 AM daily) or cloud scheduler
 
 **Aggregate Stats Preserved**:
+
 - `user_stats` table: `{ industry, skill_count, exchange_count, anonymized_at }`
 - Network analytics can query stats without PII
 
@@ -766,6 +851,7 @@ const newCompany = await client.$post({ json: { name: 'Acme' } });
 ```
 
 **Best Practices**:
+
 - Export route types (`export type XyzAPI = typeof app`)
 - Use `zValidator` for runtime validation + TypeScript inference
 - Group routes by domain (`companies.ts`, `skills.ts`, `exchanges.ts`)
@@ -801,6 +887,7 @@ export class DrizzleCompanyRepository implements CompanyRepository {
 ```
 
 **Best Practices**:
+
 - Keep Drizzle queries in repository adapters (not in use cases)
 - Map database rows to domain entities (don't leak Drizzle types)
 - Use transactions for multi-table operations: `db.transaction(async (tx) => { ... })`
@@ -934,9 +1021,13 @@ import { test, expect } from '@playwright/test';
 test.describe('Exchange Flow', () => {
   test.use({ locale: 'en-US' });
 
-  test('should complete full exchange workflow in English', async ({ page }) => {
+  test('should complete full exchange workflow in English', async ({
+    page,
+  }) => {
     await page.goto('/exchanges/new');
-    await expect(page.getByRole('heading', { name: 'Create Exchange' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Create Exchange' })
+    ).toBeVisible();
     // ...
   });
 
@@ -944,7 +1035,9 @@ test.describe('Exchange Flow', () => {
 
   test('should complete full exchange workflow in French', async ({ page }) => {
     await page.goto('/exchanges/new');
-    await expect(page.getByRole('heading', { name: 'Créer un échange' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Créer un échange' })
+    ).toBeVisible();
     // ...
   });
 });
@@ -966,18 +1059,18 @@ export default defineConfig({
 
 ## Summary of Decisions
 
-| Topic | Decision | Rationale | ADR |
-|-------|----------|-----------|-----|
-| 1. Skill Taxonomy | ESCO (EU Skills Database) | Multilingual (FR/EN), EU-focused, free | ADR-005 |
-| 2. RBAC Library | Custom → CASL if needed | YAGNI, simple for MVP, clear upgrade path | ADR-003 |
-| 3. Breach Detection | Have I Been Pwned API | Privacy-preserving, industry standard | ADR-004 |
-| 4. Rate Limiting | In-Memory → Redis | Simple for MVP, scales to distributed | - |
-| 5. Session Storage | Database (SQLite → PostgreSQL) | Persistent, reuses existing DB | - |
-| 6. i18n Namespaces | Hybrid (common + features) | DRY + clarity | - |
-| 7. Approval Workflow | Custom State Machine (Enum) | Simple, type-safe, zero deps | - |
-| 8. Database Indexes | Composite indexes on skills/availability | <2s search requirement (SC-018) | - |
-| 9. Anonymization | API-level with TypeScript types | Type-safe, flexible, testable | - |
-| 10. Data Retention | Scheduled job (cron) | Predictable, auditable, testable | - |
+| Topic                | Decision                                 | Rationale                                 | ADR     |
+| -------------------- | ---------------------------------------- | ----------------------------------------- | ------- |
+| 1. Skill Taxonomy    | ESCO (EU Skills Database)                | Multilingual (FR/EN), EU-focused, free    | ADR-005 |
+| 2. RBAC Library      | Custom → CASL if needed                  | YAGNI, simple for MVP, clear upgrade path | ADR-003 |
+| 3. Breach Detection  | Have I Been Pwned API                    | Privacy-preserving, industry standard     | ADR-004 |
+| 4. Rate Limiting     | In-Memory → Redis                        | Simple for MVP, scales to distributed     | -       |
+| 5. Session Storage   | Database (SQLite → PostgreSQL)           | Persistent, reuses existing DB            | -       |
+| 6. i18n Namespaces   | Hybrid (common + features)               | DRY + clarity                             | -       |
+| 7. Approval Workflow | Custom State Machine (Enum)              | Simple, type-safe, zero deps              | -       |
+| 8. Database Indexes  | Composite indexes on skills/availability | <2s search requirement (SC-018)           | -       |
+| 9. Anonymization     | API-level with TypeScript types          | Type-safe, flexible, testable             | -       |
+| 10. Data Retention   | Scheduled job (cron)                     | Predictable, auditable, testable          | -       |
 
 ---
 

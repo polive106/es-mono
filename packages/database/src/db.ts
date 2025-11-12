@@ -33,7 +33,9 @@ function initializeDatabase(): DrizzleDB {
   // For test databases, verify schema exists after connection
   if (process.env.NODE_ENV === 'test' && dbPath.includes('test-e2e')) {
     try {
-      const tables = _sqlite!.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='users'").all();
+      const tables = _sqlite!
+        .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")
+        .all();
       if (tables.length === 0) {
         console.error(`[Database] ERROR: Test database has no tables!`);
         throw new Error('E2E test database exists but has no schema - migrations may have failed');

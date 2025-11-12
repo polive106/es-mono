@@ -122,9 +122,7 @@ describe('RegisterUseCase', () => {
       vi.mocked(mockAuthService.register).mockRejectedValue(authError);
 
       // Act & Assert
-      await expect(registerUseCase.execute(registerData)).rejects.toThrow(
-        'Email already exists'
-      );
+      await expect(registerUseCase.execute(registerData)).rejects.toThrow('Email already exists');
       expect(mockAuthService.register).toHaveBeenCalledWith(registerData);
     });
   });

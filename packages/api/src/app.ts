@@ -55,7 +55,9 @@ export function createApp() {
     // Zod validation errors - expected, log concisely
     if (error instanceof ZodError) {
       if (!isTest) {
-        console.error(`[API] Validation error: ${error.issues.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')}`);
+        console.error(
+          `[API] Validation error: ${error.issues.map((e) => `${e.path.join('.')}: ${e.message}`).join(', ')}`
+        );
       }
       return c.json<ErrorResponse>(
         {
@@ -130,7 +132,9 @@ export function createApp() {
       {
         error: isDevelopment ? message : 'Internal server error',
         code: 'INTERNAL_ERROR',
-        details: isDevelopment ? { stack: error instanceof Error ? error.stack : undefined } : undefined,
+        details: isDevelopment
+          ? { stack: error instanceof Error ? error.stack : undefined }
+          : undefined,
         timestamp: new Date().toISOString(),
       },
       500

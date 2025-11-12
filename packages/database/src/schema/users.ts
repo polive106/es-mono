@@ -88,11 +88,7 @@ export const userRoles = sqliteTable(
       .$defaultFn(() => new Date()),
   },
   (table) => [
-    unique('unique_user_role_company').on(
-      table.userId,
-      table.roleId,
-      table.companyId
-    ),
+    unique('unique_user_role_company').on(table.userId, table.roleId, table.companyId),
     index('idx_user_roles_user_id').on(table.userId),
     index('idx_user_roles_role_id').on(table.roleId),
   ]
@@ -109,9 +105,7 @@ export const rolePermissions = sqliteTable(
       .notNull()
       .references(() => permissions.id),
   },
-  (table) => [
-    primaryKey({ columns: [table.roleId, table.permissionId] }),
-  ]
+  (table) => [primaryKey({ columns: [table.roleId, table.permissionId] })]
 );
 
 // Relations

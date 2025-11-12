@@ -612,11 +612,13 @@ Foundational (Phase 2) ────┐
 ### Parallel Opportunities
 
 **After Foundational phase completes:**
+
 - US1, US2, US3 (P1 stories) can ALL run in parallel
 - Within each story, all tasks marked [P] can run in parallel
 - Different team members can work on different stories simultaneously
 
 **Example Parallel Execution:**
+
 ```bash
 # After Foundational completes, launch in parallel:
 Developer A: Tasks T032-T074 (US1)
@@ -643,19 +645,23 @@ Developer C: Tasks T111-T139 (US3)
 ### Incremental Delivery
 
 **Release 1 (MVP)**: US1-3
+
 - Companies can onboard ✅
 - Employees can map skills ✅
 - Managers can search talent ✅
 
 **Release 2**: Add US4 (Missions)
+
 - Full mission workflow ✅
 - All P1+P2 scenarios work ✅
 
 **Release 3**: Add US5 (Credits)
+
 - Credit tracking operational ✅
 - Network flexibility enabled ✅
 
 **Release 4**: Add US6-7
+
 - Mission tracking ✅
 - Employee self-proposal ✅
 - Full platform feature-complete ✅
@@ -663,6 +669,7 @@ Developer C: Tasks T111-T139 (US3)
 ### Parallel Team Strategy
 
 With 3 developers:
+
 1. **Week 1-2**: All work together on Setup + Foundational (30 tasks)
 2. **Week 3-4**: Split after Foundational checkpoint:
    - Dev A: US1 (Company Onboarding)
@@ -676,6 +683,7 @@ With 3 developers:
 ## Summary
 
 **Total Tasks**: 276
+
 - Phase 1 (Setup): 7 tasks
 - Phase 2 (Foundational): 23 tasks
 - Phase 3 (US1 - P1): 43 tasks
@@ -690,6 +698,7 @@ With 3 developers:
 **Parallel Opportunities**: 156 tasks marked [P] can run in parallel within their phases
 
 **Independent Test Criteria**:
+
 - US1: Create company via invite, view dashboard
 - US2: Complete skill profile, set availability
 - US3: Post skill need, search talent pool

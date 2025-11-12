@@ -25,9 +25,7 @@ export function MainLayout({ children }: MainLayoutProps) {
 
         {/* Page content */}
         <main className="flex-1 overflow-y-auto bg-background">
-          <div className="container mx-auto px-4 py-8">
-            {children}
-          </div>
+          <div className="container mx-auto px-4 py-8">{children}</div>
         </main>
       </div>
 

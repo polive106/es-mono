@@ -25,25 +25,30 @@ A **skill-sharing marketplace** where companies exchange employee time and exper
 ## Target Users & Market
 
 ### Primary Users
+
 - **HR Managers**: Main platform users who manage employee skills, availability, and exchange requests
 - **Company Executives**: Approve major exchanges and strategic skill needs
 - **Employees**: Fill their own skill profiles, propose themselves for projects, consent to exchanges
 
 ### Initial Market (MVP)
+
 - **Geography**: France and UK (requires internationalization/i18n)
 - **Company Size**: Startups and SMEs only
 - **Industries**: All sectors (healthcare, fintech, logistics, etc.) - cross-industry focus reduces IP/NDA issues
 
 ### Access Model
+
 - Invite-only public marketplace
 - Companies need an invite link to join the network
 
 ## Core Use Cases
 
 ### Use Case 1: Startup Skill Swap
+
 **Scenario:** A healthtech startup has excellent marketing capabilities but needs medical expertise to validate their product. A medical practice wants to digitalize but lacks digital marketing skills.
 
 **Flow:**
+
 - Healthtech declares need for "medical consultation" skills
 - Medical practice has a doctor with 20% available capacity
 - System matches them
@@ -52,9 +57,11 @@ A **skill-sharing marketplace** where companies exchange employee time and exper
 - Healthtech later provides marketing training to medical practice staff
 
 ### Use Case 2: Large Corp + Startup Exchange
+
 **Scenario:** A bank has deep regulatory compliance expertise (ORIAS, financial regulations) but wants cutting-edge data/tech capabilities. A fintech startup needs regulatory guidance but is strong in data analytics.
 
 **Flow:**
+
 - Bank declares availability of compliance specialist (available 1 day/week)
 - Fintech declares need for "financial regulatory compliance"
 - Match occurs
@@ -63,9 +70,11 @@ A **skill-sharing marketplace** where companies exchange employee time and exper
 - Both companies benefit without hiring costs
 
 ### Use Case 3: Underutilized Talent Development
+
 **Scenario:** A company has a product manager who's between projects and has 40% idle capacity for 2 months.
 
 **Flow:**
+
 - HR manager marks this PM as "available" with skills: product strategy, roadmapping, user research
 - Another company searching for "product strategy" support finds this talent (anonymized profile)
 - Companies negotiate exchange
@@ -75,6 +84,7 @@ A **skill-sharing marketplace** where companies exchange employee time and exper
 ## Key Features & Functionality
 
 ### For HR Managers (Primary)
+
 1. **Employee Skill Mapping**
    - Option 1 (MVP): Send surveys to employees to self-report skills
    - Option 2 (Future/GenAI): AI maps skills based on employee project history
@@ -102,6 +112,7 @@ A **skill-sharing marketplace** where companies exchange employee time and exper
    - Track status of exchange requests
 
 ### Credit System
+
 - **Starting Balance**: Companies can go negative (must purchase credits)
 - **Value Determination**: Market-based negotiation between companies
   - Default metric: Employee salary as baseline
@@ -110,10 +121,12 @@ A **skill-sharing marketplace** where companies exchange employee time and exper
 - **Accumulation**: Credits don't expire, accumulate indefinitely
 
 ### Subscription Infrastructure (Not Active at Launch)
+
 - Build capability to handle paid subscriptions (to be activated later)
 - Future revenue model: Access to knowledge base of shared projects
 
 ### Employee Experience
+
 - **Profile Management**: Employees fill their own skill profiles
 - **Self-Propose**: Can propose themselves for available opportunities
 - **Career Benefits**: Gain variety, network building, cross-industry experience
@@ -121,6 +134,7 @@ A **skill-sharing marketplace** where companies exchange employee time and exper
 - **Employment Status**: Always remain employed by original company (payroll, benefits, insurance unchanged)
 
 ### Legal & Compliance
+
 - NDA signing capability within platform
 - Focus on cross-industry matches to minimize IP conflicts
 - Legal approval checkpoint in workflow
@@ -128,12 +142,14 @@ A **skill-sharing marketplace** where companies exchange employee time and exper
 ## Future Enhancements (Out of MVP Scope)
 
 ### Iteration 2: GenAI Skill Gap Analysis
+
 - AI analyzes company needs and current employee skills
 - Automatically identifies skill gaps
 - Recommends specific exchanges from the network
 - Auto-maps employee skills from project history
 
 ### Knowledge Base
+
 - Companies share project descriptions with network
 - Build searchable repository of use cases
 - Monetization opportunity (premium access)
@@ -141,24 +157,28 @@ A **skill-sharing marketplace** where companies exchange employee time and exper
 ## Success Metrics
 
 ### Platform Health
+
 - Number of companies in network
 - Number of active employees in talent pool
 - Geographic distribution (France vs UK)
 - Industry diversity
 
 ### Exchange Activity
+
 - Number of successful matches per month
 - Average exchange duration
 - Credit transaction volume
 - Repeat exchange rate (companies doing multiple swaps)
 
 ### User Satisfaction
+
 - Time to find suitable skill match
 - Employee satisfaction with exchange experience
 - Company retention rate in network
 - NPS score from HR managers
 
 ### Business Metrics
+
 - Credit purchase volume (companies going negative)
 - Average credit balance per company
 - Network density (connections between companies)
@@ -167,6 +187,7 @@ A **skill-sharing marketplace** where companies exchange employee time and exper
 ## Key Constraints & Assumptions
 
 ### Assumptions
+
 - Companies are willing to share employee capacity in exchange for skills they need
 - Cross-industry exchanges minimize IP/non-compete concerns
 - Startups/SMEs have more flexibility than large corporations (MVP focus)
@@ -174,6 +195,7 @@ A **skill-sharing marketplace** where companies exchange employee time and exper
 - HR departments are primary pain point for skill management
 
 ### Constraints
+
 - Must support multi-language (France + UK, minimum FR/EN)
 - Employees always remain employed by original company
 - All exchanges require explicit employee consent
@@ -181,6 +203,7 @@ A **skill-sharing marketplace** where companies exchange employee time and exper
 - Invite-only access to maintain network quality
 
 ## Open Questions for Technical Planning
+
 - How to handle timezone differences (France/UK operations)?
 - What level of anonymization for employee profiles before match?
 - How to handle disputes over credit value/exchange quality?

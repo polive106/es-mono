@@ -97,7 +97,8 @@ export const requestSizeLimit = (maxSizeBytes: number = 1024 * 1024) =>
             code: 'PAYLOAD_TOO_LARGE',
             maxSize: maxSizeBytes,
           },
-          413        );
+          413
+        );
       }
     }
 
@@ -119,7 +120,8 @@ export const methodWhitelist = (allowedMethods: string[]) =>
           code: 'METHOD_NOT_ALLOWED',
           allowedMethods,
         },
-        405      );
+        405
+      );
     }
 
     return next();
