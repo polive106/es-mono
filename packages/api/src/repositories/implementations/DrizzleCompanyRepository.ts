@@ -1,7 +1,7 @@
 import type { DB } from '@es-mono/database';
 import { companies } from '@es-mono/database/schema';
 import type { Company, NewCompany } from '@es-mono/database/schema';
-import { eq } from 'drizzle-orm';
+import { eq, asc } from 'drizzle-orm';
 import type { ICompanyRepository } from '../interfaces/ICompanyRepository';
 
 /**
@@ -36,7 +36,7 @@ export class DrizzleCompanyRepository implements ICompanyRepository {
 
   async findAll(): Promise<Company[]> {
     const allCompanies = await this.db.query.companies.findMany({
-      orderBy: (companies, { asc }) => [asc(companies.name)],
+      orderBy: [asc(companies.name)],
     });
     return allCompanies;
   }
