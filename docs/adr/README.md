@@ -52,6 +52,7 @@ ADRs are numbered sequentially and use kebab-case:
 ```
 
 **Format**: `NNN-title-in-kebab-case.md`
+
 - `NNN`: Zero-padded 3-digit number (000, 001, 002, ...)
 - `title`: Brief, descriptive title (2-6 words)
 
@@ -90,22 +91,26 @@ See `template.md` for the standard ADR format.
 
 ## Quick Reference
 
-| Status | Meaning |
-|--------|---------|
-| **Proposed** | Decision under consideration, not yet approved |
-| **Accepted** | Decision approved and being implemented |
-| **Implemented** | Decision fully implemented and in use |
-| **Deprecated** | Decision no longer recommended but still in use |
-| **Superseded** | Decision replaced by a newer ADR (link to new ADR) |
-| **Rejected** | Decision proposed but not approved |
+| Status          | Meaning                                            |
+| --------------- | -------------------------------------------------- |
+| **Proposed**    | Decision under consideration, not yet approved     |
+| **Accepted**    | Decision approved and being implemented            |
+| **Implemented** | Decision fully implemented and in use              |
+| **Deprecated**  | Decision no longer recommended but still in use    |
+| **Superseded**  | Decision replaced by a newer ADR (link to new ADR) |
+| **Rejected**    | Decision proposed but not approved                 |
 
 ## Index of ADRs
 
 <!-- Maintain this index manually or generate it -->
 
-| # | Title | Status | Date |
-|---|-------|--------|------|
-| [000](000-use-architecture-decision-records.md) | Use Architecture Decision Records | Accepted | 2025-11-08 |
+| #                                               | Title                                      | Status      | Date       |
+| ----------------------------------------------- | ------------------------------------------ | ----------- | ---------- |
+| [000](000-use-architecture-decision-records.md) | Use Architecture Decision Records          | Accepted    | 2025-11-08 |
+| [001](001-shadcn-ui-design-system-with-vite.md) | Use shadcn/ui Design System with Vite      | Implemented | 2025-11-08 |
+| [003](003-rbac-implementation.md)               | Custom RBAC Implementation                 | Implemented | 2025-11-08 |
+| [004](004-hibp-integration.md)                  | HIBP k-Anonymity Password Breach Detection | Implemented | 2025-11-08 |
+| [005](005-use-tanstack-form-for-react-forms.md) | Use TanStack Form for React Forms          | Implemented | 2025-11-11 |
 
 ## Tools
 

@@ -21,6 +21,7 @@ As the ES-Mono platform grows in complexity, we need a systematic way to documen
 - Implementation agents may make conflicting decisions without historical context
 
 We need a lightweight, version-controlled method to capture architectural decisions that:
+
 - Lives in the codebase (not external wiki that gets out of sync)
 - Captures context, alternatives, and rationale
 - Is easy to create and maintain
@@ -42,6 +43,7 @@ We need a lightweight, version-controlled method to capture architectural decisi
 **Description**: Lightweight markdown files in `docs/adr/` directory, one per decision, numbered sequentially.
 
 **Pros**:
+
 - Version controlled with code
 - Plain text, easy to read and write
 - Numbering provides clear chronology
@@ -50,6 +52,7 @@ We need a lightweight, version-controlled method to capture architectural decisi
 - Low friction to create
 
 **Cons**:
+
 - Requires discipline to maintain
 - Can proliferate if not managed
 
@@ -64,11 +67,13 @@ We need a lightweight, version-controlled method to capture architectural decisi
 **Description**: Document decisions in external wiki system.
 
 **Pros**:
+
 - Rich formatting options
 - Better search capabilities
 - Can include diagrams easily
 
 **Cons**:
+
 - Separate from codebase, often gets out of sync
 - Requires separate access/login
 - Not version controlled with code
@@ -86,10 +91,12 @@ We need a lightweight, version-controlled method to capture architectural decisi
 **Description**: Document decisions directly in code comments.
 
 **Pros**:
+
 - Right next to implementation
 - No separate files to maintain
 
 **Cons**:
+
 - Scattered across codebase, hard to find
 - Not suitable for high-level architectural decisions
 - Difficult to get overview of all decisions
@@ -107,10 +114,12 @@ We need a lightweight, version-controlled method to capture architectural decisi
 **Description**: Rely on commit messages, PR discussions, and institutional knowledge.
 
 **Pros**:
+
 - No overhead
 - Fast
 
 **Cons**:
+
 - Context lost over time
 - Difficult for new team members
 - Decisions get revisited unnecessarily
@@ -139,6 +148,7 @@ We chose ADRs because they provide the best balance of visibility, discoverabili
 6. **Context Preservation**: Template forces capture of alternatives considered and trade-offs
 
 The template includes sections specifically designed to help AI agents understand:
+
 - What constraints apply
 - What alternatives were rejected and why
 - When to revisit the decision
@@ -147,9 +157,11 @@ The template includes sections specifically designed to help AI agents understan
 ## Implementation Notes
 
 **Affected Packages**:
+
 - All packages - ADRs can reference any part of the system
 
 **Structure**:
+
 ```
 docs/adr/
 ├── README.md                                    # This file
@@ -162,6 +174,7 @@ docs/adr/
 **Naming Convention**: `NNN-title-in-kebab-case.md`
 
 **Process**:
+
 1. Copy `template.md` when making a significant decision
 2. Fill in all sections (Context, Options, Outcome, Consequences)
 3. Number sequentially (find highest number + 1)
@@ -169,6 +182,7 @@ docs/adr/
 5. Update status as decision progresses (Proposed → Accepted → Implemented)
 
 **AI Agent Requirements**:
+
 - During `/speckit.plan` and `/speckit.implement`, agents MUST:
   - Check for relevant ADRs before making architectural decisions
   - Create new ADRs for significant decisions during implementation
@@ -178,6 +192,7 @@ docs/adr/
 ## Consequences
 
 ### Positive Consequences
+
 - **Historical Record**: We'll have a clear record of why decisions were made
 - **Onboarding**: New team members can quickly understand architectural choices
 - **AI Guidance**: Implementation agents have clear constraints and context
@@ -185,17 +200,20 @@ docs/adr/
 - **Reduced Churn**: Prevents revisiting settled decisions unnecessarily
 
 ### Negative Consequences
+
 - **Overhead**: Requires ~5 minutes per significant decision to document
 - **Maintenance**: ADR index needs to be kept up to date
 - **Discipline**: Team must remember to create ADRs (can be enforced via PR checklist)
 
 ### Neutral Consequences
+
 - **More Files**: Additional markdown files in repository
 - **Learning Curve**: Team needs to learn when an ADR is needed (provided in README.md)
 
 ## Review Schedule
 
 **Trigger Events**:
+
 - After 6 months, review if ADRs are being created consistently
 - If ADR count exceeds 50, consider adding a search/index tool
 - If team consistently forgets ADRs, add to PR template checklist
@@ -213,7 +231,7 @@ docs/adr/
 
 ## Change Log
 
-| Date | Change | Author |
-|------|--------|--------|
-| 2025-11-08 | Created initial ADR | Claude Code |
+| Date       | Change                 | Author      |
+| ---------- | ---------------------- | ----------- |
+| 2025-11-08 | Created initial ADR    | Claude Code |
 | 2025-11-08 | Status set to Accepted | Claude Code |

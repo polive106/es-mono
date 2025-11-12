@@ -13,9 +13,7 @@ export const sessions = sqliteTable(
       .notNull()
       .$defaultFn(() => new Date()),
   },
-  (table) => [
-    index('idx_sessions_user_id').on(table.userId),
-  ]
+  (table) => [index('idx_sessions_user_id').on(table.userId)]
 );
 
 export type Session = typeof sessions.$inferSelect;

@@ -21,15 +21,12 @@ export async function checkPasswordBreach(password: string): Promise<number> {
   const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
 
   try {
-    const response = await fetch(
-      `https://api.pwnedpasswords.com/range/${prefix}`,
-      {
-        headers: {
-          'User-Agent': 'SkillSwap-Platform',
-        },
-        signal: controller.signal,
-      }
-    );
+    const response = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`, {
+      headers: {
+        'User-Agent': 'SkillSwap-Platform',
+      },
+      signal: controller.signal,
+    });
 
     clearTimeout(timeoutId);
 

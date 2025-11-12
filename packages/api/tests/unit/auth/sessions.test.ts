@@ -27,11 +27,7 @@ describe('Session Management (Unit Tests)', () => {
     it('should create session with 24-hour timeout for talent users', async () => {
       mockSessionRepo.create.mockResolvedValue();
 
-      const result = await createSessionInternal(
-        'user-123',
-        { isTalent: true },
-        mockSessionRepo
-      );
+      const result = await createSessionInternal('user-123', { isTalent: true }, mockSessionRepo);
 
       expect(result.id).toBe('test-uuid-123');
       expect(result.userId).toBe('user-123');
@@ -52,11 +48,7 @@ describe('Session Management (Unit Tests)', () => {
     it('should create session with 4-hour timeout for manager users', async () => {
       mockSessionRepo.create.mockResolvedValue();
 
-      const result = await createSessionInternal(
-        'user-123',
-        { isTalent: false },
-        mockSessionRepo
-      );
+      const result = await createSessionInternal('user-123', { isTalent: false }, mockSessionRepo);
 
       const expirationDuration = result.expiresAt.getTime() - Date.now();
       const fourHours = 4 * 60 * 60 * 1000;

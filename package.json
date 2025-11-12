@@ -10,14 +10,13 @@
   "license": "UNLICENSED",
   "engines": {
     "node": ">=20.0.0",
-    "pnpm": ">=8.0.0"
+    "pnpm": ">=9.0.0"
   },
-  "packageManager": "pnpm@8.15.0",
+  "packageManager": "pnpm@9.4.0",
   "scripts": {
     "dev": "turbo run dev --parallel",
     "build": "turbo run build",
     "test": "turbo run test",
-    "test:integration": "turbo run test:integration",
     "test:e2e": "cd tests/e2e && playwright test",
     "test:e2e:ui": "cd tests/e2e && playwright test --ui",
     "test:e2e:debug": "cd tests/e2e && playwright test --debug",

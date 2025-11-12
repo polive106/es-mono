@@ -1,5 +1,6 @@
 import { db } from '@es-mono/database';
-import { hashPassword, verifyPassword, checkPasswordBreach } from '@es-mono/shared';
+import { hashPassword, verifyPassword } from '../utils/password';
+import { checkPasswordBreach } from '../utils/hibp';
 import { invalidateSession, createSessionInternal } from './sessions';
 import type {
   IUserRepository,

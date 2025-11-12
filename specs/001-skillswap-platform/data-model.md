@@ -63,19 +63,19 @@ This document defines the complete data model for the SkillSwap platform, includ
 
 #### Fields
 
-| Field | Type | Constraints | Description |
-|-------|------|-------------|-------------|
-| `id` | `TEXT` (UUID) | `PRIMARY KEY` | Unique user identifier |
-| `email` | `TEXT` | `UNIQUE`, `NOT NULL` | User email (login credential) |
-| `password_hash` | `TEXT` | `NOT NULL` | Bcrypt hash (12+ chars plain, breach checked FR-040) |
-| `name` | `TEXT` | `NOT NULL` | Full name |
-| `language_pref` | `TEXT` | `NOT NULL`, `DEFAULT 'en'` | 'en' or 'fr' (FR-003) |
-| `company_id` | `TEXT` (UUID) | `NOT NULL`, `FOREIGN KEY` | Employer company |
-| `last_activity_at` | `INTEGER` (timestamp) | `NOT NULL` | Last login/action (for FR-044 3-year retention) |
-| `is_anonymized` | `BOOLEAN` | `NOT NULL`, `DEFAULT false` | Anonymized after 3 years (FR-044) |
-| `anonymized_at` | `INTEGER` (timestamp) | `NULL` | When anonymization occurred |
-| `created_at` | `INTEGER` (timestamp) | `NOT NULL` | Account creation timestamp |
-| `updated_at` | `INTEGER` (timestamp) | `NOT NULL` | Last profile update |
+| Field              | Type                  | Constraints                 | Description                                          |
+| ------------------ | --------------------- | --------------------------- | ---------------------------------------------------- |
+| `id`               | `TEXT` (UUID)         | `PRIMARY KEY`               | Unique user identifier                               |
+| `email`            | `TEXT`                | `UNIQUE`, `NOT NULL`        | User email (login credential)                        |
+| `password_hash`    | `TEXT`                | `NOT NULL`                  | Bcrypt hash (12+ chars plain, breach checked FR-040) |
+| `name`             | `TEXT`                | `NOT NULL`                  | Full name                                            |
+| `language_pref`    | `TEXT`                | `NOT NULL`, `DEFAULT 'en'`  | 'en' or 'fr' (FR-003)                                |
+| `company_id`       | `TEXT` (UUID)         | `NOT NULL`, `FOREIGN KEY`   | Employer company                                     |
+| `last_activity_at` | `INTEGER` (timestamp) | `NOT NULL`                  | Last login/action (for FR-044 3-year retention)      |
+| `is_anonymized`    | `BOOLEAN`             | `NOT NULL`, `DEFAULT false` | Anonymized after 3 years (FR-044)                    |
+| `anonymized_at`    | `INTEGER` (timestamp) | `NULL`                      | When anonymization occurred                          |
+| `created_at`       | `INTEGER` (timestamp) | `NOT NULL`                  | Account creation timestamp                           |
+| `updated_at`       | `INTEGER` (timestamp) | `NOT NULL`                  | Last profile update                                  |
 
 #### Relationships
 
@@ -101,17 +101,29 @@ import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 import { companies } from './companies';
 
 export const users = sqliteTable('users', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
   email: text('email').notNull().unique(),
   passwordHash: text('password_hash').notNull(),
   name: text('name').notNull(),
-  languagePref: text('language_pref', { enum: ['en', 'fr'] }).notNull().default('en'),
-  companyId: text('company_id').notNull().references(() => companies.id),
+  languagePref: text('language_pref', { enum: ['en', 'fr'] })
+    .notNull()
+    .default('en'),
+  companyId: text('company_id')
+    .notNull()
+    .references(() => companies.id),
   lastActivityAt: integer('last_activity_at', { mode: 'timestamp' }).notNull(),
-  isAnonymized: integer('is_anonymized', { mode: 'boolean' }).notNull().default(false),
+  isAnonymized: integer('is_anonymized', { mode: 'boolean' })
+    .notNull()
+    .default(false),
   anonymizedAt: integer('anonymized_at', { mode: 'timestamp' }),
-  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
-  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  updatedAt: integer('updated_at', { mode: 'timestamp' })
+    .notNull()
+    .$defaultFn(() => new Date()),
 });
 ```
 
@@ -125,14 +137,14 @@ export const users = sqliteTable('users', {
 
 #### Fields
 
-| Field | Type | Constraints | Description |
-|-------|------|-------------|-------------|
-| `id` | `TEXT` (UUID) | `PRIMARY KEY` | Unique role identifier |
-| `name` | `TEXT` | `NOT NULL` | Role name (e.g., "talent", "talent_manager", "company_admin") |
-| `description` | `TEXT` | `NULL` | Human-readable description |
-| `scope` | `TEXT` | `NOT NULL`, `DEFAULT 'system'` | 'system' or 'company' (FR-009) |
-| `company_id` | `TEXT` (UUID) | `NULL`, `FOREIGN KEY` | NULL for system roles, company ID for custom roles |
-| `created_at` | `INTEGER` (timestamp) | `NOT NULL` | Role creation timestamp |
+| Field         | Type                  | Constraints                    | Description                                                   |
+| ------------- | --------------------- | ------------------------------ | ------------------------------------------------------------- |
+| `id`          | `TEXT` (UUID)         | `PRIMARY KEY`                  | Unique role identifier                                        |
+| `name`        | `TEXT`                | `NOT NULL`                     | Role name (e.g., "talent", "talent_manager", "company_admin") |
+| `description` | `TEXT`                | `NULL`                         | Human-readable description                                    |
+| `scope`       | `TEXT`                | `NOT NULL`, `DEFAULT 'system'` | 'system' or 'company' (FR-009)                                |
+| `company_id`  | `TEXT` (UUID)         | `NULL`, `FOREIGN KEY`          | NULL for system roles, company ID for custom roles            |
+| `created_at`  | `INTEGER` (timestamp) | `NOT NULL`                     | Role creation timestamp                                       |
 
 #### Relationships
 
@@ -148,9 +160,9 @@ export const users = sqliteTable('users', {
 
 #### Default System Roles
 
-| Name | Description | Scope |
-|------|-------------|-------|
-| `talent` | Can participate in missions (FR-007) | system |
+| Name             | Description                                         | Scope  |
+| ---------------- | --------------------------------------------------- | ------ |
+| `talent`         | Can participate in missions (FR-007)                | system |
 | `talent_manager` | Can create skill needs and manage missions (FR-007) | system |
 
 #### Drizzle Schema
@@ -158,12 +170,18 @@ export const users = sqliteTable('users', {
 ```typescript
 // packages/database/src/schema/users.ts (continued)
 export const roles = sqliteTable('roles', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
   name: text('name').notNull(),
   description: text('description'),
-  scope: text('scope', { enum: ['system', 'company'] }).notNull().default('system'),
+  scope: text('scope', { enum: ['system', 'company'] })
+    .notNull()
+    .default('system'),
   companyId: text('company_id').references(() => companies.id),
-  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .$defaultFn(() => new Date()),
 });
 ```
 
@@ -177,14 +195,14 @@ export const roles = sqliteTable('roles', {
 
 #### Fields
 
-| Field | Type | Constraints | Description |
-|-------|------|-------------|-------------|
-| `id` | `TEXT` (UUID) | `PRIMARY KEY` | Unique permission identifier |
-| `name` | `TEXT` | `UNIQUE`, `NOT NULL` | Permission name (e.g., "view_talent_pool") |
-| `resource` | `TEXT` | `NOT NULL` | Resource type (e.g., "talent_pool", "skill_need", "mission") |
-| `action` | `TEXT` | `NOT NULL` | Action type (e.g., "view", "create", "update", "delete") |
-| `description` | `TEXT` | `NULL` | Human-readable description |
-| `created_at` | `INTEGER` (timestamp) | `NOT NULL` | Permission creation timestamp |
+| Field         | Type                  | Constraints          | Description                                                  |
+| ------------- | --------------------- | -------------------- | ------------------------------------------------------------ |
+| `id`          | `TEXT` (UUID)         | `PRIMARY KEY`        | Unique permission identifier                                 |
+| `name`        | `TEXT`                | `UNIQUE`, `NOT NULL` | Permission name (e.g., "view_talent_pool")                   |
+| `resource`    | `TEXT`                | `NOT NULL`           | Resource type (e.g., "talent_pool", "skill_need", "mission") |
+| `action`      | `TEXT`                | `NOT NULL`           | Action type (e.g., "view", "create", "update", "delete")     |
+| `description` | `TEXT`                | `NULL`               | Human-readable description                                   |
+| `created_at`  | `INTEGER` (timestamp) | `NOT NULL`           | Permission creation timestamp                                |
 
 #### Relationships
 
@@ -198,24 +216,30 @@ export const roles = sqliteTable('roles', {
 
 #### Default System Permissions
 
-| Name | Resource | Action | Description |
-|------|----------|--------|-------------|
-| `view_talent_pool` | talent_pool | view | Search available talent |
-| `create_skill_need` | skill_need | create | Post skill requirements |
-| `create_mission` | mission | create | Propose mission |
-| `approve_mission` | mission | approve | Manager approval |
-| `purchase_credits` | credits | create | Buy credit packages |
+| Name                | Resource    | Action  | Description             |
+| ------------------- | ----------- | ------- | ----------------------- |
+| `view_talent_pool`  | talent_pool | view    | Search available talent |
+| `create_skill_need` | skill_need  | create  | Post skill requirements |
+| `create_mission`    | mission     | create  | Propose mission         |
+| `approve_mission`   | mission     | approve | Manager approval        |
+| `purchase_credits`  | credits     | create  | Buy credit packages     |
 
 #### Drizzle Schema
 
 ```typescript
 export const permissions = sqliteTable('permissions', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
   name: text('name').notNull().unique(),
   resource: text('resource').notNull(),
-  action: text('action', { enum: ['view', 'create', 'update', 'delete', 'approve'] }).notNull(),
+  action: text('action', {
+    enum: ['view', 'create', 'update', 'delete', 'approve'],
+  }).notNull(),
   description: text('description'),
-  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .$defaultFn(() => new Date()),
 });
 ```
 
@@ -229,13 +253,13 @@ export const permissions = sqliteTable('permissions', {
 
 #### Fields
 
-| Field | Type | Constraints | Description |
-|-------|------|-------------|-------------|
-| `id` | `TEXT` (UUID) | `PRIMARY KEY` | Unique assignment identifier |
-| `user_id` | `TEXT` (UUID) | `NOT NULL`, `FOREIGN KEY` | User receiving role |
-| `role_id` | `TEXT` (UUID) | `NOT NULL`, `FOREIGN KEY` | Role being assigned |
-| `company_id` | `TEXT` (UUID) | `NOT NULL`, `FOREIGN KEY` | Company context for this role assignment |
-| `assigned_at` | `INTEGER` (timestamp) | `NOT NULL` | When role was assigned |
+| Field         | Type                  | Constraints               | Description                              |
+| ------------- | --------------------- | ------------------------- | ---------------------------------------- |
+| `id`          | `TEXT` (UUID)         | `PRIMARY KEY`             | Unique assignment identifier             |
+| `user_id`     | `TEXT` (UUID)         | `NOT NULL`, `FOREIGN KEY` | User receiving role                      |
+| `role_id`     | `TEXT` (UUID)         | `NOT NULL`, `FOREIGN KEY` | Role being assigned                      |
+| `company_id`  | `TEXT` (UUID)         | `NOT NULL`, `FOREIGN KEY` | Company context for this role assignment |
+| `assigned_at` | `INTEGER` (timestamp) | `NOT NULL`                | When role was assigned                   |
 
 #### Relationships
 
@@ -254,15 +278,33 @@ export const permissions = sqliteTable('permissions', {
 #### Drizzle Schema
 
 ```typescript
-export const userRoles = sqliteTable('user_roles', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  userId: text('user_id').notNull().references(() => users.id),
-  roleId: text('role_id').notNull().references(() => roles.id),
-  companyId: text('company_id').notNull().references(() => companies.id),
-  assignedAt: integer('assigned_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
-}, (table) => ({
-  uniqueUserRoleCompany: unique().on(table.userId, table.roleId, table.companyId),
-}));
+export const userRoles = sqliteTable(
+  'user_roles',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id),
+    roleId: text('role_id')
+      .notNull()
+      .references(() => roles.id),
+    companyId: text('company_id')
+      .notNull()
+      .references(() => companies.id),
+    assignedAt: integer('assigned_at', { mode: 'timestamp' })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => ({
+    uniqueUserRoleCompany: unique().on(
+      table.userId,
+      table.roleId,
+      table.companyId
+    ),
+  })
+);
 ```
 
 ---
@@ -275,10 +317,10 @@ export const userRoles = sqliteTable('user_roles', {
 
 #### Fields
 
-| Field | Type | Constraints | Description |
-|-------|------|-------------|-------------|
-| `role_id` | `TEXT` (UUID) | `NOT NULL`, `FOREIGN KEY`, `PRIMARY KEY` (composite) | Role |
-| `permission_id` | `TEXT` (UUID) | `NOT NULL`, `FOREIGN KEY`, `PRIMARY KEY` (composite) | Permission |
+| Field           | Type          | Constraints                                          | Description |
+| --------------- | ------------- | ---------------------------------------------------- | ----------- |
+| `role_id`       | `TEXT` (UUID) | `NOT NULL`, `FOREIGN KEY`, `PRIMARY KEY` (composite) | Role        |
+| `permission_id` | `TEXT` (UUID) | `NOT NULL`, `FOREIGN KEY`, `PRIMARY KEY` (composite) | Permission  |
 
 #### Relationships
 
@@ -288,12 +330,20 @@ export const userRoles = sqliteTable('user_roles', {
 #### Drizzle Schema
 
 ```typescript
-export const rolePermissions = sqliteTable('role_permissions', {
-  roleId: text('role_id').notNull().references(() => roles.id),
-  permissionId: text('permission_id').notNull().references(() => permissions.id),
-}, (table) => ({
-  pk: primaryKey({ columns: [table.roleId, table.permissionId] }),
-}));
+export const rolePermissions = sqliteTable(
+  'role_permissions',
+  {
+    roleId: text('role_id')
+      .notNull()
+      .references(() => roles.id),
+    permissionId: text('permission_id')
+      .notNull()
+      .references(() => permissions.id),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.roleId, table.permissionId] }),
+  })
+);
 ```
 
 ---
@@ -308,17 +358,17 @@ export const rolePermissions = sqliteTable('role_permissions', {
 
 #### Fields
 
-| Field | Type | Constraints | Description |
-|-------|------|-------------|-------------|
-| `id` | `TEXT` (UUID) | `PRIMARY KEY` | Unique company identifier |
-| `name` | `TEXT` | `NOT NULL`, `UNIQUE` | Company name |
-| `industry` | `TEXT` | `NOT NULL` | Industry sector (e.g., "healthtech", "fintech") |
-| `size` | `TEXT` | `NOT NULL` | Company size (e.g., "1-10", "11-50", "51-200") |
-| `location` | `TEXT` | `NOT NULL` | Geographic location (FR-002: FR/UK) |
-| `invite_code` | `TEXT` | `UNIQUE`, `NOT NULL` | Unique code for employee invites (FR-001) |
-| `credit_balance` | `INTEGER` | `NOT NULL`, `DEFAULT 0` | Current credit balance (can go negative FR-027) |
-| `created_at` | `INTEGER` (timestamp) | `NOT NULL` | Company creation timestamp |
-| `updated_at` | `INTEGER` (timestamp) | `NOT NULL` | Last profile update |
+| Field            | Type                  | Constraints             | Description                                     |
+| ---------------- | --------------------- | ----------------------- | ----------------------------------------------- |
+| `id`             | `TEXT` (UUID)         | `PRIMARY KEY`           | Unique company identifier                       |
+| `name`           | `TEXT`                | `NOT NULL`, `UNIQUE`    | Company name                                    |
+| `industry`       | `TEXT`                | `NOT NULL`              | Industry sector (e.g., "healthtech", "fintech") |
+| `size`           | `TEXT`                | `NOT NULL`              | Company size (e.g., "1-10", "11-50", "51-200")  |
+| `location`       | `TEXT`                | `NOT NULL`              | Geographic location (FR-002: FR/UK)             |
+| `invite_code`    | `TEXT`                | `UNIQUE`, `NOT NULL`    | Unique code for employee invites (FR-001)       |
+| `credit_balance` | `INTEGER`             | `NOT NULL`, `DEFAULT 0` | Current credit balance (can go negative FR-027) |
+| `created_at`     | `INTEGER` (timestamp) | `NOT NULL`              | Company creation timestamp                      |
+| `updated_at`     | `INTEGER` (timestamp) | `NOT NULL`              | Last profile update                             |
 
 #### Relationships
 
@@ -341,15 +391,26 @@ export const rolePermissions = sqliteTable('role_permissions', {
 ```typescript
 // packages/database/src/schema/companies.ts
 export const companies = sqliteTable('companies', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
   name: text('name').notNull().unique(),
   industry: text('industry').notNull(),
-  size: text('size', { enum: ['1-10', '11-50', '51-200', '201-500'] }).notNull(),
+  size: text('size', {
+    enum: ['1-10', '11-50', '51-200', '201-500'],
+  }).notNull(),
   location: text('location', { enum: ['FR', 'UK'] }).notNull(),
-  inviteCode: text('invite_code').notNull().unique().$defaultFn(() => generateInviteCode()),
+  inviteCode: text('invite_code')
+    .notNull()
+    .unique()
+    .$defaultFn(() => generateInviteCode()),
   creditBalance: integer('credit_balance').notNull().default(0),
-  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
-  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  updatedAt: integer('updated_at', { mode: 'timestamp' })
+    .notNull()
+    .$defaultFn(() => new Date()),
 });
 ```
 
@@ -363,14 +424,14 @@ export const companies = sqliteTable('companies', {
 
 #### Fields
 
-| Field | Type | Constraints | Description |
-|-------|------|-------------|-------------|
-| `id` | `TEXT` (UUID) | `PRIMARY KEY` | Unique skill identifier |
-| `name` | `TEXT` | `NOT NULL` | Skill name (e.g., "JavaScript", "Financial Modeling") |
-| `category` | `TEXT` | `NOT NULL` | Top-level category (e.g., "Engineering", "Design", "Marketing") |
-| `description` | `TEXT` | `NULL` | Detailed description |
-| `is_approved` | `BOOLEAN` | `NOT NULL`, `DEFAULT true` | User-proposed skills pending approval (FR-014) |
-| `created_at` | `INTEGER` (timestamp) | `NOT NULL` | Skill creation timestamp |
+| Field         | Type                  | Constraints                | Description                                                     |
+| ------------- | --------------------- | -------------------------- | --------------------------------------------------------------- |
+| `id`          | `TEXT` (UUID)         | `PRIMARY KEY`              | Unique skill identifier                                         |
+| `name`        | `TEXT`                | `NOT NULL`                 | Skill name (e.g., "JavaScript", "Financial Modeling")           |
+| `category`    | `TEXT`                | `NOT NULL`                 | Top-level category (e.g., "Engineering", "Design", "Marketing") |
+| `description` | `TEXT`                | `NULL`                     | Detailed description                                            |
+| `is_approved` | `BOOLEAN`             | `NOT NULL`, `DEFAULT true` | User-proposed skills pending approval (FR-014)                  |
+| `created_at`  | `INTEGER` (timestamp) | `NOT NULL`                 | Skill creation timestamp                                        |
 
 #### Relationships
 
@@ -387,17 +448,27 @@ export const companies = sqliteTable('companies', {
 
 ```typescript
 // packages/database/src/schema/skills.ts
-export const skills = sqliteTable('skills', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  name: text('name').notNull(),
-  category: text('category').notNull(),
-  description: text('description'),
-  isApproved: integer('is_approved', { mode: 'boolean' }).notNull().default(true),
-  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
-}, (table) => ({
-  nameIdx: index('idx_skills_name').on(table.name), // For autocomplete search
-  categoryIdx: index('idx_skills_category').on(table.category), // For filtering
-}));
+export const skills = sqliteTable(
+  'skills',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    name: text('name').notNull(),
+    category: text('category').notNull(),
+    description: text('description'),
+    isApproved: integer('is_approved', { mode: 'boolean' })
+      .notNull()
+      .default(true),
+    createdAt: integer('created_at', { mode: 'timestamp' })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => ({
+    nameIdx: index('idx_skills_name').on(table.name), // For autocomplete search
+    categoryIdx: index('idx_skills_category').on(table.category), // For filtering
+  })
+);
 ```
 
 ---
@@ -410,14 +481,14 @@ export const skills = sqliteTable('skills', {
 
 #### Fields
 
-| Field | Type | Constraints | Description |
-|-------|------|-------------|-------------|
-| `id` | `TEXT` (UUID) | `PRIMARY KEY` | Unique mapping identifier |
-| `user_id` | `TEXT` (UUID) | `NOT NULL`, `FOREIGN KEY` | User with this skill |
-| `skill_id` | `TEXT` (UUID) | `NOT NULL`, `FOREIGN KEY` | Skill possessed |
-| `proficiency_level` | `TEXT` | `NOT NULL` | 'beginner', 'intermediate', 'advanced', 'expert' |
-| `years_experience` | `INTEGER` | `NULL` | Years of experience with this skill |
-| `created_at` | `INTEGER` (timestamp) | `NOT NULL` | When skill was added |
+| Field               | Type                  | Constraints               | Description                                      |
+| ------------------- | --------------------- | ------------------------- | ------------------------------------------------ |
+| `id`                | `TEXT` (UUID)         | `PRIMARY KEY`             | Unique mapping identifier                        |
+| `user_id`           | `TEXT` (UUID)         | `NOT NULL`, `FOREIGN KEY` | User with this skill                             |
+| `skill_id`          | `TEXT` (UUID)         | `NOT NULL`, `FOREIGN KEY` | Skill possessed                                  |
+| `proficiency_level` | `TEXT`                | `NOT NULL`                | 'beginner', 'intermediate', 'advanced', 'expert' |
+| `years_experience`  | `INTEGER`             | `NULL`                    | Years of experience with this skill              |
+| `created_at`        | `INTEGER` (timestamp) | `NOT NULL`                | When skill was added                             |
 
 #### Relationships
 
@@ -436,18 +507,32 @@ export const skills = sqliteTable('skills', {
 #### Drizzle Schema
 
 ```typescript
-export const userSkills = sqliteTable('user_skills', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  userId: text('user_id').notNull().references(() => users.id),
-  skillId: text('skill_id').notNull().references(() => skills.id),
-  proficiencyLevel: text('proficiency_level', { enum: ['beginner', 'intermediate', 'advanced', 'expert'] }).notNull(),
-  yearsExperience: integer('years_experience'),
-  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
-}, (table) => ({
-  uniqueUserSkill: unique().on(table.userId, table.skillId),
-  userIdx: index('idx_user_skills_user_id').on(table.userId), // For user profile queries
-  skillIdx: index('idx_user_skills_skill_id').on(table.skillId), // For talent search
-}));
+export const userSkills = sqliteTable(
+  'user_skills',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id),
+    skillId: text('skill_id')
+      .notNull()
+      .references(() => skills.id),
+    proficiencyLevel: text('proficiency_level', {
+      enum: ['beginner', 'intermediate', 'advanced', 'expert'],
+    }).notNull(),
+    yearsExperience: integer('years_experience'),
+    createdAt: integer('created_at', { mode: 'timestamp' })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => ({
+    uniqueUserSkill: unique().on(table.userId, table.skillId),
+    userIdx: index('idx_user_skills_user_id').on(table.userId), // For user profile queries
+    skillIdx: index('idx_user_skills_skill_id').on(table.skillId), // For talent search
+  })
+);
 ```
 
 ---
@@ -460,16 +545,16 @@ export const userSkills = sqliteTable('user_skills', {
 
 #### Fields
 
-| Field | Type | Constraints | Description |
-|-------|------|-------------|-------------|
-| `id` | `TEXT` (UUID) | `PRIMARY KEY` | Unique availability record identifier |
-| `user_id` | `TEXT` (UUID) | `UNIQUE`, `NOT NULL`, `FOREIGN KEY` | User (1:1 relationship) |
-| `availability_pct` | `INTEGER` | `NOT NULL`, `DEFAULT 0` | 0-100 (percentage of capacity, FR-016) |
-| `is_available` | `BOOLEAN` | `NOT NULL`, `DEFAULT true` | User actively seeking missions |
-| `is_anonymized` | `BOOLEAN` | `NOT NULL`, `DEFAULT true` | Profile anonymized in search results (FR-017) |
-| `active_from` | `INTEGER` (timestamp) | `NULL` | Availability start date |
-| `active_until` | `INTEGER` (timestamp) | `NULL` | Availability end date (NULL = indefinite) |
-| `updated_at` | `INTEGER` (timestamp) | `NOT NULL` | Last availability update |
+| Field              | Type                  | Constraints                         | Description                                   |
+| ------------------ | --------------------- | ----------------------------------- | --------------------------------------------- |
+| `id`               | `TEXT` (UUID)         | `PRIMARY KEY`                       | Unique availability record identifier         |
+| `user_id`          | `TEXT` (UUID)         | `UNIQUE`, `NOT NULL`, `FOREIGN KEY` | User (1:1 relationship)                       |
+| `availability_pct` | `INTEGER`             | `NOT NULL`, `DEFAULT 0`             | 0-100 (percentage of capacity, FR-016)        |
+| `is_available`     | `BOOLEAN`             | `NOT NULL`, `DEFAULT true`          | User actively seeking missions                |
+| `is_anonymized`    | `BOOLEAN`             | `NOT NULL`, `DEFAULT true`          | Profile anonymized in search results (FR-017) |
+| `active_from`      | `INTEGER` (timestamp) | `NULL`                              | Availability start date                       |
+| `active_until`     | `INTEGER` (timestamp) | `NULL`                              | Availability end date (NULL = indefinite)     |
+| `updated_at`       | `INTEGER` (timestamp) | `NOT NULL`                          | Last availability update                      |
 
 #### Relationships
 
@@ -483,18 +568,35 @@ export const userSkills = sqliteTable('user_skills', {
 #### Drizzle Schema
 
 ```typescript
-export const talentAvailability = sqliteTable('talent_availability', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  userId: text('user_id').notNull().unique().references(() => users.id),
-  availabilityPct: integer('availability_pct').notNull().default(0),
-  isAvailable: integer('is_available', { mode: 'boolean' }).notNull().default(true),
-  isAnonymized: integer('is_anonymized', { mode: 'boolean' }).notNull().default(true),
-  activeFrom: integer('active_from', { mode: 'timestamp' }),
-  activeUntil: integer('active_until', { mode: 'timestamp' }),
-  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
-}, (table) => ({
-  availabilityIdx: index('idx_talent_availability_pct').on(table.availabilityPct), // For search filters
-}));
+export const talentAvailability = sqliteTable(
+  'talent_availability',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text('user_id')
+      .notNull()
+      .unique()
+      .references(() => users.id),
+    availabilityPct: integer('availability_pct').notNull().default(0),
+    isAvailable: integer('is_available', { mode: 'boolean' })
+      .notNull()
+      .default(true),
+    isAnonymized: integer('is_anonymized', { mode: 'boolean' })
+      .notNull()
+      .default(true),
+    activeFrom: integer('active_from', { mode: 'timestamp' }),
+    activeUntil: integer('active_until', { mode: 'timestamp' }),
+    updatedAt: integer('updated_at', { mode: 'timestamp' })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => ({
+    availabilityIdx: index('idx_talent_availability_pct').on(
+      table.availabilityPct
+    ), // For search filters
+  })
+);
 ```
 
 ---
@@ -507,18 +609,18 @@ export const talentAvailability = sqliteTable('talent_availability', {
 
 #### Fields
 
-| Field | Type | Constraints | Description |
-|-------|------|-------------|-------------|
-| `id` | `TEXT` (UUID) | `PRIMARY KEY` | Unique skill need identifier |
-| `company_id` | `TEXT` (UUID) | `NOT NULL`, `FOREIGN KEY` | Requesting company |
-| `skill_id` | `TEXT` (UUID) | `NOT NULL`, `FOREIGN KEY` | Required skill |
-| `title` | `TEXT` | `NOT NULL` | Need title (e.g., "Financial Regulatory Compliance Expert") |
-| `description` | `TEXT` | `NOT NULL` | Detailed need description |
-| `duration_months` | `INTEGER` | `NOT NULL` | Expected project duration (FR-018: typically 3 months) |
-| `time_commitment_hrs_week` | `INTEGER` | `NOT NULL` | Hours per week needed |
-| `status` | `TEXT` | `NOT NULL`, `DEFAULT 'open'` | 'open', 'matched', 'fulfilled', 'cancelled' |
-| `created_at` | `INTEGER` (timestamp) | `NOT NULL` | Skill need creation timestamp |
-| `updated_at` | `INTEGER` (timestamp) | `NOT NULL` | Last update timestamp |
+| Field                      | Type                  | Constraints                  | Description                                                 |
+| -------------------------- | --------------------- | ---------------------------- | ----------------------------------------------------------- |
+| `id`                       | `TEXT` (UUID)         | `PRIMARY KEY`                | Unique skill need identifier                                |
+| `company_id`               | `TEXT` (UUID)         | `NOT NULL`, `FOREIGN KEY`    | Requesting company                                          |
+| `skill_id`                 | `TEXT` (UUID)         | `NOT NULL`, `FOREIGN KEY`    | Required skill                                              |
+| `title`                    | `TEXT`                | `NOT NULL`                   | Need title (e.g., "Financial Regulatory Compliance Expert") |
+| `description`              | `TEXT`                | `NOT NULL`                   | Detailed need description                                   |
+| `duration_months`          | `INTEGER`             | `NOT NULL`                   | Expected project duration (FR-018: typically 3 months)      |
+| `time_commitment_hrs_week` | `INTEGER`             | `NOT NULL`                   | Hours per week needed                                       |
+| `status`                   | `TEXT`                | `NOT NULL`, `DEFAULT 'open'` | 'open', 'matched', 'fulfilled', 'cancelled'                 |
+| `created_at`               | `INTEGER` (timestamp) | `NOT NULL`                   | Skill need creation timestamp                               |
+| `updated_at`               | `INTEGER` (timestamp) | `NOT NULL`                   | Last update timestamp                                       |
 
 #### Relationships
 
@@ -535,22 +637,40 @@ export const talentAvailability = sqliteTable('talent_availability', {
 #### Drizzle Schema
 
 ```typescript
-export const skillNeeds = sqliteTable('skill_needs', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  companyId: text('company_id').notNull().references(() => companies.id),
-  skillId: text('skill_id').notNull().references(() => skills.id),
-  title: text('title').notNull(),
-  description: text('description').notNull(),
-  durationMonths: integer('duration_months').notNull(),
-  timeCommitmentHrsWeek: integer('time_commitment_hrs_week').notNull(),
-  status: text('status', { enum: ['open', 'matched', 'fulfilled', 'cancelled'] }).notNull().default('open'),
-  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
-  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
-}, (table) => ({
-  companyIdx: index('idx_skill_needs_company_id').on(table.companyId),
-  skillIdx: index('idx_skill_needs_skill_id').on(table.skillId),
-  statusIdx: index('idx_skill_needs_status').on(table.status), // For listing open needs
-}));
+export const skillNeeds = sqliteTable(
+  'skill_needs',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    companyId: text('company_id')
+      .notNull()
+      .references(() => companies.id),
+    skillId: text('skill_id')
+      .notNull()
+      .references(() => skills.id),
+    title: text('title').notNull(),
+    description: text('description').notNull(),
+    durationMonths: integer('duration_months').notNull(),
+    timeCommitmentHrsWeek: integer('time_commitment_hrs_week').notNull(),
+    status: text('status', {
+      enum: ['open', 'matched', 'fulfilled', 'cancelled'],
+    })
+      .notNull()
+      .default('open'),
+    createdAt: integer('created_at', { mode: 'timestamp' })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: integer('updated_at', { mode: 'timestamp' })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => ({
+    companyIdx: index('idx_skill_needs_company_id').on(table.companyId),
+    skillIdx: index('idx_skill_needs_skill_id').on(table.skillId),
+    statusIdx: index('idx_skill_needs_status').on(table.status), // For listing open needs
+  })
+);
 ```
 
 ---
@@ -565,33 +685,36 @@ export const skillNeeds = sqliteTable('skill_needs', {
 
 #### Fields
 
-| Field | Type | Constraints | Description |
-|-------|------|-------------|-------------|
-| `id` | `TEXT` (UUID) | `PRIMARY KEY` | Unique mission identifier |
-| `proposing_company_id` | `TEXT` (UUID) | `NOT NULL`, `FOREIGN KEY` | Company initiating the proposal (can be lender or borrower) |
-| `receiving_company_id` | `TEXT` (UUID) | `NOT NULL`, `FOREIGN KEY` | Company receiving/borrowing the talent |
-| `talent_user_id` | `TEXT` (UUID) | `NOT NULL`, `FOREIGN KEY` | Employee being lent for this mission |
-| `skill_need_id` | `TEXT` (UUID) | `NULL`, `FOREIGN KEY` | Related skill need (if applicable) |
-| `duration_months` | `INTEGER` | `NOT NULL` | Agreed mission duration |
-| `time_commitment_hrs_week` | `INTEGER` | `NOT NULL` | Agreed hours per week |
-| `credit_value` | `INTEGER` | `NOT NULL` | Credit value of mission (FR-028: salary-based or negotiated FR-029) |
-| `status` | `TEXT` | `NOT NULL` | See status enum below |
-| `created_at` | `INTEGER` (timestamp) | `NOT NULL` | Mission creation timestamp |
-| `updated_at` | `INTEGER` (timestamp) | `NOT NULL` | Last status update |
+| Field                      | Type                  | Constraints               | Description                                                         |
+| -------------------------- | --------------------- | ------------------------- | ------------------------------------------------------------------- |
+| `id`                       | `TEXT` (UUID)         | `PRIMARY KEY`             | Unique mission identifier                                           |
+| `proposing_company_id`     | `TEXT` (UUID)         | `NOT NULL`, `FOREIGN KEY` | Company initiating the proposal (can be lender or borrower)         |
+| `receiving_company_id`     | `TEXT` (UUID)         | `NOT NULL`, `FOREIGN KEY` | Company receiving/borrowing the talent                              |
+| `talent_user_id`           | `TEXT` (UUID)         | `NOT NULL`, `FOREIGN KEY` | Employee being lent for this mission                                |
+| `skill_need_id`            | `TEXT` (UUID)         | `NULL`, `FOREIGN KEY`     | Related skill need (if applicable)                                  |
+| `duration_months`          | `INTEGER`             | `NOT NULL`                | Agreed mission duration                                             |
+| `time_commitment_hrs_week` | `INTEGER`             | `NOT NULL`                | Agreed hours per week                                               |
+| `credit_value`             | `INTEGER`             | `NOT NULL`                | Credit value of mission (FR-028: salary-based or negotiated FR-029) |
+| `status`                   | `TEXT`                | `NOT NULL`                | See status enum below                                               |
+| `created_at`               | `INTEGER` (timestamp) | `NOT NULL`                | Mission creation timestamp                                          |
+| `updated_at`               | `INTEGER` (timestamp) | `NOT NULL`                | Last status update                                                  |
 
 #### Credit Flow Logic
 
 **Lending Company** (company that has the employee):
+
 - **Receives**: `+credit_value` (they provided value by lending their employee)
 - **Identified by**: Company that `talent_user_id` belongs to (employee's employer)
 
 **Borrowing Company** (company receiving the talent):
+
 - **Spends**: `-credit_value` (they consumed value by using external talent)
 - **Identified by**: `receiving_company_id`
 
 **Example Flows**:
 
 **Flow 1: Borrower Initiates** (most common)
+
 1. Company A (borrower) posts skill need: "Need regulatory expert"
 2. Company A searches talent pool, finds Employee X from Company B
 3. Company A proposes to borrow Employee X
@@ -602,6 +725,7 @@ export const skillNeeds = sqliteTable('skill_needs', {
 5. Credits: Company B +30 (lender), Company A -30 (borrower)
 
 **Flow 2: Lender Initiates**
+
 1. Company B has underutilized Employee X with regulatory skills
 2. Company B searches skill needs, finds Company A's need
 3. Company B proposes Employee X for Company A's need
@@ -612,6 +736,7 @@ export const skillNeeds = sqliteTable('skill_needs', {
 5. Same credit flow: Company B +30, Company A -30
 
 **Flow 3: Employee Self-Proposal** (US7)
+
 1. Employee X browses opportunities, finds Company A's need
 2. Employee X proposes themselves
    - Triggers Company B (employer) notification for approval
@@ -633,17 +758,17 @@ export const skillNeeds = sqliteTable('skill_needs', {
 
 See **State Transitions** section below for detailed state machine.
 
-| Status | Description |
-|--------|-------------|
-| `proposed` | Initial mission proposal created |
-| `negotiating` | Counter-proposal in progress (FR-023) |
-| `awaiting_consent` | Awaiting employee consent |
-| `awaiting_manager` | Awaiting manager approval |
-| `awaiting_legal` | Awaiting legal review (NDA) |
-| `approved` | All approvals complete, mission ready to start |
-| `active` | Mission in progress |
-| `completed` | Mission finished (FR-035) |
-| `cancelled` | Mission cancelled (FR-025) |
+| Status             | Description                                    |
+| ------------------ | ---------------------------------------------- |
+| `proposed`         | Initial mission proposal created               |
+| `negotiating`      | Counter-proposal in progress (FR-023)          |
+| `awaiting_consent` | Awaiting employee consent                      |
+| `awaiting_manager` | Awaiting manager approval                      |
+| `awaiting_legal`   | Awaiting legal review (NDA)                    |
+| `approved`         | All approvals complete, mission ready to start |
+| `active`           | Mission in progress                            |
+| `completed`        | Mission finished (FR-035)                      |
+| `cancelled`        | Mission cancelled (FR-025)                     |
 
 #### Validation Rules
 
@@ -656,29 +781,58 @@ See **State Transitions** section below for detailed state machine.
 
 ```typescript
 // packages/database/src/schema/missions.ts
-export const missions = sqliteTable('missions', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  proposingCompanyId: text('proposing_company_id').notNull().references(() => companies.id),
-  receivingCompanyId: text('receiving_company_id').notNull().references(() => companies.id),
-  talentUserId: text('talent_user_id').notNull().references(() => users.id),
-  skillNeedId: text('skill_need_id').references(() => skillNeeds.id),
-  durationMonths: integer('duration_months').notNull(),
-  timeCommitmentHrsWeek: integer('time_commitment_hrs_week').notNull(),
-  creditValue: integer('credit_value').notNull(),
-  status: text('status', {
-    enum: [
-      'proposed', 'negotiating', 'awaiting_consent', 'awaiting_manager',
-      'awaiting_legal', 'approved', 'active', 'completed', 'cancelled'
-    ]
-  }).notNull().default('proposed'),
-  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
-  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
-}, (table) => ({
-  proposingCompanyIdx: index('idx_missions_proposing_company').on(table.proposingCompanyId),
-  receivingCompanyIdx: index('idx_missions_receiving_company').on(table.receivingCompanyId),
-  talentIdx: index('idx_missions_talent_user').on(table.talentUserId),
-  statusIdx: index('idx_missions_status').on(table.status),
-}));
+export const missions = sqliteTable(
+  'missions',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    proposingCompanyId: text('proposing_company_id')
+      .notNull()
+      .references(() => companies.id),
+    receivingCompanyId: text('receiving_company_id')
+      .notNull()
+      .references(() => companies.id),
+    talentUserId: text('talent_user_id')
+      .notNull()
+      .references(() => users.id),
+    skillNeedId: text('skill_need_id').references(() => skillNeeds.id),
+    durationMonths: integer('duration_months').notNull(),
+    timeCommitmentHrsWeek: integer('time_commitment_hrs_week').notNull(),
+    creditValue: integer('credit_value').notNull(),
+    status: text('status', {
+      enum: [
+        'proposed',
+        'negotiating',
+        'awaiting_consent',
+        'awaiting_manager',
+        'awaiting_legal',
+        'approved',
+        'active',
+        'completed',
+        'cancelled',
+      ],
+    })
+      .notNull()
+      .default('proposed'),
+    createdAt: integer('created_at', { mode: 'timestamp' })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: integer('updated_at', { mode: 'timestamp' })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => ({
+    proposingCompanyIdx: index('idx_missions_proposing_company').on(
+      table.proposingCompanyId
+    ),
+    receivingCompanyIdx: index('idx_missions_receiving_company').on(
+      table.receivingCompanyId
+    ),
+    talentIdx: index('idx_missions_talent_user').on(table.talentUserId),
+    statusIdx: index('idx_missions_status').on(table.status),
+  })
+);
 ```
 
 ---
@@ -691,16 +845,16 @@ export const missions = sqliteTable('missions', {
 
 #### Fields
 
-| Field | Type | Constraints | Description |
-|-------|------|-------------|-------------|
-| `id` | `TEXT` (UUID) | `PRIMARY KEY` | Unique approval identifier |
-| `mission_id` | `TEXT` (UUID) | `NOT NULL`, `FOREIGN KEY` | Related mission |
-| `type` | `TEXT` | `NOT NULL` | 'employee_consent', 'manager_approval', 'legal_check' |
-| `status` | `TEXT` | `NOT NULL`, `DEFAULT 'pending'` | 'pending', 'approved', 'rejected' |
-| `approver_user_id` | `TEXT` (UUID) | `NULL`, `FOREIGN KEY` | User who approved/rejected (NULL if pending) |
-| `comments` | `TEXT` | `NULL` | Approver comments |
-| `approved_at` | `INTEGER` (timestamp) | `NULL` | When approval decision was made |
-| `created_at` | `INTEGER` (timestamp) | `NOT NULL` | Approval request creation timestamp |
+| Field              | Type                  | Constraints                     | Description                                           |
+| ------------------ | --------------------- | ------------------------------- | ----------------------------------------------------- |
+| `id`               | `TEXT` (UUID)         | `PRIMARY KEY`                   | Unique approval identifier                            |
+| `mission_id`       | `TEXT` (UUID)         | `NOT NULL`, `FOREIGN KEY`       | Related mission                                       |
+| `type`             | `TEXT`                | `NOT NULL`                      | 'employee_consent', 'manager_approval', 'legal_check' |
+| `status`           | `TEXT`                | `NOT NULL`, `DEFAULT 'pending'` | 'pending', 'approved', 'rejected'                     |
+| `approver_user_id` | `TEXT` (UUID)         | `NULL`, `FOREIGN KEY`           | User who approved/rejected (NULL if pending)          |
+| `comments`         | `TEXT`                | `NULL`                          | Approver comments                                     |
+| `approved_at`      | `INTEGER` (timestamp) | `NULL`                          | When approval decision was made                       |
+| `created_at`       | `INTEGER` (timestamp) | `NOT NULL`                      | Approval request creation timestamp                   |
 
 #### Relationships
 
@@ -719,19 +873,33 @@ export const missions = sqliteTable('missions', {
 #### Drizzle Schema
 
 ```typescript
-export const approvals = sqliteTable('approvals', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  missionId: text('mission_id').notNull().references(() => missions.id),
-  type: text('type', { enum: ['employee_consent', 'manager_approval', 'legal_check'] }).notNull(),
-  status: text('status', { enum: ['pending', 'approved', 'rejected'] }).notNull().default('pending'),
-  approverUserId: text('approver_user_id').references(() => users.id),
-  comments: text('comments'),
-  approvedAt: integer('approved_at', { mode: 'timestamp' }),
-  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
-}, (table) => ({
-  uniqueMissionType: unique().on(table.missionId, table.type),
-  missionIdx: index('idx_approvals_mission_id').on(table.missionId),
-}));
+export const approvals = sqliteTable(
+  'approvals',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    missionId: text('mission_id')
+      .notNull()
+      .references(() => missions.id),
+    type: text('type', {
+      enum: ['employee_consent', 'manager_approval', 'legal_check'],
+    }).notNull(),
+    status: text('status', { enum: ['pending', 'approved', 'rejected'] })
+      .notNull()
+      .default('pending'),
+    approverUserId: text('approver_user_id').references(() => users.id),
+    comments: text('comments'),
+    approvedAt: integer('approved_at', { mode: 'timestamp' }),
+    createdAt: integer('created_at', { mode: 'timestamp' })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => ({
+    uniqueMissionType: unique().on(table.missionId, table.type),
+    missionIdx: index('idx_approvals_mission_id').on(table.missionId),
+  })
+);
 ```
 
 ---
@@ -744,15 +912,15 @@ export const approvals = sqliteTable('approvals', {
 
 #### Fields
 
-| Field | Type | Constraints | Description |
-|-------|------|-------------|-------------|
-| `id` | `TEXT` (UUID) | `PRIMARY KEY` | Unique NDA identifier |
-| `mission_id` | `TEXT` (UUID) | `UNIQUE`, `NOT NULL`, `FOREIGN KEY` | Related mission (1:1) |
-| `proposing_company_signer_id` | `TEXT` (UUID) | `NOT NULL`, `FOREIGN KEY` | Signer from proposing company |
-| `receiving_company_signer_id` | `TEXT` (UUID) | `NOT NULL`, `FOREIGN KEY` | Signer from receiving company |
-| `document_url` | `TEXT` | `NOT NULL` | URL to signed NDA document (storage TBD) |
-| `signed_at` | `INTEGER` (timestamp) | `NOT NULL` | When both parties signed |
-| `created_at` | `INTEGER` (timestamp) | `NOT NULL` | NDA creation timestamp |
+| Field                         | Type                  | Constraints                         | Description                              |
+| ----------------------------- | --------------------- | ----------------------------------- | ---------------------------------------- |
+| `id`                          | `TEXT` (UUID)         | `PRIMARY KEY`                       | Unique NDA identifier                    |
+| `mission_id`                  | `TEXT` (UUID)         | `UNIQUE`, `NOT NULL`, `FOREIGN KEY` | Related mission (1:1)                    |
+| `proposing_company_signer_id` | `TEXT` (UUID)         | `NOT NULL`, `FOREIGN KEY`           | Signer from proposing company            |
+| `receiving_company_signer_id` | `TEXT` (UUID)         | `NOT NULL`, `FOREIGN KEY`           | Signer from receiving company            |
+| `document_url`                | `TEXT`                | `NOT NULL`                          | URL to signed NDA document (storage TBD) |
+| `signed_at`                   | `INTEGER` (timestamp) | `NOT NULL`                          | When both parties signed                 |
+| `created_at`                  | `INTEGER` (timestamp) | `NOT NULL`                          | NDA creation timestamp                   |
 
 #### Relationships
 
@@ -769,13 +937,24 @@ export const approvals = sqliteTable('approvals', {
 
 ```typescript
 export const ndas = sqliteTable('ndas', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  missionId: text('mission_id').notNull().unique().references(() => missions.id),
-  proposingCompanySignerId: text('proposing_company_signer_id').notNull().references(() => users.id),
-  receivingCompanySignerId: text('receiving_company_signer_id').notNull().references(() => users.id),
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  missionId: text('mission_id')
+    .notNull()
+    .unique()
+    .references(() => missions.id),
+  proposingCompanySignerId: text('proposing_company_signer_id')
+    .notNull()
+    .references(() => users.id),
+  receivingCompanySignerId: text('receiving_company_signer_id')
+    .notNull()
+    .references(() => users.id),
   documentUrl: text('document_url').notNull(),
   signedAt: integer('signed_at', { mode: 'timestamp' }).notNull(),
-  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .$defaultFn(() => new Date()),
 });
 ```
 
@@ -789,15 +968,15 @@ export const ndas = sqliteTable('ndas', {
 
 #### Fields
 
-| Field | Type | Constraints | Description |
-|-------|------|-------------|-------------|
-| `id` | `TEXT` (UUID) | `PRIMARY KEY` | Unique time log identifier |
-| `mission_id` | `TEXT` (UUID) | `NOT NULL`, `FOREIGN KEY` | Related mission |
-| `user_id` | `TEXT` (UUID) | `NOT NULL`, `FOREIGN KEY` | User logging time |
-| `hours_worked` | `INTEGER` | `NOT NULL` | Hours logged for this entry |
-| `work_date` | `INTEGER` (timestamp) | `NOT NULL` | Date of work |
-| `notes` | `TEXT` | `NULL` | Work notes (FR-034) |
-| `created_at` | `INTEGER` (timestamp) | `NOT NULL` | Log entry creation timestamp |
+| Field          | Type                  | Constraints               | Description                  |
+| -------------- | --------------------- | ------------------------- | ---------------------------- |
+| `id`           | `TEXT` (UUID)         | `PRIMARY KEY`             | Unique time log identifier   |
+| `mission_id`   | `TEXT` (UUID)         | `NOT NULL`, `FOREIGN KEY` | Related mission              |
+| `user_id`      | `TEXT` (UUID)         | `NOT NULL`, `FOREIGN KEY` | User logging time            |
+| `hours_worked` | `INTEGER`             | `NOT NULL`                | Hours logged for this entry  |
+| `work_date`    | `INTEGER` (timestamp) | `NOT NULL`                | Date of work                 |
+| `notes`        | `TEXT`                | `NULL`                    | Work notes (FR-034)          |
+| `created_at`   | `INTEGER` (timestamp) | `NOT NULL`                | Log entry creation timestamp |
 
 #### Relationships
 
@@ -812,18 +991,30 @@ export const ndas = sqliteTable('ndas', {
 #### Drizzle Schema
 
 ```typescript
-export const timeLogs = sqliteTable('time_logs', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  missionId: text('mission_id').notNull().references(() => missions.id),
-  userId: text('user_id').notNull().references(() => users.id),
-  hoursWorked: integer('hours_worked').notNull(),
-  workDate: integer('work_date', { mode: 'timestamp' }).notNull(),
-  notes: text('notes'),
-  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
-}, (table) => ({
-  missionIdx: index('idx_time_logs_mission_id').on(table.missionId),
-  userIdx: index('idx_time_logs_user_id').on(table.userId),
-}));
+export const timeLogs = sqliteTable(
+  'time_logs',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    missionId: text('mission_id')
+      .notNull()
+      .references(() => missions.id),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id),
+    hoursWorked: integer('hours_worked').notNull(),
+    workDate: integer('work_date', { mode: 'timestamp' }).notNull(),
+    notes: text('notes'),
+    createdAt: integer('created_at', { mode: 'timestamp' })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => ({
+    missionIdx: index('idx_time_logs_mission_id').on(table.missionId),
+    userIdx: index('idx_time_logs_user_id').on(table.userId),
+  })
+);
 ```
 
 ---
@@ -836,16 +1027,16 @@ export const timeLogs = sqliteTable('time_logs', {
 
 #### Fields
 
-| Field | Type | Constraints | Description |
-|-------|------|-------------|-------------|
-| `id` | `TEXT` (UUID) | `PRIMARY KEY` | Unique transaction identifier |
-| `company_id` | `TEXT` (UUID) | `NOT NULL`, `FOREIGN KEY` | Company affected |
-| `amount` | `INTEGER` | `NOT NULL` | Credit amount (positive = gained, negative = spent) |
-| `type` | `TEXT` | `NOT NULL` | 'mission', 'purchase', 'adjustment' |
-| `description` | `TEXT` | `NOT NULL` | Human-readable description |
-| `mission_id` | `TEXT` (UUID) | `NULL`, `FOREIGN KEY` | Related mission (if type = 'mission') |
-| `initiated_by_user_id` | `TEXT` (UUID) | `NULL`, `FOREIGN KEY` | User who initiated transaction |
-| `created_at` | `INTEGER` (timestamp) | `NOT NULL` | Transaction timestamp |
+| Field                  | Type                  | Constraints               | Description                                         |
+| ---------------------- | --------------------- | ------------------------- | --------------------------------------------------- |
+| `id`                   | `TEXT` (UUID)         | `PRIMARY KEY`             | Unique transaction identifier                       |
+| `company_id`           | `TEXT` (UUID)         | `NOT NULL`, `FOREIGN KEY` | Company affected                                    |
+| `amount`               | `INTEGER`             | `NOT NULL`                | Credit amount (positive = gained, negative = spent) |
+| `type`                 | `TEXT`                | `NOT NULL`                | 'mission', 'purchase', 'adjustment'                 |
+| `description`          | `TEXT`                | `NOT NULL`                | Human-readable description                          |
+| `mission_id`           | `TEXT` (UUID)         | `NULL`, `FOREIGN KEY`     | Related mission (if type = 'mission')               |
+| `initiated_by_user_id` | `TEXT` (UUID)         | `NULL`, `FOREIGN KEY`     | User who initiated transaction                      |
+| `created_at`           | `INTEGER` (timestamp) | `NOT NULL`                | Transaction timestamp                               |
 
 #### Relationships
 
@@ -863,19 +1054,31 @@ export const timeLogs = sqliteTable('time_logs', {
 
 ```typescript
 // packages/database/src/schema/credits.ts
-export const creditTransactions = sqliteTable('credit_transactions', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  companyId: text('company_id').notNull().references(() => companies.id),
-  amount: integer('amount').notNull(),
-  type: text('type', { enum: ['mission', 'purchase', 'adjustment'] }).notNull(),
-  description: text('description').notNull(),
-  missionId: text('mission_id').references(() => missions.id),
-  initiatedByUserId: text('initiated_by_user_id').references(() => users.id),
-  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
-}, (table) => ({
-  companyIdx: index('idx_credit_transactions_company_id').on(table.companyId),
-  typeIdx: index('idx_credit_transactions_type').on(table.type),
-}));
+export const creditTransactions = sqliteTable(
+  'credit_transactions',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    companyId: text('company_id')
+      .notNull()
+      .references(() => companies.id),
+    amount: integer('amount').notNull(),
+    type: text('type', {
+      enum: ['mission', 'purchase', 'adjustment'],
+    }).notNull(),
+    description: text('description').notNull(),
+    missionId: text('mission_id').references(() => missions.id),
+    initiatedByUserId: text('initiated_by_user_id').references(() => users.id),
+    createdAt: integer('created_at', { mode: 'timestamp' })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => ({
+    companyIdx: index('idx_credit_transactions_company_id').on(table.companyId),
+    typeIdx: index('idx_credit_transactions_type').on(table.type),
+  })
+);
 ```
 
 ---
@@ -955,6 +1158,7 @@ const VALID_TRANSITIONS: Record<MissionStatus, MissionStatus[]> = {
 ```
 
 **Side Effects** (business logic):
+
 - `awaiting_consent → awaiting_manager`: Create `Approval` record with `type='employee_consent'`, `status='approved'`
 - `awaiting_manager → awaiting_legal`: Create `Approval` record with `type='manager_approval'`, `status='approved'`
 - `awaiting_legal → approved`: Create `NDA` record, `Approval` record with `type='legal_check'`, `status='approved'`
@@ -967,24 +1171,24 @@ const VALID_TRANSITIONS: Record<MissionStatus, MissionStatus[]> = {
 
 **Performance Targets**: SC-018 (<2s skill search), FR-020 (talent search/filter)
 
-| Table | Index | Columns | Purpose |
-|-------|-------|---------|---------|
-| `users` | `idx_users_company_id` | company_id | Filter users by company |
-| `user_skills` | `idx_user_skills_user_id` | user_id | Get user's skills |
-| `user_skills` | `idx_user_skills_skill_id` | skill_id | Find users with skill |
-| `talent_availability` | `idx_talent_availability_pct` | availability_pct | Filter by availability |
-| `skills` | `idx_skills_name` | name | Autocomplete search |
-| `skills` | `idx_skills_category` | category | Filter by category |
-| `skill_needs` | `idx_skill_needs_company_id` | company_id | Company's needs |
-| `skill_needs` | `idx_skill_needs_skill_id` | skill_id | Needs for specific skill |
-| `skill_needs` | `idx_skill_needs_status` | status | List open needs |
-| `missions` | `idx_missions_proposing_company` | proposing_company_id | Company's proposals |
-| `missions` | `idx_missions_receiving_company` | receiving_company_id | Company's received |
-| `missions` | `idx_missions_talent_user` | talent_user_id | User's missions |
-| `missions` | `idx_missions_status` | status | Filter by status |
-| `approvals` | `idx_approvals_mission_id` | mission_id | Mission's approvals |
-| `credit_transactions` | `idx_credit_transactions_company_id` | company_id | Company transaction history |
-| `time_logs` | `idx_time_logs_mission_id` | mission_id | Mission time logs |
+| Table                 | Index                                | Columns              | Purpose                     |
+| --------------------- | ------------------------------------ | -------------------- | --------------------------- |
+| `users`               | `idx_users_company_id`               | company_id           | Filter users by company     |
+| `user_skills`         | `idx_user_skills_user_id`            | user_id              | Get user's skills           |
+| `user_skills`         | `idx_user_skills_skill_id`           | skill_id             | Find users with skill       |
+| `talent_availability` | `idx_talent_availability_pct`        | availability_pct     | Filter by availability      |
+| `skills`              | `idx_skills_name`                    | name                 | Autocomplete search         |
+| `skills`              | `idx_skills_category`                | category             | Filter by category          |
+| `skill_needs`         | `idx_skill_needs_company_id`         | company_id           | Company's needs             |
+| `skill_needs`         | `idx_skill_needs_skill_id`           | skill_id             | Needs for specific skill    |
+| `skill_needs`         | `idx_skill_needs_status`             | status               | List open needs             |
+| `missions`            | `idx_missions_proposing_company`     | proposing_company_id | Company's proposals         |
+| `missions`            | `idx_missions_receiving_company`     | receiving_company_id | Company's received          |
+| `missions`            | `idx_missions_talent_user`           | talent_user_id       | User's missions             |
+| `missions`            | `idx_missions_status`                | status               | Filter by status            |
+| `approvals`           | `idx_approvals_mission_id`           | mission_id           | Mission's approvals         |
+| `credit_transactions` | `idx_credit_transactions_company_id` | company_id           | Company transaction history |
+| `time_logs`           | `idx_time_logs_mission_id`           | mission_id           | Mission time logs           |
 
 ---
 
@@ -1015,12 +1219,22 @@ export async function seed(db: DrizzleDB) {
   // 1. Insert system roles
   await db.insert(roles).values([
     { id: 'role_talent', name: 'talent', scope: 'system', description: '...' },
-    { id: 'role_talent_manager', name: 'talent_manager', scope: 'system', description: '...' },
+    {
+      id: 'role_talent_manager',
+      name: 'talent_manager',
+      scope: 'system',
+      description: '...',
+    },
   ]);
 
   // 2. Insert permissions
   await db.insert(permissions).values([
-    { id: 'perm_view_talent_pool', name: 'view_talent_pool', resource: 'talent_pool', action: 'view' },
+    {
+      id: 'perm_view_talent_pool',
+      name: 'view_talent_pool',
+      resource: 'talent_pool',
+      action: 'view',
+    },
     // ...
   ]);
 
@@ -1043,6 +1257,7 @@ export async function seed(db: DrizzleDB) {
 ### SQLite → PostgreSQL Compatibility
 
 **Type Mappings**:
+
 - SQLite `TEXT` → PostgreSQL `VARCHAR(n)` or `TEXT`
 - SQLite `INTEGER` (timestamp) → PostgreSQL `TIMESTAMPTZ`
 - SQLite `INTEGER` (boolean) → PostgreSQL `BOOLEAN`
@@ -1064,6 +1279,7 @@ export default defineConfig({
 ```
 
 **Full-Text Search Migration**:
+
 - SQLite: `CREATE VIRTUAL TABLE skills_fts USING fts5(name, category);`
 - PostgreSQL: `CREATE INDEX idx_skills_name_trgm ON skills USING gin(name gin_trgm_ops);`
 

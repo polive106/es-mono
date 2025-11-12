@@ -5,7 +5,7 @@
 **Status**: Draft
 **Input**: User description: "Create a skill-sharing marketplace platform where companies exchange employee expertise using a credit-based system for cross-industry talent sharing"
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Company Onboarding & Profile Setup (Priority: P1)
 
@@ -138,17 +138,19 @@ Employees need to browse available opportunities across the network and propose 
 - **How are NDA breaches handled?** Legal agreements specify remedies; the platform logs all data access for audit trails
 - **What if an employee refuses consent after companies agree?** The mission is cancelled with no credit transaction; companies are notified to find alternative matches
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
 **Company & Access Management**
+
 - **FR-001**: System MUST allow companies to join only via invite links to maintain network quality
 - **FR-002**: System MUST support company profiles including industry, size, and geographic location
 - **FR-003**: System MUST display all content in French and English based on user language preference
 - **FR-004**: System MUST support startups and SME company types in the MVP phase
 
 **User, Role & Permission Management**
+
 - **FR-005**: System MUST store all users in a single User/Account table regardless of their role (talent, talent manager, or both)
 - **FR-006**: System MUST support role-based access control with N:N relationship between Users and Roles
 - **FR-007**: System MUST provide default system roles: "talent" (can participate in missions) and "talent_manager" (can create skill needs and manage missions)
@@ -159,18 +161,21 @@ Employees need to browse available opportunities across the network and propose 
 - **FR-012**: Users MUST be able to have different roles in different companies (e.g., talent in Company A, talent_manager in Company B)
 
 **User Skill Management**
-- **FR-013**: System MUST support hierarchical skill taxonomy with 10-15 top-level categories (e.g., "Engineering", "Design", "Marketing", "Business Analysis") and approximately 100 pre-seeded specific skills sourced from industry standards (LinkedIn Skills, O*NET classifications)
+
+- **FR-013**: System MUST support hierarchical skill taxonomy with 10-15 top-level categories (e.g., "Engineering", "Design", "Marketing", "Business Analysis") and approximately 100 pre-seeded specific skills sourced from industry standards (LinkedIn Skills, O\*NET classifications)
 - **FR-014**: Users MUST be able to propose new skills to the taxonomy for admin approval, ensuring the taxonomy grows based on real user needs
 - **FR-015**: System MUST allow users to document skills through self-reported surveys
 - **FR-016**: System MUST allow users to set availability as percentage of capacity (e.g., 20%, 40%, full-time)
 - **FR-017**: System MUST anonymize user profiles when shown to other companies initially
 
 **Skill Needs & Matching**
+
 - **FR-018**: Users with talent_manager role MUST be able to declare skill needs with duration (project-based, typically 3 months) and time commitment
 - **FR-019**: System MUST match skill needs with available talent based on skill categories and availability
 - **FR-020**: System MUST allow companies to search and filter talent by skills, availability, and experience level
 
 **Mission Workflow**
+
 - **FR-021**: System MUST support mission proposal with negotiable terms (duration, commitment, credit value)
 - **FR-022**: System MUST enforce approval workflow: User consent (as talent) → Manager approval → Legal check
 - **FR-023**: System MUST allow counter-proposals during negotiation
@@ -178,6 +183,7 @@ Employees need to browse available opportunities across the network and propose 
 - **FR-025**: System MUST allow mission cancellation before user consent with no penalties
 
 **Credit System**
+
 - **FR-026**: System MUST track credit balances for each company with indefinite accumulation (no expiration)
 - **FR-027**: Companies MUST be able to start with zero balance and go negative (SkillSwap admin adjusts credits as needed)
 - **FR-028**: System MUST calculate default credit values based on user salary as baseline
@@ -186,12 +192,14 @@ Employees need to browse available opportunities across the network and propose 
 - **FR-031**: System MUST record all credit transactions with timestamp, parties, and mission reference
 
 **Mission Tracking**
+
 - **FR-032**: System MUST allow time logging for active missions to track commitment against agreement
 - **FR-033**: System MUST send progress notifications at defined milestones (e.g., 1 month, 2 months)
 - **FR-034**: System MUST allow both companies to add notes and updates visible to all participants
 - **FR-035**: System MUST allow missions to be marked complete when all parties agree
 
 **Security & Compliance**
+
 - **FR-036**: System MUST ensure users remain employed by their original company (no payroll/benefits changes)
 - **FR-037**: System MUST log all data access for GDPR compliance and audit trails
 - **FR-038**: System MUST support data export for users (GDPR right to data portability)
@@ -203,17 +211,20 @@ Employees need to browse available opportunities across the network and propose 
 - **FR-045**: System MUST enforce rate limiting: 100 requests per minute per user for read operations, 20 requests per minute per user for write operations, and 300 requests per minute per IP address to prevent abuse
 
 **Subscription Infrastructure**
+
 - **FR-043**: System MUST have capability to handle subscription tiers (not active at launch, but infrastructure present)
 
 ### Key Entities
 
 **Core Identity & Access**
+
 - **User (or Account)**: Represents a person in the system; attributes include name, email, language preference (FR/EN), authentication credentials; relationships to Company (employer), Roles (N:N via UserRole junction), and Missions (as participant). A user can be a talent, talent manager (HR), or both simultaneously.
 - **Role**: Represents a permission set that can be assigned to users; attributes include name (e.g., "talent", "talent_manager", "company_admin"), description, company (if company-specific role), scope (system-level or company-level); relationship to Permissions (N:N via RolePermission junction) and Users (N:N via UserRole junction). System provides default roles (talent, talent_manager) but companies can create custom roles.
 - **Permission**: Represents a specific capability in the system; attributes include name (e.g., "view_talent_pool", "create_skill_need", "approve_mission"), resource (what entity it applies to), action (read/write/delete); relationship to Roles (N:N). Permissions are granular and can be combined into roles flexibly.
 - **UserRole**: Junction entity linking Users to Roles within a Company context; attributes include user, role, company, assigned_date; allows users to have different roles in different companies (e.g., talent in Company A, talent_manager in Company B)
 
 **Business Entities**
+
 - **Company**: Represents an organization in the network; attributes include name, industry, size, location (FR/UK), credit balance, invite code; relationships to Users (employees/managers), Missions, CustomRoles
 - **Skill**: Represents a capability in the taxonomy; attributes include name, category, description; hierarchical relationship (categories contain specific skills)
 - **UserSkill**: Junction entity linking Users to Skills; attributes include user, skill, proficiency_level, years_experience; relationship to User and Skill
@@ -221,48 +232,56 @@ Employees need to browse available opportunities across the network and propose 
 - **SkillNeed**: Represents a company's request for expertise; attributes include skill required, duration, time commitment (hours/week), status (open/matched/fulfilled), anonymization level; relationship to Company (requester)
 
 **Mission & Transactions**
+
 - **Mission**: Represents an agreed skill swap between companies; attributes include proposing company, receiving company, talent user, duration, time commitment, credit value, status (proposed/negotiating/approved/active/complete); relationships to Company (both parties), User (talent participating), Approval records
 - **CreditTransaction**: Represents a credit movement; attributes include amount, type (mission/purchase/adjustment), timestamp, description, initiated_by_user; relationships to Company (payer/payee), Mission (if applicable), User (who initiated)
 - **Approval**: Represents a step in the approval workflow; attributes include type (employee_consent/manager_approval/legal_check), status (pending/approved/rejected), timestamp, approver_user, comments; relationship to Mission and User (approver)
 - **NDA**: Represents legal agreement for a mission; attributes include parties, signed date, document reference, signed_by_users; relationship to Mission and Users (signatories)
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 
 **Platform Adoption**
+
 - **SC-001**: At least 10 companies join the network within 3 months of launch
 - **SC-002**: At least 100 employees complete skill profiles within 3 months
 - **SC-003**: Platform supports both French and English users with <5% translation errors reported
 
 **Mission Activity**
+
 - **SC-004**: At least 5 successful missions are completed within 6 months of launch
 - **SC-005**: Average time from skill need creation to matched talent found is under 2 weeks
 - **SC-006**: 80% of proposed missions result in either completion or counter-proposal (not abandoned)
 - **SC-007**: Companies complete the full mission workflow (proposal → approval → active → complete) in under 4 weeks on average
 
 **User Experience**
+
 - **SC-008**: HR managers can create a skill need in under 5 minutes
 - **SC-009**: Employees can complete skill profile survey in under 15 minutes
 - **SC-010**: 90% of users successfully complete their first key task (create company profile, fill skill survey, or post skill need) on first attempt
 - **SC-011**: Users can switch between French and English interface seamlessly with all content translated
 
 **Credit System**
+
 - **SC-012**: Credit transactions are recorded accurately with zero discrepancies in audit logs
 - **SC-013**: Companies can view credit balance and transaction history in real-time via dashboard
 - **SC-014**: At least 30% of companies receive admin credit adjustments within first 6 months (indicating network flexibility beyond 1:1 missions)
 
 **Network Health**
+
 - **SC-015**: Network includes companies from at least 3 different industries to support cross-industry missions
 - **SC-016**: Average company has at least 5 employees with documented skills
 - **SC-017**: Repeat mission rate (companies doing multiple swaps) reaches 40% within 1 year
 
 **Technical Performance**
+
 - **SC-018**: Skill search returns results in under 2 seconds for 90% of queries
 - **SC-019**: Platform handles 100 concurrent users with <10% latency increase compared to single-user baseline (measured at p95)
 - **SC-020**: System maintains 99.5% uptime during business hours (9am-6pm FR/UK time)
 
 **Compliance & Security**
+
 - **SC-021**: 100% of missions have completed NDA signing before employee work begins
 - **SC-022**: All employee data access is logged and can be audited with complete history
 - **SC-023**: Zero instances of employees being incorrectly moved to different company payroll
@@ -288,7 +307,7 @@ Employees need to browse available opportunities across the network and propose 
 - Q: How long should user sessions remain active before requiring re-authentication? → A: 24 hours for talent role, 4 hours for talent_manager role, re-auth for critical actions (mission approval, credit purchase)
 - Q: How long should the system retain user data after account closure or inactivity? → A: Keep identifiable data for 3 years after last activity, then anonymize and retain aggregate mission/credit statistics indefinitely for network analytics
 - Q: What rate limiting should the system enforce to prevent abuse? → A: Per-user: 100 requests/minute for reads, 20 requests/minute for writes; Per-IP: 300 requests/minute
-- Q: What should be the initial skill taxonomy scope for MVP launch? → A: Balanced approach: 10-15 top-level categories (e.g., Engineering, Design, Marketing), ~100 pre-seeded skills sourced from LinkedIn Skills or O*NET standards, users can add new skills for approval
+- Q: What should be the initial skill taxonomy scope for MVP launch? → A: Balanced approach: 10-15 top-level categories (e.g., Engineering, Design, Marketing), ~100 pre-seeded skills sourced from LinkedIn Skills or O\*NET standards, users can add new skills for approval
 - Q: How should credit purchases work in the MVP? → A: No payment UI/workflow in MVP scope; SkillSwap admin staff manually add credits directly in database when companies request them offline
 - Q: Should the MVP include any financial transactions, pricing, or payment mentions? → A: No - credits are purely a numerical tracking system in MVP with no financial layer; admin adds credits as needed with no money/pricing involved
 - Q: Which mission approval types should require re-authentication? → A: Manager approval and legal check require re-authentication; employee consent uses active session (lower risk, employee can refuse later, manager reviews anyway)

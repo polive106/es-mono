@@ -7,6 +7,7 @@
 ## Problem Statement
 
 SkillSwap requires role-based access control (RBAC) with:
+
 - Multiple roles (talent, talent_manager, company-specific custom roles)
 - Granular permissions (view_talent_pool, create_skill_need, approve_mission, etc.)
 - Company context (different roles in different companies)
@@ -17,6 +18,7 @@ We evaluated two main approaches for implementing RBAC in the TypeScript stack.
 ## Options Evaluated
 
 ### Option A: CASL (Isomorphic Authorization)
+
 - **TypeScript Support**: Excellent (first-class)
 - **Complexity**: Low-medium (define abilities declaratively)
 - **Flexibility**: High (field-level permissions, conditions)
@@ -33,6 +35,7 @@ We evaluated two main approaches for implementing RBAC in the TypeScript stack.
   - Additional dependency
 
 ### Option B: Custom Implementation
+
 - **TypeScript Support**: Native (fully typed)
 - **Complexity**: Low (simple role-permission checks)
 - **Flexibility**: Medium (grows with requirements)
@@ -62,6 +65,7 @@ We evaluated two main approaches for implementing RBAC in the TypeScript stack.
 ### Evaluation Trigger
 
 If any of these conditions occur, migrate to CASL:
+
 - Permission rules exceed 20 distinct permissions
 - Need for attribute-based access control (ABAC) with conditions
 - Resource-level permissions become complex (e.g., "user can only see missions they're part of")
@@ -75,7 +79,7 @@ If any of these conditions occur, migrate to CASL:
 // packages/database/src/schema/roles.ts
 export const roles = sqliteTable('roles', {
   id: text('id').primaryKey(),
-  name: text('name').notNull(),           // 'talent', 'talent_manager'
+  name: text('name').notNull(), // 'talent', 'talent_manager'
   scope: text('scope').notNull().default('system'), // 'system' or 'company'
   companyId: text('company_id'),
   // ... other fields
@@ -83,18 +87,22 @@ export const roles = sqliteTable('roles', {
 
 export const permissions = sqliteTable('permissions', {
   id: text('id').primaryKey(),
-  name: text('name').notNull().unique(),  // 'view_talent_pool'
-  resource: text('resource').notNull(),   // 'talent_pool'
-  action: text('action').notNull(),       // 'view'
+  name: text('name').notNull().unique(), // 'view_talent_pool'
+  resource: text('resource').notNull(), // 'talent_pool'
+  action: text('action').notNull(), // 'view'
   // ... other fields
 });
 
-export const rolePermissions = sqliteTable('role_permissions', {
-  roleId: text('role_id').notNull(),
-  permissionId: text('permission_id').notNull(),
-}, (table) => ({
-  pk: primaryKey({ columns: [table.roleId, table.permissionId] }),
-}));
+export const rolePermissions = sqliteTable(
+  'role_permissions',
+  {
+    roleId: text('role_id').notNull(),
+    permissionId: text('permission_id').notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.roleId, table.permissionId] }),
+  })
+);
 ```
 
 ### Use Case Layer
@@ -103,16 +111,16 @@ export const rolePermissions = sqliteTable('role_permissions', {
 // packages/domain/src/use-cases/CheckPermission.ts
 export interface PermissionCheck {
   userId: string;
-  permission: string;           // e.g., 'view_talent_pool'
-  companyId?: string;           // for company-scoped permissions
-  resourceId?: string;          // for resource-level checks
+  permission: string; // e.g., 'view_talent_pool'
+  companyId?: string; // for company-scoped permissions
+  resourceId?: string; // for resource-level checks
 }
 
 export async function checkUserPermission(
   check: PermissionCheck,
   userRepository: UserRepository,
   roleRepository: RoleRepository,
-  permissionRepository: PermissionRepository,
+  permissionRepository: PermissionRepository
 ): Promise<boolean> {
   const user = await userRepository.findById(check.userId);
   if (!user) return false;
@@ -122,7 +130,7 @@ export async function checkUserPermission(
 
   for (const role of userRoles) {
     const rolePermissions = await permissionRepository.findByRoleId(role.id);
-    if (rolePermissions.some(p => p.name === check.permission)) {
+    if (rolePermissions.some((p) => p.name === check.permission)) {
       return true;
     }
   }
@@ -140,11 +148,14 @@ export const requirePermission = (permission: string) => {
     const user = c.get('user');
     if (!user) return c.json({ error: 'Unauthorized' }, 401);
 
-    const hasPermission = await checkUserPermission({
-      userId: user.id,
-      permission,
-      companyId: user.companyId,
-    }, repositories);
+    const hasPermission = await checkUserPermission(
+      {
+        userId: user.id,
+        permission,
+        companyId: user.companyId,
+      },
+      repositories
+    );
 
     if (!hasPermission) {
       return c.json({ error: 'Forbidden' }, 403);
@@ -168,18 +179,21 @@ const companiesRouter = new Hono()
 ## Consequences
 
 ### Positive
+
 - ✅ Simple, testable, fully typed implementation
 - ✅ No external dependencies for MVP
 - ✅ Clear migration path to CASL if needed
 - ✅ Performance overhead minimal (<1ms per permission check)
 
 ### Negative
+
 - ⚠️ No built-in ABAC support (must implement manually if needed)
 - ⚠️ Manual permission validation (more boilerplate than CASL DSL)
 
 ## Migration to CASL (Future)
 
 If/when complexity grows:
+
 1. Keep current permission model (roles, permissions, rolePermissions tables)
 2. Wrap CASL on top: Map database permissions to CASL abilities
 3. Update middleware layer, keep repository layer unchanged

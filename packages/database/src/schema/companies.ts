@@ -23,9 +23,7 @@ export const companies = sqliteTable(
       .notNull()
       .$defaultFn(() => new Date()),
   },
-  (table) => [
-    index('idx_companies_invite_code').on(table.inviteCode),
-  ]
+  (table) => [index('idx_companies_invite_code').on(table.inviteCode)]
 );
 
 // Helper function to generate invite codes

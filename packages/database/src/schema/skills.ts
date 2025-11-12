@@ -71,9 +71,7 @@ export const talentAvailability = sqliteTable(
       .notNull()
       .$defaultFn(() => new Date()),
   },
-  (table) => [
-    index('idx_talent_availability_pct').on(table.availabilityPct),
-  ]
+  (table) => [index('idx_talent_availability_pct').on(table.availabilityPct)]
 );
 
 export type Skill = typeof skills.$inferSelect;

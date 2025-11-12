@@ -1,21 +1,28 @@
 <!--
-Sync Impact Report - Constitution v1.0.2
+Sync Impact Report - Constitution v1.0.3
 
-Version Change: 1.0.1 → 1.0.2 (PATCH)
-Amendment Type: Development workflow clarification for atomic commits
+Version Change: 1.0.2 → 1.0.3 (PATCH)
+Amendment Type: Technical standard clarification for form library usage
 
 Changes Made:
+- Added form library standard requirement to Code Quality section
+- Specified TanStack Form as mandatory for all React forms
+- Added reference to ADR-005 for implementation details
+- Documented required validator patterns (onChange + onSubmit)
+
+Rationale:
+- PATCH version: Non-breaking technical standard clarification
+- Codifies existing practice (forms already use TanStack Form)
+- Ensures consistency across future form implementations
+- Improves maintainability with single, documented pattern
+- No changes to core principles or governance structure
+- ADR-005 provides complete technical justification
+
+Previous Changes (v1.0.2):
 - Enhanced atomic commits requirement in Branching & Commits section
 - Added explicit requirement for implementation agents to commit at every working feature step
 - Added atomic commits verification to Pull Request Checklist
 - Added atomic commits requirement to Code Quality standards
-
-Rationale:
-- PATCH version: Non-breaking clarification of commit workflow standards
-- Emphasizes incremental development with working feature commits
-- Ensures agents create granular, reviewable commit history
-- Maintains code quality by requiring tests to pass before each commit
-- No changes to core principles or governance structure
 
 Previous Changes (v1.0.1):
 - Added ADR (Architecture Decision Record) requirement to Documentation Requirements
@@ -117,6 +124,7 @@ Notes:
 - Complex algorithms require inline comments explaining the "why"
 - No commented-out code in main branch
 - **Atomic commits required**: Each working feature increment must be committed with all tests passing
+- **Form library standard**: All React forms MUST use TanStack Form (`@tanstack/react-form`) with consistent validator patterns (`onChange` + `onSubmit`) as documented in [ADR-005](./adr/005-use-tanstack-form-for-react-forms.md)
 
 ### Performance Standards
 
@@ -205,4 +213,4 @@ All changes to this constitution are version controlled. The Sync Impact Report 
 
 For agent-specific runtime guidance (tool usage patterns, execution context, agent-specific instructions), see individual command files in `.claude/commands/`. This constitution defines project-wide governance; command files define execution patterns.
 
-**Version**: 1.0.2 | **Ratified**: 2025-11-08 | **Last Amended**: 2025-11-08
+**Version**: 1.0.3 | **Ratified**: 2025-11-08 | **Last Amended**: 2025-11-11

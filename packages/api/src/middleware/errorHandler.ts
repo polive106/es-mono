@@ -103,10 +103,13 @@ export const errorHandler = createMiddleware(async (c, next) => {
       {
         error: isDevelopment ? message : 'Internal server error',
         code: 'INTERNAL_ERROR',
-        details: isDevelopment ? { stack: error instanceof Error ? error.stack : undefined } : undefined,
+        details: isDevelopment
+          ? { stack: error instanceof Error ? error.stack : undefined }
+          : undefined,
         timestamp: new Date().toISOString(),
       },
-      500    );
+      500
+    );
   }
 });
 

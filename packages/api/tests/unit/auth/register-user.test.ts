@@ -2,15 +2,27 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { registerUserInternal, AuthError } from '../../../src/auth/service';
 import type { AuthServiceDependencies } from '../../../src/auth/service';
 import { createMockRepositories } from '../helpers/mock-repositories';
-import * as shared from '@es-mono/shared';
+import * as password from '../../../src/utils/password';
+import * as hibp from '../../../src/utils/hibp';
 
-// Mock the shared package
-vi.mock('@es-mono/shared', async () => {
-  const actual = await vi.importActual<typeof import('@es-mono/shared')>('@es-mono/shared');
+// Mock the password utility
+vi.mock('../../../src/utils/password', async () => {
+  const actual = await vi.importActual<typeof import('../../../src/utils/password')>(
+    '../../../src/utils/password'
+  );
+  return {
+    ...actual,
+    hashPassword: vi.fn().mockResolvedValue('hashed_password_123'),
+  };
+});
+
+// Mock HIBP check to avoid external API calls
+vi.mock('../../../src/utils/hibp', async () => {
+  const actual =
+    await vi.importActual<typeof import('../../../src/utils/hibp')>('../../../src/utils/hibp');
   return {
     ...actual,
     checkPasswordBreach: vi.fn().mockResolvedValue(0), // Not breached by default
-    hashPassword: vi.fn().mockResolvedValue('hashed_password_123'),
   };
 });
 
@@ -342,7 +354,7 @@ describe('registerUserInternal (Unit Tests)', () => {
         updatedAt: new Date(),
       });
 
-      vi.mocked(shared.checkPasswordBreach).mockResolvedValueOnce(100);
+      vi.mocked(hibp.checkPasswordBreach).mockResolvedValueOnce(100);
 
       await expect(
         registerUserInternal(
@@ -382,7 +394,7 @@ describe('registerUserInternal (Unit Tests)', () => {
         updatedAt: new Date(),
       });
 
-      vi.mocked(shared.checkPasswordBreach).mockResolvedValueOnce(0);
+      vi.mocked(hibp.checkPasswordBreach).mockResolvedValueOnce(0);
 
       await registerUserInternal(
         {
@@ -394,7 +406,7 @@ describe('registerUserInternal (Unit Tests)', () => {
         deps
       );
 
-      expect(shared.checkPasswordBreach).toHaveBeenCalledWith('SafePassword123!');
+      expect(hibp.checkPasswordBreach).toHaveBeenCalledWith('SafePassword123!');
     });
   });
 

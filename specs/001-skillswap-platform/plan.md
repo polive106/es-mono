@@ -13,6 +13,7 @@ SkillSwap is a talent-sharing platform enabling startups and SMEs to exchange em
 
 **Language/Version**: TypeScript 5.x (Node.js 20.x LTS for backend, modern browsers for frontend)
 **Primary Dependencies**:
+
 - Backend: Hono (API), Drizzle ORM (database), Lucia (auth), Zod (validation)
 - Frontend: React 18+, TanStack Router, i18next, shadcn/ui (Radix UI + Tailwind CSS)
 - Build: Turborepo (monorepo orchestration), Vite (frontend bundler), tsup (backend bundler)
@@ -21,6 +22,7 @@ SkillSwap is a talent-sharing platform enabling startups and SMEs to exchange em
 **Storage**: SQLite (MVP development) → PostgreSQL (production scale). Drizzle ORM provides migration path. Schema designed for PostgreSQL compatibility from day 1.
 
 **Testing**:
+
 - Unit: Vitest for domain logic, use cases, utilities
 - Integration: Vitest + in-memory SQLite for repository/database tests
 - Contract: OpenAPI contracts verified against Hono endpoints
@@ -29,21 +31,24 @@ SkillSwap is a talent-sharing platform enabling startups and SMEs to exchange em
 **Target Platform**: Web application (responsive, desktop-first for managers, mobile-optimized for talent)
 
 **Performance Goals**:
+
 - Skill search: <2s for 90% of queries (SC-018)
 - API CRUD: <500ms p95 latency (Constitution standard)
 - Concurrent users: 100 without degradation (SC-019)
 - Uptime: 99.5% during business hours 9am-6pm FR/UK time (SC-020)
 
 **Constraints**:
-  - **Hexagonal Architecture**: Domain core has zero external dependencies; all infrastructure via ports/adapters
-  - **Test-First Development**: Red-Green-Refactor cycle mandatory (Constitution Principle I)
-  - **Feature Isolation**: Each user story independently implementable/testable (Constitution Principle II)
-  - **Security by Design**: Snyk scans, input validation, auth/authz on all endpoints, audit logging (Constitution Principle III)
-  - **Atomic Commits**: Each working feature must be committed atomically with descriptive messages
-  - **i18n from Day 1**: All UI strings in i18next namespaces (FR/EN)
-  - **Database Abstraction**: All queries through repository interfaces (no raw SQL in use cases)
+
+- **Hexagonal Architecture**: Domain core has zero external dependencies; all infrastructure via ports/adapters
+- **Test-First Development**: Red-Green-Refactor cycle mandatory (Constitution Principle I)
+- **Feature Isolation**: Each user story independently implementable/testable (Constitution Principle II)
+- **Security by Design**: Snyk scans, input validation, auth/authz on all endpoints, audit logging (Constitution Principle III)
+- **Atomic Commits**: Each working feature must be committed atomically with descriptive messages
+- **i18n from Day 1**: All UI strings in i18next namespaces (FR/EN)
+- **Database Abstraction**: All queries through repository interfaces (no raw SQL in use cases)
 
 **Scale/Scope**:
+
 - MVP: 10 companies, 100 employees, 5 missions (6 months target - SC-001, SC-002, SC-004)
 - Production: 100+ companies, 1000+ employees, concurrent missions
 - Entities: 13 core entities (User, Role, Permission, Company, Skill, Mission, Credit transactions, etc.)
@@ -52,7 +57,7 @@ SkillSwap is a talent-sharing platform enabling startups and SMEs to exchange em
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
 ### Principle I: Test-First Development ✅
 
@@ -118,7 +123,7 @@ SkillSwap is a talent-sharing platform enabling startups and SMEs to exchange em
 
 ### Post-Phase-1 Constitution Re-Check
 
-*(Completed after design artifacts generated)*
+_(Completed after design artifacts generated)_
 
 - [x] **Verify repository pattern maintains domain isolation**: ✅ PASS
   - data-model.md defines Drizzle schemas with repository pattern references
@@ -233,11 +238,11 @@ packages/
 
 > **Violations requiring justification per Constitution Principle V**
 
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| **4+ packages** (6 total: domain, database, api, frontend, design-system, shared) | Hexagonal architecture mandates domain/database/api separation. Frontend is distinct delivery mechanism. Design-system enables shadcn/ui reuse. Shared types reduce duplication. | Merging packages would couple domain to infrastructure (Drizzle, Hono), violating hexagonal constraints and making database/auth swapping impossible. |
-| **Repository pattern** (ports/adapters for database) | Required for database abstraction (SQLite → PostgreSQL migration). Domain use cases depend on repository interfaces, not Drizzle directly. | Direct Drizzle usage in use cases would lock us to ORM, preventing swap to Prisma/TypeORM later. Hexagonal architecture explicitly requires this abstraction. |
-| **i18next from day 1** (before MVP validation) | FR/UK market from launch (FR-003). Retrofitting i18n breaks all UI strings, component APIs, and validation messages. | Adding i18n post-MVP requires touching every component, API response, and validation error—weeks of refactor vs. hours upfront. Market requirement, not speculation. |
+| Violation                                                                         | Why Needed                                                                                                                                                                       | Simpler Alternative Rejected Because                                                                                                                                 |
+| --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **4+ packages** (6 total: domain, database, api, frontend, design-system, shared) | Hexagonal architecture mandates domain/database/api separation. Frontend is distinct delivery mechanism. Design-system enables shadcn/ui reuse. Shared types reduce duplication. | Merging packages would couple domain to infrastructure (Drizzle, Hono), violating hexagonal constraints and making database/auth swapping impossible.                |
+| **Repository pattern** (ports/adapters for database)                              | Required for database abstraction (SQLite → PostgreSQL migration). Domain use cases depend on repository interfaces, not Drizzle directly.                                       | Direct Drizzle usage in use cases would lock us to ORM, preventing swap to Prisma/TypeORM later. Hexagonal architecture explicitly requires this abstraction.        |
+| **i18next from day 1** (before MVP validation)                                    | FR/UK market from launch (FR-003). Retrofitting i18n breaks all UI strings, component APIs, and validation messages.                                                             | Adding i18n post-MVP requires touching every component, API response, and validation error—weeks of refactor vs. hours upfront. Market requirement, not speculation. |
 
 **Summary**: All complexity is driven by explicit requirements (hexagonal architecture for database swapping, i18n for FR/UK market) or Constitution principles (test isolation, feature independence). No speculative abstractions.
 
@@ -274,7 +279,7 @@ packages/
    - Mock strategies for external services (email, breach checker)
 
 6. **Skills Taxonomy Sourcing**
-   - ESCO (European Skills/Competences classification) vs. O*NET vs. LinkedIn Skills
+   - ESCO (European Skills/Competences classification) vs. O\*NET vs. LinkedIn Skills
    - 10-15 top-level categories, ~100 pre-seeded skills (FR-013)
    - User-proposed skills approval workflow
 
@@ -312,6 +317,7 @@ packages/
    - TimeLog: Hours worked tracking for active missions
 
 **For Each Entity**:
+
 - Field definitions with types, constraints, defaults
 - Validation rules (FR constraints: password 12+ chars, session timeouts, rate limits, etc.)
 - Relationships (1:1, 1:N, N:N with junction tables)
@@ -363,6 +369,7 @@ packages/
    - GET /credit-packages (predefined packages for display, no actual purchase)
 
 **For Each Endpoint**:
+
 - Request/response schemas with Zod validation
 - Authentication requirements (bearerAuth)
 - Authorization rules (role-based permissions)
@@ -395,6 +402,7 @@ packages/
 ### Agent Context Update
 
 Run `.specify/scripts/bash/update-agent-context.sh claude` to update `.claude/agent-context.md`:
+
 - Add TypeScript, Hono, Drizzle ORM, Lucia, React, TanStack Router, i18next, shadcn/ui
 - Add hexagonal architecture patterns (domain/ports/adapters)
 - Add Turborepo monorepo structure
@@ -402,11 +410,12 @@ Run `.specify/scripts/bash/update-agent-context.sh claude` to update `.claude/ag
 
 ## Phase 2: Task Generation
 
-*(Not executed by /speckit.plan - this is the /speckit.tasks command)*
+_(Not executed by /speckit.plan - this is the /speckit.tasks command)_
 
 Tasks will be organized by user story (US1-US7) with dependencies:
 
 **US1 (P1): Company Onboarding**
+
 - Setup Turborepo monorepo with 6 packages
 - Configure TypeScript strict mode, ESLint, Prettier
 - Setup Drizzle ORM with SQLite, create companies schema
@@ -416,6 +425,7 @@ Tasks will be organized by user story (US1-US7) with dependencies:
 - E2E test: Complete registration via invite link
 
 **US2 (P1): Employee Skill Mapping**
+
 - Create skills taxonomy schema (categories, skills, user_skills)
 - Seed database with 10-15 categories, ~100 skills (ESCO-based)
 - Implement user skills API (add, remove, proficiency levels)
@@ -425,6 +435,7 @@ Tasks will be organized by user story (US1-US7) with dependencies:
 - E2E test: Employee completes skill profile
 
 **US3 (P1): Skill Needs & Talent Search**
+
 - Create skill_needs schema with status state machine
 - Implement skill need creation API (talent_manager role)
 - Implement talent pool search API (anonymized profiles, filters)
@@ -433,6 +444,7 @@ Tasks will be organized by user story (US1-US7) with dependencies:
 - E2E test: Manager posts need, searches talent, views anonymized profiles
 
 **US4 (P2): Mission Workflow**
+
 - Create missions, approvals, ndas schemas
 - Implement mission state machine (9 statuses)
 - Implement mission proposal API (negotiation workflow)
@@ -445,6 +457,7 @@ Tasks will be organized by user story (US1-US7) with dependencies:
 - E2E test: Complete mission flow from proposal to activation
 
 **US5 (P2): Credit System**
+
 - Create credit_transactions schema
 - Implement credit tracking API (balance, transaction history)
 - Implement admin credit adjustment API (manual add/subtract)
@@ -454,6 +467,7 @@ Tasks will be organized by user story (US1-US7) with dependencies:
 - E2E test: Company goes negative, admin adds credits, view transaction history
 
 **US6 (P3): Mission Tracking**
+
 - Create time_logs schema
 - Implement time logging API (hours, date, notes)
 - Implement progress notifications (milestone triggers)
@@ -462,12 +476,14 @@ Tasks will be organized by user story (US1-US7) with dependencies:
 - E2E test: Log hours, view progress, complete mission
 
 **US7 (P3): Employee Self-Proposal**
+
 - Implement employee mission proposal API (requires manager approval)
 - Build opportunity marketplace UI for employees
 - Build manager review UI for employee self-proposals
 - E2E test: Employee proposes self, manager approves, mission created
 
 **Cross-Cutting**:
+
 - i18n setup: Configure i18next with FR/EN namespaces
 - Translations: Extract all UI strings, translate to French
 - Security: Integrate Snyk scanning, password breach checking
@@ -514,11 +530,13 @@ Tasks will be organized by user story (US1-US7) with dependencies:
 **Plan Status**: ✅ PHASE 0 & PHASE 1 COMPLETE - READY FOR TASK GENERATION
 **Constitution Compliance**: ✅ ALL GATES PASSED (initial check + post-design re-check)
 **Artifacts Generated**:
+
 - ✅ research.md (Phase 0)
 - ✅ data-model.md (Phase 1)
 - ✅ contracts/ - 5 OpenAPI specs (Phase 1)
 - ✅ quickstart.md (Phase 1)
 
 **Next Command**:
+
 1. Run `.specify/scripts/bash/update-agent-context.sh claude` to update agent context
 2. Run `/speckit.tasks` to generate dependency-ordered task list

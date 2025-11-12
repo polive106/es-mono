@@ -15,22 +15,13 @@ export function Footer() {
             &copy; {currentYear} SkillSwap. {t('allRightsReserved')}
           </p>
           <div className="flex gap-4">
-            <a
-              href="/privacy"
-              className="hover:text-foreground transition-colors"
-            >
+            <a href="/privacy" className="hover:text-foreground transition-colors">
               {t('privacy')}
             </a>
-            <a
-              href="/terms"
-              className="hover:text-foreground transition-colors"
-            >
+            <a href="/terms" className="hover:text-foreground transition-colors">
               {t('terms')}
             </a>
-            <a
-              href="/contact"
-              className="hover:text-foreground transition-colors"
-            >
+            <a href="/contact" className="hover:text-foreground transition-colors">
               {t('contact')}
             </a>
           </div>

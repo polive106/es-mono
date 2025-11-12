@@ -12,22 +12,24 @@ This guide helps you set up the SkillSwap platform locally, understand the proje
 
 Before you begin, ensure you have the following installed:
 
-| Tool | Version | Purpose |
-|------|---------|---------|
-| **Node.js** | 18+ | Runtime for backend and build tools |
-| **pnpm** | 8+ | Package manager (workspace support required) |
-| **Git** | 2.x | Version control |
+| Tool        | Version | Purpose                                      |
+| ----------- | ------- | -------------------------------------------- |
+| **Node.js** | 18+     | Runtime for backend and build tools          |
+| **pnpm**    | 8+      | Package manager (workspace support required) |
+| **Git**     | 2.x     | Version control                              |
 
 ### Installation
 
 **Node.js**: Download from [nodejs.org](https://nodejs.org/) (LTS version recommended)
 
 **pnpm**: Install globally via npm:
+
 ```bash
 npm install -g pnpm
 ```
 
 Verify installations:
+
 ```bash
 node --version  # Should be 18.x or higher
 pnpm --version  # Should be 8.x or higher
@@ -103,6 +105,7 @@ RATE_LIMIT_MAX_WRITES=20          # FR-045
 The project uses Drizzle ORM with SQLite for MVP. PostgreSQL migration supported for production.
 
 **Generate migrations**:
+
 ```bash
 pnpm --filter @es-mono/database generate
 ```
@@ -110,16 +113,19 @@ pnpm --filter @es-mono/database generate
 This creates migration files in `packages/database/migrations/` based on schemas in `packages/database/src/schema/`.
 
 **Run migrations**:
+
 ```bash
 pnpm --filter @es-mono/database migrate
 ```
 
 **Seed database** (system roles, permissions, skills taxonomy):
+
 ```bash
 pnpm --filter @es-mono/database seed
 ```
 
 **Verify database**:
+
 ```bash
 # SQLite CLI (optional)
 sqlite3 packages/database/local.db
@@ -142,15 +148,18 @@ sqlite> .quit
 The monorepo includes scripts to run API and frontend concurrently.
 
 **Start all services**:
+
 ```bash
 pnpm dev
 ```
 
 This runs:
+
 - **API Server**: `http://localhost:3000` (Hono REST API)
 - **Frontend Dev Server**: `http://localhost:5173` (Vite React app)
 
 **Run services separately** (for debugging):
+
 ```bash
 # Terminal 1: API server
 pnpm --filter @es-mono/api dev
@@ -160,6 +169,7 @@ pnpm --filter @es-mono/frontend dev
 ```
 
 **Access the application**:
+
 - Frontend: http://localhost:5173
 - API: http://localhost:3000/api
 - Health Check: http://localhost:3000/api/health
@@ -203,6 +213,7 @@ Open browser to http://localhost:5173/auth/register
 **Step 3: Verify Login**
 
 Navigate to http://localhost:5173/auth/login
+
 - Email: `alice@acme.com`
 - Password: `SecurePassword123!`
 
@@ -261,6 +272,7 @@ Navigate to: http://localhost:5173/skills/search
 - Search
 
 Results show anonymized profiles (FR-017):
+
 - Skill categories: `["Business Analysis", "Legal"]`
 - Experience: `Senior`
 - Availability: `40%`
@@ -273,6 +285,7 @@ Results show anonymized profiles (FR-017):
 **IMPORTANT**: This is NOT a simultaneous employee swap. You're borrowing talent now and paying with credits. The lending company can use those credits later to borrow from anyone.
 
 **Example Scenario**:
+
 - **You** (Acme HealthTech) need regulatory help
 - **Bob's Fintech** has Employee Y with regulatory skills
 - You propose to borrow Employee Y for 3 months
@@ -291,6 +304,7 @@ From search results, click "Propose Mission" on a matching profile
 - Submit Proposal
 
 **Credit Impact** (when approved):
+
 - Bob's Fintech (lending company): **+30 credits** 💰
 - Acme HealthTech (your company): **-30 credits** 💸
 
@@ -364,6 +378,7 @@ Navigate to: http://localhost:5173/missions/approvals
 **Mission status**: `approved`
 
 **Credit Transaction Created**:
+
 - **Bob's Fintech** (lending company): **+30 credits** 💰
 - **Acme HealthTech** (borrowing company): **-30 credits** 💸
 
@@ -378,6 +393,7 @@ Once all approvals complete, mission moves to `active`:
 Navigate to: http://localhost:5173/missions/active
 
 **What Happens Now**:
+
 - **Employee Y** (from Bob's Fintech) starts working at **Acme HealthTech**
 - Employee Y spends 8 hours/week helping Acme HealthTech with regulatory compliance
 - Employee Y remains on Bob's Fintech payroll (no employment transfer, FR-036)
@@ -397,6 +413,7 @@ Navigate to: http://localhost:5173/missions/{id}/time-logs
 3. Submit
 
 **Track Progress** (Both Companies):
+
 - View total hours logged against commitment (8 hrs/week × 12 weeks = 96 hours total)
 - See milestones (1 month, 2 months markers with auto-notifications)
 - Both companies can add progress notes (FR-034)
@@ -486,6 +503,7 @@ es-mono/
 ### Key Files Tour
 
 **Database Schema**:
+
 ```
 packages/database/src/schema/
 ├── users.ts              # User, Role, Permission, UserRole (RBAC)
@@ -496,6 +514,7 @@ packages/database/src/schema/
 ```
 
 **API Routes**:
+
 ```
 packages/api/src/adapters/http/routes/
 ├── companies.ts          # Company management
@@ -506,6 +525,7 @@ packages/api/src/adapters/http/routes/
 ```
 
 **Frontend Features**:
+
 ```
 packages/frontend/src/features/
 ├── companies/            # Company onboarding (US1)
@@ -515,6 +535,7 @@ packages/frontend/src/features/
 ```
 
 **i18n Translations**:
+
 ```
 packages/frontend/src/i18n/locales/
 ├── en/
@@ -602,12 +623,14 @@ Stop all running processes accessing `local.db`, then restart.
 ### HIBP Password Check Failing
 
 In development, HIBP API key is optional. To bypass:
+
 - Comment out breach check in `packages/api/src/adapters/external/HIBPPasswordChecker.ts`
 - Or set `HIBP_API_KEY` in `.env`
 
 ### i18n Missing Translation
 
 If you see raw translation keys (e.g., `skills:selectCategory`):
+
 1. Check `packages/frontend/src/i18n/locales/en/skills.json` has the key
 2. Verify namespace loaded in component: `useTranslation(['skills'])`
 3. Restart dev server to reload translations

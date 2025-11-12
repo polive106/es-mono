@@ -20,11 +20,9 @@
     "clean": "rm -rf dist node_modules .turbo"
   },
   "dependencies": {
-    "bcrypt": "^6.0.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {
-    "@types/bcrypt": "^6.0.0",
     "tsup": "^8.5.0",
     "vitest": "^4.0.8"
   }

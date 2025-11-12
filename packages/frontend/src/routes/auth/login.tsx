@@ -1,6 +1,9 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
+import { useForm } from '@tanstack/react-form';
+import { loginSchema } from '@es-mono/shared';
+import { Button, Input, Label, Card, Alert, AlertDescription } from '@es-mono/design-system';
+import { useLogin } from '../../hooks';
 
 export const Route = createFileRoute('/auth/login')({
   component: Login,
@@ -9,56 +12,23 @@ export const Route = createFileRoute('/auth/login')({
 function Login() {
   const { t } = useTranslation('auth');
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+  const { mutate: login, isPending, error: mutationError } = useLogin();
+
+  const form = useForm({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+    onSubmit: async ({ value }) => {
+      login(value, {
+        onSuccess: () => {
+          navigate({ to: '/dashboard' });
+        },
+      });
+    },
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setIsLoading(true);
-
-    try {
-      // Direct fetch call until Hono RPC types are fixed
-      // eslint-disable-next-line no-undef
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
-
-      if (response.ok) {
-        await response.json();
-        // Redirect to dashboard on successful login
-        navigate({ to: '/dashboard' });
-      } else {
-        setError(t('login.error.invalidCredentials'));
-      }
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : t('login.error.networkError')
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  const error = mutationError?.message;
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
@@ -73,57 +43,101 @@ function Login() {
           </p>
         </div>
 
-        <div className="rounded-lg border bg-card p-8 shadow-sm">
+        <Card className="p-8">
           {error && (
-            <div className="mb-4 rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-              {error}
-            </div>
+            <Alert variant="destructive" className="mb-4">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium text-foreground">
-                {t('login.email')}
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-                disabled={isLoading}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                placeholder="you@example.com"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium text-foreground">
-                {t('login.password')}
-              </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                required
-                disabled={isLoading}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                placeholder="••••••••"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              form.handleSubmit();
+            }}
+            className="space-y-6"
+            data-testid="login-form"
+            noValidate
+          >
+            <form.Field
+              name="email"
+              validators={{
+                onChange: ({ value }) => {
+                  const result = loginSchema.shape.email.safeParse(value);
+                  return result.success ? undefined : result.error.issues[0]?.message;
+                },
+                onSubmit: ({ value }) => {
+                  const result = loginSchema.shape.email.safeParse(value);
+                  return result.success ? undefined : result.error.issues[0]?.message;
+                },
+              }}
             >
-              {isLoading ? t('login.loading') : t('login.submit')}
-            </button>
+              {(field) => (
+                <div className="space-y-2">
+                  <Label htmlFor="email">{t('login.email')}</Label>
+                  <Input
+                    type="email"
+                    id="email"
+                    name="email"
+                    data-testid="email-input"
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    disabled={isPending}
+                    placeholder="you@example.com"
+                  />
+                  {field.state.meta.errors && field.state.meta.errors.length > 0 && (
+                    <p className="text-sm text-destructive">{field.state.meta.errors[0]}</p>
+                  )}
+                </div>
+              )}
+            </form.Field>
+
+            <form.Field
+              name="password"
+              validators={{
+                onChange: ({ value }) => {
+                  if (!value) return 'Password is required';
+                  return undefined;
+                },
+                onSubmit: ({ value }) => {
+                  if (!value) return 'Password is required';
+                  return undefined;
+                },
+              }}
+            >
+              {(field) => (
+                <div className="space-y-2">
+                  <Label htmlFor="password">{t('login.password')}</Label>
+                  <Input
+                    type="password"
+                    id="password"
+                    name="password"
+                    data-testid="password-input"
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    disabled={isPending}
+                    placeholder="••••••••"
+                  />
+                  {field.state.meta.errors && field.state.meta.errors.length > 0 && (
+                    <p className="text-sm text-destructive">{field.state.meta.errors[0]}</p>
+                  )}
+                </div>
+              )}
+            </form.Field>
+
+            <Button
+              type="submit"
+              data-testid="login-submit"
+              disabled={isPending}
+              className="w-full"
+            >
+              {isPending ? t('login.loading') : t('login.submit')}
+            </Button>
           </form>
-        </div>
+        </Card>
 
         <div className="text-center">
           <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">

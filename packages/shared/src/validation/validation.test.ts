@@ -22,7 +22,11 @@ describe('Validation Schemas', () => {
   describe('Basic Field Schemas', () => {
     describe('emailSchema', () => {
       it('should accept valid email addresses', () => {
-        const validEmails = ['test@example.com', 'user.name@company.co.uk', 'admin+test@domain.org'];
+        const validEmails = [
+          'test@example.com',
+          'user.name@company.co.uk',
+          'admin+test@domain.org',
+        ];
 
         validEmails.forEach((email) => {
           const result = emailSchema.safeParse(email);

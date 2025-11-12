@@ -15,12 +15,17 @@
   "dependencies": {
     "@es-mono/api": "workspace:^",
     "@es-mono/design-system": "workspace:^",
+    "@es-mono/shared": "workspace:^",
+    "@tanstack/react-form": "^1.23.8",
+    "@tanstack/react-query": "^5.90.7",
     "@tanstack/react-router": "^1.134.15",
+    "@tanstack/zod-form-adapter": "^0.42.1",
     "hono": "^4.10.4",
     "i18next": "^25.6.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-i18next": "^16.2.4"
+    "react-i18next": "^16.2.4",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",
@@ -31,7 +36,7 @@
     "@types/react-dom": "^19.2.2",
     "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.4.21",
-    "jsdom": "^27.1.0",
+    "happy-dom": "^20.0.10",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.1",
     "vite": "^5.4.21",

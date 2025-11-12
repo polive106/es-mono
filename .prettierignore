@@ -10,3 +10,6 @@ yarn.lock
 .next
 .cache
 public
+
+# Auto-generated files
+**/routeTree.gen.ts
