@@ -2,17 +2,28 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createTestDatabase } from './setup/test-db';
 import { companies, users } from '@es-mono/database/schema';
 import type { DB } from '@es-mono/database';
+import {
+  UpdateCompanyProfile,
+  GetCompany,
+  ValidateInviteCode,
+  ListCompanies,
+} from '@es-mono/domain';
+import { DrizzleCompanyRepository } from '../../src/repositories/implementations/DrizzleCompanyRepository';
 
 describe('Company Onboarding Integration Tests', () => {
   let testDb: DB;
   let cleanup: () => Promise<void>;
   let testUserId: string;
   let testCompanyId: string;
+  let companyRepository: DrizzleCompanyRepository;
 
   beforeAll(async () => {
     const result = await createTestDatabase();
     testDb = result.db;
     cleanup = result.cleanup;
+
+    // Initialize repository
+    companyRepository = new DrizzleCompanyRepository(testDb);
 
     // Create a test company with invite code
     const timestamp = Date.now();
@@ -48,12 +59,7 @@ describe('Company Onboarding Integration Tests', () => {
 
   describe('Complete company profile', () => {
     it('should allow company to update its profile information', async () => {
-      // This test will FAIL because the update company use case doesn't exist yet
-      const { UpdateCompanyProfile } = await import(
-        '../../src/domain/use-cases/companies/UpdateCompanyProfile'
-      );
-
-      const updateCompanyProfile = new UpdateCompanyProfile();
+      const updateCompanyProfile = new UpdateCompanyProfile(companyRepository);
 
       const updatedCompany = await updateCompanyProfile.execute({
         companyId: testCompanyId,
@@ -63,16 +69,13 @@ describe('Company Onboarding Integration Tests', () => {
         },
       });
 
-      expect(updatedCompany.industry).toBe('Healthcare');
-      expect(updatedCompany.size).toBe('51-200');
+      const companyData = updatedCompany.toObject();
+      expect(companyData.industry).toBe('Healthcare');
+      expect(companyData.size).toBe('51-200');
     });
 
     it('should validate company data during profile completion', async () => {
-      const { UpdateCompanyProfile } = await import(
-        '../../src/domain/use-cases/companies/UpdateCompanyProfile'
-      );
-
-      const updateCompanyProfile = new UpdateCompanyProfile();
+      const updateCompanyProfile = new UpdateCompanyProfile(companyRepository);
 
       // Should reject invalid industry
       await expect(
@@ -89,27 +92,20 @@ describe('Company Onboarding Integration Tests', () => {
 
   describe('View company profile', () => {
     it('should retrieve company profile by ID', async () => {
-      // This test will FAIL because the get company use case doesn't exist yet
-      const { GetCompany } = await import('../../src/domain/use-cases/companies/GetCompany');
-
-      const getCompany = new GetCompany();
+      const getCompany = new GetCompany(companyRepository);
       const company = await getCompany.execute(testCompanyId);
 
-      expect(company).toBeDefined();
-      expect(company.id).toBe(testCompanyId);
-      expect(company.name).toContain('Test Company');
-      expect(company.creditBalance).toBe(0);
+      const companyData = company.toObject();
+      expect(companyData).toBeDefined();
+      expect(companyData.id).toBe(testCompanyId);
+      expect(companyData.name).toContain('Test Company');
+      expect(companyData.creditBalance).toBe(0);
     });
   });
 
   describe('Validate invite code', () => {
     it('should validate a correct invite code', async () => {
-      // This test will FAIL because the validate invite code use case doesn't exist yet
-      const { ValidateInviteCode } = await import(
-        '../../src/domain/use-cases/companies/ValidateInviteCode'
-      );
-
-      const validateInviteCode = new ValidateInviteCode();
+      const validateInviteCode = new ValidateInviteCode(companyRepository);
 
       const existingCompany = await testDb.query.companies.findFirst({
         where: (companies, { eq }) => eq(companies.id, testCompanyId),
@@ -121,13 +117,9 @@ describe('Company Onboarding Integration Tests', () => {
     });
 
     it('should reject an invalid invite code', async () => {
-      const { ValidateInviteCode } = await import(
-        '../../src/domain/use-cases/companies/ValidateInviteCode'
-      );
+      const validateInviteCode = new ValidateInviteCode(companyRepository);
 
-      const validateInviteCode = new ValidateInviteCode();
-
-      const isValid = await validateInviteCode.execute('INVALID123');
+      const isValid = await validateInviteCode.execute('INVALID1');
 
       expect(isValid).toBe(false);
     });
@@ -135,16 +127,15 @@ describe('Company Onboarding Integration Tests', () => {
 
   describe('List companies in network', () => {
     it('should retrieve all companies in the network', async () => {
-      // This test will FAIL because the list companies use case doesn't exist yet
-      const { ListCompanies } = await import('../../src/domain/use-cases/companies/ListCompanies');
-
-      const listCompanies = new ListCompanies();
+      const listCompanies = new ListCompanies(companyRepository);
       const companiesList = await listCompanies.execute();
 
       expect(companiesList).toBeDefined();
       expect(Array.isArray(companiesList)).toBe(true);
       expect(companiesList.length).toBeGreaterThan(0);
-      expect(companiesList.some((c) => c.id === testCompanyId)).toBe(true);
+
+      const companiesData = companiesList.map((c) => c.toObject());
+      expect(companiesData.some((c) => c.id === testCompanyId)).toBe(true);
     });
   });
 });
