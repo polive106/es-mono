@@ -4,11 +4,12 @@ import { z } from 'zod';
 import { requireAuth, getAuthUser } from '../middleware/auth';
 import { db } from '@es-mono/database';
 import { DrizzleCompanyRepository } from '../repositories/implementations/DrizzleCompanyRepository';
+import type { CompanyRepository } from '@es-mono/domain';
 
 const companiesRoutes = new Hono();
 
-// Initialize repository
-const companyRepository = new DrizzleCompanyRepository(db);
+// Initialize repository using domain port interface
+const companyRepository: CompanyRepository = new DrizzleCompanyRepository(db);
 
 /**
  * GET /api/companies
@@ -17,7 +18,10 @@ const companyRepository = new DrizzleCompanyRepository(db);
 companiesRoutes.get('/', requireAuth, async (c) => {
   const companies = await companyRepository.findAll();
 
-  return c.json({ companies });
+  // Convert domain entities to plain objects for JSON response
+  const companiesData = companies.map((company) => company.toObject());
+
+  return c.json({ companies: companiesData });
 });
 
 /**
@@ -33,7 +37,7 @@ companiesRoutes.get('/:id', requireAuth, async (c) => {
     return c.json({ error: 'Company not found' }, 404);
   }
 
-  return c.json({ company });
+  return c.json({ company: company.toObject() });
 });
 
 /**
@@ -60,18 +64,26 @@ companiesRoutes.patch(
       return c.json({ error: 'Unauthorized to update this company' }, 403);
     }
 
-    // Verify company exists
+    // Get existing company (domain entity)
     const existingCompany = await companyRepository.findById(id);
     if (!existingCompany) {
       return c.json({ error: 'Company not found' }, 404);
     }
 
-    // Update company
-    const updatedCompany = await companyRepository.update(id, updates);
+    // Apply updates using domain entity methods (includes validation)
+    if (updates.industry) {
+      existingCompany.updateIndustry(updates.industry);
+    }
+    if (updates.size) {
+      existingCompany.updateSize(updates.size);
+    }
+
+    // Persist via repository
+    const updatedCompany = await companyRepository.update(existingCompany);
 
     return c.json({
       message: 'Company updated successfully',
-      company: updatedCompany,
+      company: updatedCompany.toObject(),
     });
   }
 );

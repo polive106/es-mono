@@ -2,9 +2,9 @@ import { db } from '@es-mono/database';
 import { hashPassword, verifyPassword } from '../utils/password';
 import { checkPasswordBreach } from '../utils/hibp';
 import { invalidateSession, createSessionInternal } from './sessions';
+import type { CompanyRepository } from '@es-mono/domain';
 import type {
   IUserRepository,
-  ICompanyRepository,
   ISessionRepository,
   IUserRoleRepository,
 } from '../repositories/interfaces';
@@ -33,7 +33,7 @@ export class AuthError extends Error {
  */
 export interface AuthServiceDependencies {
   userRepo: IUserRepository;
-  companyRepo: ICompanyRepository;
+  companyRepo: CompanyRepository;
   sessionRepo: ISessionRepository;
   userRoleRepo: IUserRoleRepository;
 }

@@ -16,6 +16,8 @@ export default defineConfig({
         '@hono/node-server',
         '@es-mono/database',
         '@es-mono/database/schema',
+        '@es-mono/domain',
+        '@es-mono/domain/ports/repositories',
         '@es-mono/shared',
         'drizzle-orm',
         'better-sqlite3',
