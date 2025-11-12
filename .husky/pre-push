@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Pre-push hook: Run E2E tests
+# E2E tests are slow (~15+ minutes) so they run before pushing, not on every commit
+
+echo "🧪 Running E2E tests before push..."
+echo "⏱️  This may take 10-15 minutes..."
+
+pnpm test:e2e || {
+  echo "❌ E2E tests failed. Please fix the failing tests before pushing."
+  exit 1
+}
+
+echo "\n✅ All E2E tests passed! Safe to push."
